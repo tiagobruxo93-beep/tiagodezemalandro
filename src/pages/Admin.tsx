@@ -11,6 +11,13 @@ const Admin = () => {
 
   useEffect(() => {
     document.title = "Painel — Pai Tiago de Zé Malandro";
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => {
+      meta.remove();
+    };
   }, []);
 
   if (loading || (session && checking)) {

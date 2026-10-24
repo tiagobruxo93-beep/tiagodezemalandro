@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, ArrowUpRight, Lock } from "lucide-react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
@@ -108,12 +108,6 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
                   Falar no WhatsApp
                   <ArrowUpRight />
                 </a>
-              </Button>
-              <Button asChild variant="hairline" size="lg">
-                <Link to="/admin" onClick={() => setOpen(false)}>
-                  <Lock />
-                  Painel do Pai Tiago
-                </Link>
               </Button>
             </div>
           </div>

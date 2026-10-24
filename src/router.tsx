@@ -15,8 +15,8 @@ export const routers = [
     element: <AdPage />,
   },
   {
-    path: "/admin",
-    name: "admin",
+    path: "/painel-do-pai-tiago-93k",
+    name: "painel",
     element: <Admin />,
   },
   /* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */

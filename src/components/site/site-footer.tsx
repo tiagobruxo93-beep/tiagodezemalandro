@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { ArrowUpRight, Lock } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
 
 export function SiteFooter({ settings }: { settings: SiteSettings }) {
@@ -59,15 +58,6 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
                 </a>
               </li>
               <li>{settings.paymentNote}</li>
-              <li>
-                <Link
-                  to="/admin"
-                  className="inline-flex items-center gap-1.5 transition-colors hover:text-secondary"
-                >
-                  <Lock className="h-3.5 w-3.5" />
-                  Painel de administração
-                </Link>
-              </li>
             </ul>
           </div>
         </div>
