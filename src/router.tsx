@@ -1,4 +1,6 @@
 import Index from "./pages/Index";
+import AdPage from "./pages/AdPage";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 export const routers = [
@@ -6,6 +8,16 @@ export const routers = [
     path: "/",
     name: "home",
     element: <Index />,
+  },
+  {
+    path: "/anuncio/:slug",
+    name: "anuncio",
+    element: <AdPage />,
+  },
+  {
+    path: "/admin",
+    name: "admin",
+    element: <Admin />,
   },
   /* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */
   {
