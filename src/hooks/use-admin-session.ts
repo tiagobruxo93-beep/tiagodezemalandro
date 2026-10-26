@@ -57,6 +57,33 @@ export function useAdminSession() {
     };
   }, [session]);
 
+  // Desconecta sozinho depois de 60 minutos sem uso (proteção em computador compartilhado).
+  useEffect(() => {
+    if (!session) return;
+
+    const LIMITE = 60 * 60 * 1000;
+    let ultimo = Date.now();
+
+    const tocar = () => {
+      ultimo = Date.now();
+    };
+
+    const eventos: (keyof WindowEventMap)[] = ["click", "keydown", "scroll", "touchstart"];
+    eventos.forEach((evento) => window.addEventListener(evento, tocar, { passive: true }));
+
+    const relogio = window.setInterval(() => {
+      if (Date.now() - ultimo > LIMITE) {
+        void supabase.auth.signOut();
+        setIsAdmin(false);
+      }
+    }, 60 * 1000);
+
+    return () => {
+      eventos.forEach((evento) => window.removeEventListener(evento, tocar));
+      window.clearInterval(relogio);
+    };
+  }, [session]);
+
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);

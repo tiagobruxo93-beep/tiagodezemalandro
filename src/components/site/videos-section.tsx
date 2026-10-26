@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { safeUrl } from "@/lib/security";
 import { ArrowUpRight, Play } from "lucide-react";
 import { isDirectVideo, videoEmbedUrl, type SiteContent, type VideoItem } from "@/lib/site-content";
 
@@ -12,7 +13,7 @@ function VideoCard({ item }: { item: VideoItem }) {
         {open && embed ? (
           isDirectVideo(item.url) ? (
             <video
-              src={embed}
+              src={safeUrl(embed)}
               controls
               autoPlay
               playsInline
@@ -20,7 +21,7 @@ function VideoCard({ item }: { item: VideoItem }) {
             />
           ) : (
             <iframe
-              src={embed}
+              src={safeUrl(embed)}
               title={item.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -31,7 +32,7 @@ function VideoCard({ item }: { item: VideoItem }) {
           <>
             {item.cover ? (
               <img
-                src={item.cover}
+                src={safeUrl(item.cover)}
                 alt={item.title}
                 loading="lazy"
                 className="h-full w-full object-cover opacity-85"
@@ -55,9 +56,9 @@ function VideoCard({ item }: { item: VideoItem }) {
               </button>
             ) : item.url ? (
               <a
-                href={item.url}
+                href={safeUrl(item.url, "#")}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 border border-secondary/40 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-secondary backdrop-blur-sm"
               >
                 Abrir vídeo <ArrowUpRight className="h-3 w-3" />

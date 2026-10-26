@@ -1,3 +1,4 @@
+import { safeUrl } from "@/lib/security";
 import type { SiteContent } from "@/lib/site-content";
 
 export function HowItWorks({ content }: { content: SiteContent }) {
@@ -73,7 +74,7 @@ export function CorrenteBanner({
           <div className="absolute -inset-3 -z-10 border border-secondary/20" />
           <div className="relative border border-secondary/30 bg-card/40 p-2 shadow-elegant">
             <img
-              src={content.corrente.image}
+              src={safeUrl(content.corrente.image)}
               alt="Nomes sendo escritos para a firmeza da corrente"
               loading="lazy"
               className="aspect-[4/3] w-full object-contain"

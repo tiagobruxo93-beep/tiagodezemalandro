@@ -1,4 +1,5 @@
 import { Quote } from "lucide-react";
+import { safeUrl } from "@/lib/security";
 import { Button } from "@/components/ui/button";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
 import type { SiteContent } from "@/lib/site-content";
@@ -24,7 +25,7 @@ export function AboutSection({
           <div className="relative border border-secondary/25 bg-card/40 p-3">
             <div className="relative overflow-hidden">
               <img
-                src={sobre.image}
+                src={safeUrl(sobre.image)}
                 alt={sobre.title}
                 loading="lazy"
                 className="aspect-[4/5] w-full object-contain"
@@ -66,7 +67,7 @@ export function AboutSection({
           </div>
 
           <Button asChild variant="outline" size="lg" className="mt-8">
-            <a href={buildWhatsAppLink(settings.whatsappNumber)} target="_blank" rel="noreferrer">
+            <a href={buildWhatsAppLink(settings.whatsappNumber)} target="_blank" rel="noopener noreferrer">
               {sobre.button}
             </a>
           </Button>

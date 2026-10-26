@@ -1,3 +1,4 @@
+import { safeUrl } from "@/lib/security";
 import type { SiteContent } from "@/lib/site-content";
 
 export function GalleryStrip({ content }: { content: SiteContent }) {
@@ -27,7 +28,7 @@ export function GalleryStrip({ content }: { content: SiteContent }) {
               className="group relative overflow-hidden border border-border/60 bg-card/40 p-2"
             >
               <img
-                src={photo.url}
+                src={safeUrl(photo.url)}
                 alt={photo.alt}
                 loading="lazy"
                 className="aspect-square w-full object-contain opacity-90 transition-opacity duration-700 group-hover:opacity-100"

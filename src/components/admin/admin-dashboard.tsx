@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Activity,
+  Download,
   ExternalLink,
   LayoutList,
   LogOut,
@@ -19,6 +20,7 @@ import { AdFormDialog } from "@/components/admin/ad-form-dialog";
 import { ContentEditor } from "@/components/admin/content-editor";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
 import { createAd, fetchClickCounts, updateAd, type AdDraft } from "@/lib/admin-ads";
+import { exportarDados } from "@/lib/backup";
 import type { Ad } from "@/lib/ads";
 import { cn } from "@/lib/utils";
 
@@ -209,6 +211,20 @@ export function AdminDashboard({
                     <ExternalLink />
                     Ver site
                   </Link>
+                </Button>
+                <Button
+                  variant="hairline"
+                  size="sm"
+                  onClick={() => {
+                    void exportarDados()
+                      .then(() => toast.success("Cópia de segurança baixada"))
+                      .catch(() =>
+                        toast.error("Não foi possível gerar a cópia de segurança"),
+                      );
+                  }}
+                >
+                  <Download />
+                  Baixar cópia
                 </Button>
                 <Button variant="forward" size="sm" onClick={openNew}>
                   <Plus />

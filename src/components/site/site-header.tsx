@@ -67,7 +67,7 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
             <a
               href={buildWhatsAppLink(settings.whatsappNumber)}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               Participar
               <ArrowUpRight />
@@ -103,7 +103,7 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
                 <a
                   href={buildWhatsAppLink(settings.whatsappNumber)}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   Falar no WhatsApp
                   <ArrowUpRight />

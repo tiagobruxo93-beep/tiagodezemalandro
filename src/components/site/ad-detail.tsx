@@ -8,6 +8,7 @@ import {
   MessageCircle,
   ShieldCheck,
 } from "lucide-react";
+import { safeUrl } from "@/lib/security";
 import { Button } from "@/components/ui/button";
 import {
   buildWhatsAppLink,
@@ -84,7 +85,7 @@ export function AdDetail({
                 <div className="absolute -inset-3 -z-10 border border-secondary/20" />
                 <div className="relative border border-secondary/30 bg-card/40 p-3 shadow-elegant">
                   <img
-                    src={ad.imageUrl}
+                    src={safeUrl(ad.imageUrl)}
                     alt={ad.title}
                     className="aspect-[4/5] w-full object-contain"
                   />
@@ -167,7 +168,7 @@ export function AdDetail({
                   <a
                     href={forwardHref(ad, settings)}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     onClick={() =>
                       void trackForward(ad.id, external ? "checkout" : "whatsapp")
                     }
@@ -177,7 +178,7 @@ export function AdDetail({
                   </a>
                 </Button>
                 <Button asChild variant="whatsapp" size="lg" className="w-full">
-                  <a href={whatsapp} target="_blank" rel="noreferrer">
+                  <a href={whatsapp} target="_blank" rel="noopener noreferrer">
                     <MessageCircle />
                     Tirar dúvida no WhatsApp
                   </a>

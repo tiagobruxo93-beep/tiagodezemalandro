@@ -6,47 +6,37 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-type Mode = "login" | "signup";
-
 export function AdminLogin() {
-  const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
-    setInfo(null);
     setLoading(true);
+
     try {
-      if (mode === "login") {
-        const { error: authError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (authError) throw new Error(authError.message);
-      } else {
-        const { error: authError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/` },
-        });
-        if (authError) throw new Error(authError.message);
-        setInfo("Acesso criado. Se for o primeiro acesso da casa, ele já é administrador.");
-      }
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+      if (authError) throw new Error(authError.message);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Não foi possível entrar";
-      setError(
-        message.includes("Invalid login credentials")
-          ? "E-mail ou senha incorretos."
-          : message.includes("already registered")
-            ? "Esse e-mail já tem acesso. Use a aba Entrar."
-            : message,
-      );
+      const mensagem = err instanceof Error ? err.message : "Não foi possível entrar";
+
+      if (mensagem.includes("Invalid login credentials")) {
+        setError("E-mail ou senha incorretos.");
+      } else if (mensagem.includes("Email not confirmed")) {
+        setError("Confirme o e-mail antes de entrar.");
+      } else if (mensagem.toLowerCase().includes("rate") || mensagem.includes("too many")) {
+        setError("Muitas tentativas. Aguarde alguns minutos e tente de novo.");
+      } else {
+        setError(mensagem);
+      }
     } finally {
       setLoading(false);
     }
@@ -56,7 +46,7 @@ export function AdminLogin() {
     <div className="grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
       <div className="relative hidden overflow-hidden lg:block">
         <img
-          src="/images/hero-altar.jpg"
+          src="/images/hero-altar-art.jpg"
           alt="Altar do terreiro"
           className="h-full w-full object-cover opacity-70"
         />
@@ -75,8 +65,8 @@ export function AdminLogin() {
               <span className="block italic text-secondary">sob o seu controle.</span>
             </p>
             <p className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
-              Gerencie os trabalhos, os links de pagamento, as abas do site e o
-              atendimento do WhatsApp em um só lugar.
+              Área restrita ao responsável. O acesso é individual e o cadastro de
+              novas contas fica fechado.
             </p>
           </div>
         </div>
@@ -104,30 +94,12 @@ export function AdminLogin() {
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-1 border border-border/70 bg-card/40 p-1">
-            {(["login", "signup"] as Mode[]).map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => {
-                  setMode(item);
-                  setError(null);
-                  setInfo(null);
-                }}
-                className={`rounded-sm px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] transition-colors ${
-                  mode === item
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {item === "login" ? "Entrar" : "Primeiro acesso"}
-              </button>
-            ))}
-          </div>
-
-          <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+          <form onSubmit={handleSubmit} className="mt-10 space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              <Label
+                htmlFor="email"
+                className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+              >
                 E-mail
               </Label>
               <Input
@@ -135,6 +107,7 @@ export function AdminLogin() {
                 type="email"
                 autoComplete="email"
                 required
+                maxLength={160}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="voce@terreiro.com"
@@ -143,19 +116,23 @@ export function AdminLogin() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              <Label
+                htmlFor="password"
+                className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+              >
                 Senha
               </Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  autoComplete="current-password"
                   required
-                  minLength={6}
+                  minLength={8}
+                  maxLength={128}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Mínimo de 6 caracteres"
+                  placeholder="Sua senha"
                   className="h-12 rounded-sm border-border bg-card/60 pr-11 text-sm focus-visible:ring-secondary/50"
                 />
                 <button
@@ -170,26 +147,24 @@ export function AdminLogin() {
             </div>
 
             {error && (
-              <p className="border-l-2 border-destructive bg-destructive/10 px-3 py-2 text-[12px] text-destructive-foreground">
+              <p
+                role="alert"
+                className="border-l-2 border-destructive bg-destructive/10 px-3 py-2 text-[12px] text-destructive-foreground"
+              >
                 {error}
-              </p>
-            )}
-            {info && (
-              <p className="border-l-2 border-secondary bg-secondary/10 px-3 py-2 text-[12px] text-foreground">
-                {info}
               </p>
             )}
 
             <Button type="submit" variant="forward" size="xl" className="w-full" disabled={loading}>
               {loading ? <Loader2 className="animate-spin" /> : <ArrowRight />}
-              {mode === "login" ? "Entrar no painel" : "Criar acesso"}
+              Entrar no painel
             </Button>
           </form>
 
           <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
-            {mode === "login"
-              ? "Use o e-mail e a senha cadastrados pelo responsável da casa."
-              : "O primeiro acesso criado se torna administrador. Os seguintes ficam sem permissão até serem liberados."}
+            O cadastro de novas contas está fechado por segurança. Se precisar de
+            outro acesso, ele é criado pelo responsável da casa. Depois de alguns
+            minutos sem uso, o painel desconecta sozinho.
           </p>
         </div>
       </div>

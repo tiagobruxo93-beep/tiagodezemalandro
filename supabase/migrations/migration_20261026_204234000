@@ -1,0 +1,46 @@
+create policy "paitiago_conteudo_insert_admin"
+on storage.objects as restrictive for insert to authenticated
+with check (public.spiritual_is_admin());
+
+create or replace function public.spiritual_validar_clique()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  recentes integer;
+begin
+  if new.channel is null or length(new.channel) = 0 then
+    new.channel := 'forward';
+  end if;
+
+  new.channel := left(lower(new.channel), 20);
+
+  if new.channel not in ('forward', 'checkout', 'whatsapp', 'view') then
+    raise exception 'canal invalido';
+  end if;
+
+  if not exists (select 1 from public.spiritual_ads a where a.id = new.ad_id) then
+    raise exception 'anuncio inexistente';
+  end if;
+
+  select count(*) into recentes
+  from public.spiritual_ad_clicks c
+  where c.ad_id = new.ad_id and c.created_at > now() - interval '1 minute';
+
+  if recentes > 120 then
+    raise exception 'limite de registros por minuto atingido';
+  end if;
+
+  if random() < 0.01 then
+    delete from public.spiritual_ad_clicks where created_at < now() - interval '365 days';
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger spiritual_cliques_validar
+before insert on public.spiritual_ad_clicks
+for each row execute function public.spiritual_validar_clique();

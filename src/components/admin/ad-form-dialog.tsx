@@ -79,6 +79,17 @@ export function AdFormDialog({
       return;
     }
 
+    const imagem = (draft.image_url ?? "").trim();
+    if (imagem && !imagem.startsWith("/") && !/^https?:\/\//i.test(imagem)) {
+      setError("O endereço da imagem precisa começar com / ou https://");
+      return;
+    }
+
+    if (draft.title.length > 200 || draft.summary.length > 600) {
+      setError("Título ou resumo muito longos. Reduza o texto.");
+      return;
+    }
+
     setSaving(true);
     try {
       await onSave({

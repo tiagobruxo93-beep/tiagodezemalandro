@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CONTENT_IMAGES, uploadSiteImage } from "@/lib/site-content";
+import { safeUrl } from "@/lib/security";
 
 const LABEL = "text-[10px] uppercase tracking-[0.16em] text-muted-foreground";
 const FIELD = "rounded-sm border-border bg-background/70 text-sm focus-visible:ring-secondary/50";
@@ -38,6 +39,7 @@ export function TextField({
         value={valor}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
+        maxLength={400}
         className={FIELD}
       />
       {ajuda && <p className="text-[11px] text-muted-foreground">{ajuda}</p>}
@@ -65,6 +67,7 @@ export function TextAreaField({
         value={valor}
         onChange={(event) => onChange(event.target.value)}
         rows={rows}
+        maxLength={6000}
         className={FIELD}
       />
       {ajuda && <p className="text-[11px] text-muted-foreground">{ajuda}</p>}
@@ -130,7 +133,7 @@ export function ImageField({
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="flex h-28 w-full shrink-0 items-center justify-center overflow-hidden border border-border/70 bg-background/60 sm:w-44">
           {valor ? (
-            <img src={valor} alt="" className="h-full w-full object-contain" />
+            <img src={safeUrl(valor)} alt="" className="h-full w-full object-contain" />
           ) : (
             <ImagePlus className="h-5 w-5 text-muted-foreground/60" />
           )}
@@ -141,6 +144,7 @@ export function ImageField({
             value={valor}
             onChange={(event) => onChange(event.target.value)}
             placeholder="https://... ou /images/..."
+            maxLength={500}
             className={FIELD}
           />
 

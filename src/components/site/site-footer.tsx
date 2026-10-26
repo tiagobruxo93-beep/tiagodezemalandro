@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import { safeUrl } from "@/lib/security";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
 import type { SiteContent } from "@/lib/site-content";
 
@@ -58,7 +59,7 @@ export function SiteFooter({
                   className="inline-flex items-center gap-1.5 transition-colors hover:text-secondary"
                   href={buildWhatsAppLink(settings.whatsappNumber)}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   WhatsApp do terreiro
                   <ArrowUpRight className="h-3.5 w-3.5" />
@@ -68,9 +69,9 @@ export function SiteFooter({
                 <li>
                   <a
                     className="inline-flex items-center gap-1.5 transition-colors hover:text-secondary"
-                    href={content.contato.instagram}
+                    href={safeUrl(content.contato.instagram, "#")}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >
                     Instagram
                     <ArrowUpRight className="h-3.5 w-3.5" />

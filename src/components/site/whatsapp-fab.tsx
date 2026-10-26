@@ -6,7 +6,7 @@ export function WhatsAppFab({ settings }: { settings: SiteSettings }) {
     <a
       href={buildWhatsAppLink(settings.whatsappNumber)}
       target="_blank"
-      rel="noreferrer"
+      rel="noopener noreferrer"
       aria-label="Falar no WhatsApp"
       className="group fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary px-4 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary-foreground shadow-glow transition-transform duration-300 hover:scale-[1.03] sm:bottom-7 sm:right-7"
     >

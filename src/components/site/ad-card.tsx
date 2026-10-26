@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Flame, MoonStar, Sparkles } from "lucide-react";
+import { safeUrl } from "@/lib/security";
 import { Button } from "@/components/ui/button";
 import {
   CATEGORY_META,
@@ -54,7 +55,7 @@ export function AdCard({
       <div className="relative border-b border-border/60 bg-[radial-gradient(70%_50%_at_50%_0%,hsl(38_45%_24%_/_0.35),transparent_70%)] px-5 pb-6 pt-11">
         {ad.imageUrl ? (
           <img
-            src={ad.imageUrl}
+            src={safeUrl(ad.imageUrl)}
             alt={ad.title}
             loading="lazy"
             className="aspect-[4/5] w-full object-contain drop-shadow-[0_22px_40px_rgba(0,0,0,0.65)]"
@@ -109,7 +110,7 @@ export function AdCard({
             <a
               href={forwardHref(ad, settings)}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               onClick={() => void trackForward(ad.id, external ? "checkout" : "whatsapp")}
             >
               {ad.forwardLabel}

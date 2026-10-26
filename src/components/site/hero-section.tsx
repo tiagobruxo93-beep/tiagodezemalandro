@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowUpRight, CalendarDays, ShieldCheck } from "lucide-react";
+import { safeUrl } from "@/lib/security";
 import { Button } from "@/components/ui/button";
 import {
   buildWhatsAppLink,
@@ -47,7 +48,7 @@ export function HeroSection({
                 </a>
               </Button>
               <Button asChild variant="outline" size="xl" className="min-w-[190px]">
-                <a href={buildWhatsAppLink(settings.whatsappNumber)} target="_blank" rel="noreferrer">
+                <a href={buildWhatsAppLink(settings.whatsappNumber)} target="_blank" rel="noopener noreferrer">
                   Falar no WhatsApp
                   <ArrowUpRight />
                 </a>
@@ -74,7 +75,7 @@ export function HeroSection({
             <div className="absolute -inset-3 -z-10 border border-secondary/20" />
             <div className="relative border border-secondary/30 bg-card/40 p-2 shadow-elegant">
               <img
-                src={content.hero.image}
+                src={safeUrl(content.hero.image)}
                 alt="Altar do terreiro sob a lua vermelha"
                 className="aspect-video w-full object-contain"
               />
@@ -119,7 +120,7 @@ export function HeroSection({
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button asChild variant="forward" size="lg">
-                  <a href={forwardHref(featuredAd, settings)} target="_blank" rel="noreferrer">
+                  <a href={forwardHref(featuredAd, settings)} target="_blank" rel="noopener noreferrer">
                     {featuredAd.forwardLabel}
                     <ArrowUpRight />
                   </a>

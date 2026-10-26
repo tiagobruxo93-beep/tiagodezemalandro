@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { onlyDigits, safeUrl } from "@/lib/security";
 
 export type AdCategory = "coletivo" | "individual" | "consulta";
 export type AdTab = "todos" | AdCategory;
@@ -214,16 +215,25 @@ export function buildWhatsAppLink(
   number: string,
   message = "Olá, Pai Tiago! Vim pelo site e quero saber mais sobre os trabalhos.",
 ) {
-  const digits = (number || "").replace(/\D/g, "");
+  const digits = onlyDigits(number);
+  if (!digits) return "#contato";
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
 
 export function isExternalForward(ad: Ad) {
-  return /^https?:\/\//i.test(ad.forwardUrl.trim());
+  const endereco = ad.forwardUrl.trim();
+  if (endereco === "" || !/^https?:\/\//i.test(endereco)) return false;
+
+  try {
+    const url = new URL(endereco);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
 }
 
 export function forwardHref(ad: Ad, settings: SiteSettings) {
-  if (isExternalForward(ad)) return ad.forwardUrl.trim();
+  if (isExternalForward(ad)) return safeUrl(ad.forwardUrl, "#");
   const message =
     ad.category === "coletivo"
       ? `Olá, Pai Tiago! Quero participar do trabalho "${ad.title}".`
@@ -241,13 +251,20 @@ export function slugify(value: string) {
     .slice(0, 70);
 }
 
+const CLICKS_REGISTRADOS = new Set<string>();
+
 export async function trackForward(adId: string, channel = "forward") {
+  // Um registro por anúncio e por visita: evita spam de cliques e requisições repetidas.
+  const chave = `${adId}:${channel}`;
+  if (CLICKS_REGISTRADOS.has(chave)) return;
+  CLICKS_REGISTRADOS.add(chave);
+
   try {
     await supabase
       .from("spiritual_ad_clicks")
-      .insert({ ad_id: adId, channel });
+      .insert({ ad_id: adId, channel: channel.slice(0, 20) });
   } catch {
-    // Tracking must never block the forward action.
+    // O registro nunca deve bloquear o encaminhamento.
   }
 }
 
