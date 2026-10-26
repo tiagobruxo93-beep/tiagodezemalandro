@@ -2,22 +2,18 @@ const PHOTOS = [
   {
     src: "/images/galeria-terreiro.jpg",
     alt: "Gira de trabalho coletivo no terreiro com velas e flores",
-    className: "md:col-span-2 md:row-span-1",
   },
   {
     src: "/images/galeria-nomes.jpg",
     alt: "Nomes sendo escritos para a firmeza da corrente",
-    className: "",
   },
   {
     src: "/images/trabalho-caminhos.jpg",
     alt: "Firmeza de abertura de caminhos com velas e chaves",
-    className: "",
   },
   {
     src: "/images/trabalho-demanda.jpg",
     alt: "Firmeza de quebra de demanda com correntes e velas",
-    className: "md:col-span-2",
   },
 ];
 
@@ -38,19 +34,18 @@ export function GalleryStrip() {
           </p>
         </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {PHOTOS.map((photo) => (
             <div
               key={photo.src}
-              className={`group relative overflow-hidden border border-border/60 ${photo.className}`}
+              className="group relative overflow-hidden border border-border/60 bg-card/40 p-2"
             >
               <img
                 src={photo.src}
                 alt={photo.alt}
                 loading="lazy"
-                className="h-[180px] w-full object-cover opacity-85 transition-all duration-700 group-hover:scale-105 group-hover:opacity-100 sm:h-[240px]"
+                className="aspect-square w-full object-contain opacity-90 transition-opacity duration-700 group-hover:opacity-100"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent opacity-70" />
             </div>
           ))}
         </div>

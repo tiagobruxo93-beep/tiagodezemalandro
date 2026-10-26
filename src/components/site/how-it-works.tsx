@@ -64,16 +64,10 @@ export function HowItWorks() {
 
 export function CorrenteBanner({ onCta }: { onCta?: () => void }) {
   return (
-    <section className="relative isolate overflow-hidden">
-      <img
-        src="/images/galeria-nomes.jpg"
-        alt="Nomes sendo escritos para a firmeza da corrente"
-        className="absolute inset-0 -z-10 h-full w-full object-cover object-center opacity-60"
-      />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/70 to-background/30" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-transparent to-background/60" />
+    <section className="relative isolate overflow-hidden border-y border-border/60">
+      <div className="absolute inset-0 -z-10 bg-candle" />
 
-      <div className="section-shell flex min-h-[360px] flex-col justify-center py-20">
+      <div className="section-shell grid items-center gap-10 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
         <div className="max-w-xl">
           <p className="eyebrow">A corrente de fé</p>
           <h2 className="mt-4 font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
@@ -92,6 +86,18 @@ export function CorrenteBanner({ onCta }: { onCta?: () => void }) {
           >
             Escolher meu trabalho
           </a>
+        </div>
+
+        <div className="relative">
+          <div className="absolute -inset-3 -z-10 border border-secondary/20" />
+          <div className="relative border border-secondary/30 bg-card/40 p-2 shadow-elegant">
+            <img
+              src="/images/galeria-nomes.jpg"
+              alt="Nomes sendo escritos para a firmeza da corrente"
+              loading="lazy"
+              className="aspect-[4/3] w-full object-contain"
+            />
+          </div>
         </div>
       </div>
     </section>

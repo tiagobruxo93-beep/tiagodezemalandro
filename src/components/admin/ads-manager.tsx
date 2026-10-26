@@ -180,7 +180,7 @@ export function AdsManager({ ads, clickCounts, onEdit, onChanged }: Props) {
               <div className="flex min-w-0 items-center gap-3">
                 <div className="h-11 w-11 shrink-0 overflow-hidden border border-border/60 bg-background">
                   {ad.imageUrl ? (
-                    <img src={ad.imageUrl} alt="" className="h-full w-full object-cover" />
+                    <img src={ad.imageUrl} alt="" className="h-full w-full object-contain" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center font-display text-lg text-secondary/60">
                       {ad.title.charAt(0)}
@@ -318,7 +318,7 @@ export function AdsManager({ ads, clickCounts, onEdit, onChanged }: Props) {
             <div className="flex items-start gap-3">
               <div className="h-12 w-12 shrink-0 overflow-hidden border border-border/60">
                 {ad.imageUrl ? (
-                  <img src={ad.imageUrl} alt="" className="h-full w-full object-cover" />
+                  <img src={ad.imageUrl} alt="" className="h-full w-full object-contain" />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center font-display text-lg text-secondary/60">
                     {ad.title.charAt(0)}

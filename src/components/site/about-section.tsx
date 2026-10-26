@@ -14,19 +14,21 @@ export function AboutSection({ settings }: { settings: SiteSettings }) {
       <div className="section-shell grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
         <div className="relative">
           <div className="absolute -inset-3 -z-10 border border-secondary/20" />
-          <div className="relative overflow-hidden">
-            <img
-              src="/images/pai-tiago.jpg"
-              alt="Pai Tiago de Zé Malandro no terreiro"
-              loading="lazy"
-              className="h-[420px] w-full object-cover object-top sm:h-[560px]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-            <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
-              <p className="font-display text-xl italic text-foreground/90">
-                “A fé, a palavra e o respeito abrem qualquer porta.”
-              </p>
-              <Quote className="h-6 w-6 shrink-0 text-secondary/60" />
+          <div className="relative border border-secondary/25 bg-card/40 p-3">
+            <div className="relative overflow-hidden">
+              <img
+                src="/images/pai-tiago.jpg"
+                alt="Pai Tiago de Zé Malandro no terreiro"
+                loading="lazy"
+                className="aspect-[4/5] w-full object-contain"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-transparent to-transparent" />
+              <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
+                <p className="font-display text-xl italic text-foreground/90">
+                  “A fé, a palavra e o respeito abrem qualquer porta.”
+                </p>
+                <Quote className="h-6 w-6 shrink-0 text-secondary/60" />
+              </div>
             </div>
           </div>
         </div>

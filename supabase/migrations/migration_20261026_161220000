@@ -1,0 +1,9 @@
+update public.spiritual_ads set image_url = '/images/arte-caixao-inimigos.jpg' where slug = 'caixao-dos-inimigos';
+update public.spiritual_ads set image_url = '/images/arte-cova-inimigos.jpg' where slug = 'cova-dos-inimigos';
+update public.spiritual_ads set image_url = '/images/arte-cruz-desespero.jpg' where slug = 'cruz-do-desespero';
+update public.spiritual_ads set image_url = '/images/arte-caldeirao-mulambo.jpg' where slug = 'caldeirao-de-maria-mulambo';
+update public.spiritual_ads set image_url = '/images/arte-broxamento.jpg' where slug = 'broxamento';
+update public.spiritual_ads set image_url = '/images/arte-exu-do-ouro.jpg' where slug = 'exu-do-ouro';
+update public.spiritual_ads set image_url = '/images/arte-alianca-riqueza.jpg' where slug = 'alianca-de-riqueza';
+update public.spiritual_ads set image_url = '/images/arte-cartas-buzios.jpg' where slug = 'consulta-de-cartas-e-buzios';
+update public.spiritual_site_settings set hero_image_url = '/images/hero-altar-art.jpg' where id = 1;

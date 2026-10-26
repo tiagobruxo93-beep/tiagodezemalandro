@@ -39,19 +39,10 @@ export function AdDetail({
   return (
     <main className="pt-[74px]">
       <div className="relative isolate overflow-hidden border-b border-border/60">
-        {ad.imageUrl ? (
-          <img
-            src={ad.imageUrl}
-            alt={ad.title}
-            className="absolute inset-0 -z-10 h-full w-full object-cover opacity-35"
-          />
-        ) : (
-          <div className="absolute inset-0 -z-10 bg-candle" />
-        )}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/90 to-background/40" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background to-transparent" />
+        <div className="absolute inset-0 -z-10 bg-candle animate-candle-flicker" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-background/60 to-transparent" />
 
-        <div className="section-shell py-14 sm:py-20">
+        <div className="section-shell py-14 sm:py-16">
           <Link
             to="/#trabalhos"
             className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-secondary"
@@ -88,6 +79,19 @@ export function AdDetail({
       <div className="section-shell py-14">
         <div className="grid gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:gap-16">
           <div>
+            {ad.imageUrl && (
+              <div className="relative mx-auto mb-12 max-w-[460px]">
+                <div className="absolute -inset-3 -z-10 border border-secondary/20" />
+                <div className="relative border border-secondary/30 bg-card/40 p-3 shadow-elegant">
+                  <img
+                    src={ad.imageUrl}
+                    alt={ad.title}
+                    className="aspect-[4/5] w-full object-contain"
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="prose-invert max-w-none space-y-4 text-[15px] leading-relaxed text-muted-foreground">
               {ad.description
                 .split("\n")

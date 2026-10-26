@@ -253,7 +253,7 @@ export function AdFormDialog({
                     <img
                       src={draft.image_url}
                       alt="Prévia"
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                     />
                   ) : (
                     <ImagePlus className="h-5 w-5 text-muted-foreground/60" />

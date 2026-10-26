@@ -26,14 +26,14 @@ function ImageFallback({
 }) {
   const Icon = FALLBACK_ICON[category];
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_20%,hsl(38_45%_30%_/_0.35),transparent_65%)]">
-      <div className="absolute h-32 w-32 rounded-full border border-secondary/20" />
-      <div className="absolute h-44 w-44 rounded-full border border-secondary/10" />
+    <div className="flex h-full w-full flex-col items-center justify-center gap-6">
+      <div className="absolute h-40 w-40 rounded-full border border-secondary/15" />
+      <div className="absolute h-56 w-56 rounded-full border border-secondary/10" />
       <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-secondary/30 bg-background/40">
         <Icon className="h-6 w-6 text-secondary/80" />
       </div>
-      <span className="absolute bottom-4 left-4 font-display text-[13px] uppercase tracking-[0.22em] text-secondary/60">
-        {title.split(" ").slice(0, 2).join(" ")}
+      <span className="relative max-w-[80%] text-center font-display text-[15px] uppercase tracking-[0.22em] text-secondary/60">
+        {title}
       </span>
     </div>
   );
@@ -51,25 +51,26 @@ export function AdCard({
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-sm border border-border/80 bg-card/60 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-secondary/40 hover:shadow-elegant">
-      <div className="relative h-[200px] overflow-hidden border-b border-border/60">
+      <div className="relative border-b border-border/60 bg-[radial-gradient(70%_50%_at_50%_0%,hsl(38_45%_24%_/_0.35),transparent_70%)] px-5 pb-6 pt-11">
         {ad.imageUrl ? (
           <img
             src={ad.imageUrl}
             alt={ad.title}
             loading="lazy"
-            className="h-full w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-[1.04]"
+            className="aspect-[4/5] w-full object-contain drop-shadow-[0_22px_40px_rgba(0,0,0,0.65)]"
           />
         ) : (
-          <ImageFallback title={ad.title} category={ad.category} />
+          <div className="relative flex aspect-[4/5] w-full items-center justify-center">
+            <ImageFallback title={ad.title} category={ad.category} />
+          </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-transparent to-transparent" />
 
         {ad.badge && (
-          <span className="absolute left-3 top-3 rounded-sm border border-primary/40 bg-primary/15 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-primary-foreground backdrop-blur-sm">
+          <span className="absolute left-4 top-3 rounded-sm border border-primary/40 bg-primary/20 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-primary-foreground backdrop-blur-sm">
             {ad.badge}
           </span>
         )}
-        <span className="absolute right-3 top-3 rounded-sm border border-secondary/30 bg-background/70 px-2.5 py-1 text-[9px] uppercase tracking-[0.18em] text-secondary backdrop-blur-sm">
+        <span className="absolute right-4 top-3 rounded-sm border border-secondary/30 bg-background/70 px-2.5 py-1 text-[9px] uppercase tracking-[0.18em] text-secondary backdrop-blur-sm">
           {meta.label}
         </span>
       </div>

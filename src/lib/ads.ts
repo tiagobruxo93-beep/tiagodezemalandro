@@ -117,13 +117,21 @@ export const AD_TABS: { value: AdTab; label: string; hint: string }[] = [
 ];
 
 export const IMAGE_LIBRARY = [
-  { label: "Altar de Seu Zé", value: "/images/hero-altar.jpg" },
-  { label: "Cova dos inimigos", value: "/images/cova-dos-inimigos.jpg" },
-  { label: "Abertura de caminhos", value: "/images/trabalho-caminhos.jpg" },
-  { label: "Quebra de demanda", value: "/images/trabalho-demanda.jpg" },
-  { label: "Nomes na corrente", value: "/images/galeria-nomes.jpg" },
-  { label: "Gira no terreiro", value: "/images/galeria-terreiro.jpg" },
-  { label: "Pai Tiago", value: "/images/pai-tiago.jpg" },
+  { label: "Arte — Caixão dos Inimigos", value: "/images/arte-caixao-inimigos.jpg" },
+  { label: "Arte — Cova dos Inimigos", value: "/images/arte-cova-inimigos.jpg" },
+  { label: "Arte — Cruz do Desespero", value: "/images/arte-cruz-desespero.jpg" },
+  { label: "Arte — Caldeirão de Maria Mulambo", value: "/images/arte-caldeirao-mulambo.jpg" },
+  { label: "Arte — Broxamento", value: "/images/arte-broxamento.jpg" },
+  { label: "Arte — Exu do Ouro", value: "/images/arte-exu-do-ouro.jpg" },
+  { label: "Arte — Aliança de Riqueza", value: "/images/arte-alianca-riqueza.jpg" },
+  { label: "Arte — Consulta de Cartas e Búzios", value: "/images/arte-cartas-buzios.jpg" },
+  { label: "Altar sob a lua vermelha", value: "/images/hero-altar-art.jpg" },
+  { label: "Altar de Seu Zé (foto)", value: "/images/hero-altar.jpg" },
+  { label: "Abertura de caminhos (foto)", value: "/images/trabalho-caminhos.jpg" },
+  { label: "Quebra de demanda (foto)", value: "/images/trabalho-demanda.jpg" },
+  { label: "Nomes na corrente (foto)", value: "/images/galeria-nomes.jpg" },
+  { label: "Gira no terreiro (foto)", value: "/images/galeria-terreiro.jpg" },
+  { label: "Pai Tiago (foto)", value: "/images/pai-tiago.jpg" },
 ];
 
 export const CATEGORY_VALUES: AdCategory[] = [
@@ -244,7 +252,7 @@ export async function trackForward(adId: string, channel = "forward") {
 }
 
 export const SITE_IMAGES = {
-  hero: "/images/hero-altar.jpg",
+  hero: "/images/hero-altar-art.jpg",
   gallery: "/images/galeria-terreiro.jpg",
   names: "/images/galeria-nomes.jpg",
   caminhos: "/images/trabalho-caminhos.jpg",
