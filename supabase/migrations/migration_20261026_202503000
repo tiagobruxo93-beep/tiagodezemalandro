@@ -1,0 +1,11 @@
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('images', 'images', true, 10485760, array['image/jpeg','image/png','image/webp','image/gif']::text[])
+on conflict (id) do nothing;
+
+create policy "paitiago_conteudo_read"
+on storage.objects for select to public
+using (bucket_id = 'images' and name like 'conteudo/%');
+
+create policy "paitiago_conteudo_insert"
+on storage.objects for insert to authenticated
+with check (bucket_id = 'images' and name like 'conteudo/%');

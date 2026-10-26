@@ -6,13 +6,14 @@ import { AdsTabsSection } from "@/components/site/ads-tabs-section";
 import { AboutSection } from "@/components/site/about-section";
 import { GalleryStrip } from "@/components/site/gallery-strip";
 import { FaqSection } from "@/components/site/faq-section";
+import { VideosSection } from "@/components/site/videos-section";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsAppFab } from "@/components/site/whatsapp-fab";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
 
 const Index = () => {
   const { ads, loading } = useAds();
-  const { settings } = useSiteSettings();
+  const { settings, content } = useSiteSettings();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
@@ -28,15 +29,16 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <SiteHeader settings={settings} />
       <main>
-        <HeroSection settings={settings} featuredAd={featuredAd} />
-        <HowItWorks />
-        <CorrenteBanner />
-        <AdsTabsSection ads={ads} settings={settings} loading={loading} />
-        <AboutSection settings={settings} />
-        <GalleryStrip />
-        <FaqSection />
+        <HeroSection settings={settings} content={content} featuredAd={featuredAd} />
+        <HowItWorks content={content} />
+        <CorrenteBanner content={content} />
+        <AdsTabsSection ads={ads} settings={settings} content={content} loading={loading} />
+        <VideosSection videos={content.videos} />
+        <AboutSection settings={settings} content={content} />
+        <GalleryStrip content={content} />
+        <FaqSection content={content} />
       </main>
-      <SiteFooter settings={settings} />
+      <SiteFooter settings={settings} content={content} />
       <WhatsAppFab settings={settings} />
     </div>
   );

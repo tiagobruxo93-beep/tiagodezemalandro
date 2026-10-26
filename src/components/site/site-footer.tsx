@@ -1,7 +1,14 @@
 import { ArrowUpRight } from "lucide-react";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
+import type { SiteContent } from "@/lib/site-content";
 
-export function SiteFooter({ settings }: { settings: SiteSettings }) {
+export function SiteFooter({
+  settings,
+  content,
+}: {
+  settings: SiteSettings;
+  content: SiteContent;
+}) {
   return (
     <footer className="relative mt-24 border-t border-border/70">
       <div className="hairline-gold absolute inset-x-0 -top-px h-px" />
@@ -12,7 +19,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
               Pai Tiago <span className="italic text-primary">de Zé Malandro</span>
             </p>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              {settings.footerNote} Trabalhos conduzidos com responsabilidade,
+              {content.rodape.note} Trabalhos conduzidos com responsabilidade,
               tradição e respeito a quem procura a casa.
             </p>
           </div>
@@ -57,7 +64,20 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               </li>
-              <li>{settings.paymentNote}</li>
+              {content.contato.instagram && (
+                <li>
+                  <a
+                    className="inline-flex items-center gap-1.5 transition-colors hover:text-secondary"
+                    href={content.contato.instagram}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Instagram
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                  </a>
+                </li>
+              )}
+              <li>{content.contato.paymentNote}</li>
             </ul>
           </div>
         </div>

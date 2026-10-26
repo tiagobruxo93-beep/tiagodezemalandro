@@ -7,6 +7,7 @@ import {
   type Ad,
   type SiteSettings,
 } from "@/lib/ads";
+import { DEFAULT_CONTENT, fetchSiteContent, type SiteContent } from "@/lib/site-content";
 
 export function useAds() {
   const [ads, setAds] = useState<Ad[]>([]);
@@ -35,13 +36,17 @@ export function useAds() {
 
 export function useSiteSettings() {
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
+  const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
   const [loading, setLoading] = useState(true);
 
   const reload = useCallback(async () => {
     try {
-      setSettings(await fetchSiteSettings());
+      const [dados, texto] = await Promise.all([fetchSiteSettings(), fetchSiteContent()]);
+      setSettings(dados);
+      setContent(texto);
     } catch {
       setSettings(DEFAULT_SETTINGS);
+      setContent(DEFAULT_CONTENT);
     } finally {
       setLoading(false);
     }
@@ -51,7 +56,7 @@ export function useSiteSettings() {
     void reload();
   }, [reload]);
 
-  return { settings, loading, reload };
+  return { settings, content, loading, reload };
 }
 
 export function useAd(slug: string | undefined) {

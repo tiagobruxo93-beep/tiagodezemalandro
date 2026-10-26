@@ -3473,6 +3473,7 @@ export type Database = {
         Row: {
           about_text: string
           about_title: string
+          content: Json
           footer_note: string
           hero_eyebrow: string
           hero_highlight: string
@@ -3487,6 +3488,7 @@ export type Database = {
         Insert: {
           about_text?: string
           about_title?: string
+          content?: Json
           footer_note?: string
           hero_eyebrow?: string
           hero_highlight?: string
@@ -3501,6 +3503,7 @@ export type Database = {
         Update: {
           about_text?: string
           about_title?: string
+          content?: Json
           footer_note?: string
           hero_eyebrow?: string
           hero_highlight?: string

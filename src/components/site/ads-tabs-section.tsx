@@ -9,16 +9,19 @@ import {
   type AdCategory,
   type SiteSettings,
 } from "@/lib/ads";
+import type { SiteContent } from "@/lib/site-content";
 
 const CATEGORY_ORDER: AdCategory[] = ["coletivo", "individual", "consulta"];
 
 export function AdsTabsSection({
   ads,
   settings,
+  content,
   loading,
 }: {
   ads: Ad[];
   settings: SiteSettings;
+  content: SiteContent;
   loading: boolean;
 }) {
   const [tab, setTab] = useState<string>("todos");
@@ -36,13 +39,12 @@ export function AdsTabsSection({
       <div className="section-shell">
         <div className="flex flex-col gap-8 border-b border-border/60 pb-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl">
-            <p className="eyebrow">Escolha o seu</p>
+            <p className="eyebrow">{content.trabalhos.eyebrow}</p>
             <h2 className="mt-4 font-display text-4xl leading-tight text-foreground sm:text-5xl">
-              Meus trabalhos
+              {content.trabalhos.title}
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Cada anúncio tem sua própria aba, com ficha completa e botão de
-              encaminhamento direto para o pagamento seguro ou para o WhatsApp.
+              {content.trabalhos.text}
             </p>
           </div>
 
@@ -129,7 +131,7 @@ export function AdsTabsSection({
         </Tabs>
 
         <p className="mt-8 text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">
-          {settings.paymentNote}
+          {content.contato.paymentNote}
         </p>
       </div>
     </section>

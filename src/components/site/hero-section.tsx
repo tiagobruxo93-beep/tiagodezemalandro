@@ -7,13 +7,16 @@ import {
   type Ad,
   type SiteSettings,
 } from "@/lib/ads";
+import type { SiteContent } from "@/lib/site-content";
 import { Link } from "react-router-dom";
 
 export function HeroSection({
   settings,
+  content,
   featuredAd,
 }: {
   settings: SiteSettings;
+  content: SiteContent;
   featuredAd?: Ad;
 }) {
   return (
@@ -24,16 +27,16 @@ export function HeroSection({
       <div className="section-shell relative flex min-h-[88svh] flex-col justify-center pb-16 pt-32 sm:pt-36">
         <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <div className="max-w-2xl animate-fade-up">
-            <p className="eyebrow">{settings.heroEyebrow}</p>
+            <p className="eyebrow">{content.hero.eyebrow}</p>
 
             <h1 className="mt-5 font-display text-[44px] leading-[0.98] tracking-tight text-foreground sm:text-[60px] lg:text-[72px]">
-              {settings.heroTitle}
+              {content.hero.title}
               <br />
-              <span className="italic text-primary">{settings.heroHighlight}</span>
+              <span className="italic text-primary">{content.hero.highlight}</span>
             </h1>
 
             <p className="mt-7 max-w-xl text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-              {settings.heroSubtitle}
+              {content.hero.subtitle}
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -71,7 +74,7 @@ export function HeroSection({
             <div className="absolute -inset-3 -z-10 border border-secondary/20" />
             <div className="relative border border-secondary/30 bg-card/40 p-2 shadow-elegant">
               <img
-                src={settings.heroImageUrl}
+                src={content.hero.image}
                 alt="Altar do terreiro sob a lua vermelha"
                 className="aspect-video w-full object-contain"
               />

@@ -1,0 +1,1 @@
+update public.spiritual_site_settings set content = '{}'::jsonb where id = 1;

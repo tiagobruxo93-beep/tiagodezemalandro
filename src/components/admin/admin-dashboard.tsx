@@ -10,18 +10,19 @@ import {
   Settings2,
   Star,
   Wallet,
+  Video,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { AdsManager } from "@/components/admin/ads-manager";
 import { AdFormDialog } from "@/components/admin/ad-form-dialog";
-import { SettingsPanel } from "@/components/admin/settings-panel";
+import { ContentEditor } from "@/components/admin/content-editor";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
 import { createAd, fetchClickCounts, updateAd, type AdDraft } from "@/lib/admin-ads";
 import type { Ad } from "@/lib/ads";
 import { cn } from "@/lib/utils";
 
-type View = "anuncios" | "configuracoes";
+type View = "anuncios" | "conteudo";
 
 export function AdminDashboard({
   email,
@@ -31,7 +32,7 @@ export function AdminDashboard({
   onSignOut: () => void;
 }) {
   const { ads, loading, reload: reloadAds } = useAds();
-  const { settings, reload: reloadSettings } = useSiteSettings();
+  const { settings, content, reload: reloadSettings } = useSiteSettings();
   const [view, setView] = useState<View>("anuncios");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Ad | null>(null);
@@ -79,8 +80,14 @@ export function AdminDashboard({
         hint: "checkout configurado",
         icon: Wallet,
       },
+      {
+        label: "Vídeos publicados",
+        value: String(content.videos.items.length),
+        hint: content.videos.enabled ? "seção visível no site" : "seção desligada",
+        icon: Video,
+      },
     ],
-    [ads, clicks.total],
+    [ads, clicks.total, content.videos.enabled, content.videos.items.length],
   );
 
   const openNew = () => {
@@ -110,7 +117,7 @@ export function AdminDashboard({
 
   const navItems: { id: View; label: string; icon: typeof LayoutList }[] = [
     { id: "anuncios", label: "Anúncios", icon: Megaphone },
-    { id: "configuracoes", label: "Configurações", icon: Settings2 },
+    { id: "conteudo", label: "Conteúdo do site", icon: Settings2 },
   ];
 
   return (
@@ -256,7 +263,7 @@ export function AdminDashboard({
                   </p>
                 </div>
 
-                <div className="mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                   {stats.map((stat) => (
                     <div
                       key={stat.label}
@@ -303,15 +310,15 @@ export function AdminDashboard({
                 <div>
                   <p className="eyebrow">Painel de administração</p>
                   <h1 className="mt-3 font-display text-4xl text-foreground sm:text-5xl">
-                    Configurações
+                    Conteúdo do site
                   </h1>
                   <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
-                    Textos da primeira dobra, apresentação, WhatsApp de
-                    atendimento e avisos de pagamento.
+                    Fotos, textos, vídeos, dúvidas e contato — tudo que aparece no
+                    site, sem mexer em código.
                   </p>
                 </div>
                 <div className="mt-7 max-w-4xl">
-                  <SettingsPanel settings={settings} onSaved={reloadSettings} />
+                  <ContentEditor content={content} onSaved={reloadSettings} />
                 </div>
               </>
             )}

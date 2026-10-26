@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const AdPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { ad, loading, error } = useAd(slug);
-  const { settings } = useSiteSettings();
+  const { settings, content } = useSiteSettings();
   const { ads } = useAds();
 
   useEffect(() => {
@@ -65,7 +65,7 @@ const AdPage = () => {
         <AdDetail ad={ad} settings={settings} related={related} />
       )}
 
-      <SiteFooter settings={settings} />
+      <SiteFooter settings={settings} content={content} />
       <WhatsAppFab settings={settings} />
     </div>
   );

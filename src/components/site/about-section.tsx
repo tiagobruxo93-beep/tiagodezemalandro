@@ -1,14 +1,21 @@
 import { Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
+import type { SiteContent } from "@/lib/site-content";
 
-const STATS = [
-  { value: "1.000", label: "Nomes firmados" },
-  { value: "13", label: "Trabalhos ativos" },
-  { value: "Toda", label: "Semana, gira" },
-];
+export function AboutSection({
+  settings,
+  content,
+}: {
+  settings: SiteSettings;
+  content: SiteContent;
+}) {
+  const sobre = content.sobre;
+  const paragrafos = sobre.text
+    .split("\n")
+    .map((linha) => linha.trim())
+    .filter(Boolean);
 
-export function AboutSection({ settings }: { settings: SiteSettings }) {
   return (
     <section id="sobre" className="relative scroll-mt-24 py-20 sm:py-28">
       <div className="section-shell grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
@@ -17,15 +24,15 @@ export function AboutSection({ settings }: { settings: SiteSettings }) {
           <div className="relative border border-secondary/25 bg-card/40 p-3">
             <div className="relative overflow-hidden">
               <img
-                src="/images/pai-tiago.jpg"
-                alt="Pai Tiago de Zé Malandro no terreiro"
+                src={sobre.image}
+                alt={sobre.title}
                 loading="lazy"
                 className="aspect-[4/5] w-full object-contain"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-transparent to-transparent" />
               <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
                 <p className="font-display text-xl italic text-foreground/90">
-                  “A fé, a palavra e o respeito abrem qualquer porta.”
+                  “{sobre.quote}”
                 </p>
                 <Quote className="h-6 w-6 shrink-0 text-secondary/60" />
               </div>
@@ -34,26 +41,19 @@ export function AboutSection({ settings }: { settings: SiteSettings }) {
         </div>
 
         <div>
-          <p className="eyebrow">Sobre mim</p>
+          <p className="eyebrow">{sobre.eyebrow}</p>
           <h2 className="mt-4 font-display text-4xl leading-[1.05] text-foreground sm:text-5xl">
-            {settings.aboutTitle}
+            {sobre.title}
           </h2>
 
           <div className="mt-6 space-y-4 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-            <p>{settings.aboutText}</p>
-            <p>
-              Criei os trabalhos coletivos para que todos tenham acesso à força
-              do terreiro, independente de onde estejam. Cada nome é recebido
-              com carinho e firmado com a mesma seriedade de um trabalho
-              individual.
-            </p>
-            <p className="text-foreground/90">
-              Aqui não tem promessa vazia: tem tradição, compromisso e muito axé.
-            </p>
+            {paragrafos.map((paragrafo, index) => (
+              <p key={index}>{paragrafo}</p>
+            ))}
           </div>
 
           <div className="mt-10 grid grid-cols-3 gap-4 border-y border-border/70 py-6">
-            {STATS.map((stat) => (
+            {sobre.stats.map((stat) => (
               <div key={stat.label}>
                 <p className="font-display text-3xl leading-none text-secondary sm:text-4xl">
                   {stat.value}
@@ -67,7 +67,7 @@ export function AboutSection({ settings }: { settings: SiteSettings }) {
 
           <Button asChild variant="outline" size="lg" className="mt-8">
             <a href={buildWhatsAppLink(settings.whatsappNumber)} target="_blank" rel="noreferrer">
-              Conversar com o Pai Tiago
+              {sobre.button}
             </a>
           </Button>
         </div>
