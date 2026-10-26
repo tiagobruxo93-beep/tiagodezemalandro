@@ -128,3 +128,37 @@ eu preparo essa versão.
 | Site antigo aparecendo | Cache do navegador/CDN — recarregue com Ctrl+Shift+R |
 | Painel abre mas não carrega dados | Instância do Enter Cloud pausada ou sem créditos |
 | Fotos não aparecem | A pasta `images` não foi enviada junto com o `index.html` |
+
+---
+
+## Caminho sem colar texto no console (HostGator VPS)
+
+Muitos consoles web da HostGator não aceitam Ctrl+V. Nesse caso não precisa colar
+nada: suba o arquivo pelo Gerenciador de Arquivos e digite dois comandos curtos.
+
+1. No **Gerenciador de Arquivos** do cPanel, entre na pasta pessoal (a que mostra
+   `public_html`) — **não** envie o ZIP para dentro de `public_html`.
+2. Envie o `tiagodezemalandro.zip` e, em seguida, clique com o botão direito nele e
+   escolha **Extract** (extrair).
+3. No console da VPS digite (use a tecla **Tab** para completar o nome da pasta):
+
+```bash
+cd tiagodezemalandro
+```
+
+4. E depois, com o seu domínio e e-mail:
+
+```bash
+sudo bash deploy/install.sh seudominio.com.br --ssl seu@email.com
+```
+
+O script instala o Nginx (se faltar), publica em `/var/www/paitiago/dist`, cria a
+configuração do site, recarrega o servidor e emite o certificado HTTPS.
+
+Dicas para o console sem colagem:
+
+- `cd tiago` + **Tab** completa o nome da pasta; `sudo bash dep` + **Tab** completa o caminho.
+- Em vários consoles web, clicar com o **botão direito** cola o conteúdo da área de
+  transferência, mesmo sem Ctrl+V.
+- Se preferir não usar console algum: ative o Nginx pelo painel e envie apenas o
+  conteúdo de `dist/` para `public_html` (Opção A no começo deste guia).
