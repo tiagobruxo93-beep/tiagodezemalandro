@@ -56,6 +56,42 @@
 		});
 	}
 
+	document.querySelectorAll('[data-video]').forEach(function (quadro) {
+		var botao = quadro.querySelector('.video__play');
+
+		if (!botao) {
+			return;
+		}
+
+		botao.addEventListener('click', function () {
+			var embed = quadro.getAttribute('data-embed');
+			var tipo = quadro.getAttribute('data-tipo');
+
+			if (!embed) {
+				return;
+			}
+
+			quadro.innerHTML = '';
+
+			if (tipo === 'arquivo') {
+				var filme = document.createElement('video');
+				filme.src = embed;
+				filme.controls = true;
+				filme.autoplay = true;
+				filme.playsInline = true;
+				quadro.appendChild(filme);
+				return;
+			}
+
+			var moldura = document.createElement('iframe');
+			moldura.src = embed;
+			moldura.setAttribute('title', 'Vídeo do terreiro');
+			moldura.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+			moldura.setAttribute('allowfullscreen', 'allowfullscreen');
+			quadro.appendChild(moldura);
+		});
+	});
+
 	document.querySelectorAll('[data-tabs]').forEach(function (raiz) {
 		var abas = raiz.querySelectorAll('.tab');
 		var grade = document.querySelector('[data-cards]');

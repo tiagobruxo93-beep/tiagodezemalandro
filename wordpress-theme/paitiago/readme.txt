@@ -4,48 +4,55 @@ Contributors: paitiago
 Requires at least: 6.0
 Requires PHP: 7.4
 Tested up to: 6.6
-Version: 1.0.0
+Version: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: dark, custom-colors, custom-menu, featured-images
 
-Tema sob medida para a casa de Pai Tiago de Zé Malandro: trabalhos coletivos,
-individuais e consultas, com abas, fichas individuais e botões de encaminhamento
-para o checkout ou para o WhatsApp.
+Tema sob medida com painel de controle completo: anúncios, vídeos, fotos,
+textos e contato, tudo pelo painel do WordPress.
 
 == Instalação ==
 
-1. No WordPress, vá em Aparência > Temas > Adicionar novo > Enviar tema.
-2. Selecione o arquivo tema-wordpress-paitiago.zip e clique em Instalar agora.
-3. Ative o tema.
-4. Vá em Aparência > Conteúdo do site e clique em "Criar os 13 trabalhos de exemplo".
-5. Em Aparência > Personalizar > Site Pai Tiago, ajuste WhatsApp, textos e imagens.
-6. Em Configurações > Links permanentes, escolha "Nome do post" e salve (atualiza as URLs).
+1. Aparência > Temas > Adicionar novo > Enviar tema > escolha o ZIP > Instalar > Ativar.
+2. No menu "Painel do site", clique em "Visão geral".
+3. Aparência > Conteúdo do site > "Criar os 13 anúncios de exemplo".
+4. Painel do site > Textos e fotos: troque o WhatsApp (está 5511999999999) e ajuste os textos.
+5. Configurações > Links permanentes > marque "Nome do post" e salve.
 
-== O que o tema traz ==
+== Painel do site ==
 
-* Página inicial completa (topo, como funciona, abas, sobre, galeria, dúvidas).
-* Tipo de conteúdo "Trabalhos" com frentes (Coletivos, Individuais, Consultas).
-* Campos por trabalho: valor, link de encaminhamento, texto do botão, selo,
-  linha de apoio, itens inclusos, arte e destaque na primeira dobra.
-* Ficha individual do trabalho com botão grande de pagamento e WhatsApp.
-* Rodapé sem qualquer link para o painel administrativo.
-* 14 artes e fotos já incluídas no tema.
+O tema cria um menu próprio no admin, com tudo do site:
 
-== Onde editar ==
+* Visão geral: quantidade de anúncios, vídeos, anúncios sem link de pagamento,
+  WhatsApp em uso, atalhos (novo anúncio, novo vídeo, ver o site) e últimos anúncios.
+* Textos e fotos: todos os textos do site (topo, como funciona, faixa da corrente,
+  seção dos anúncios, sobre, galeria, vídeos, dúvidas, rodapé) e as fotos, escolhidas
+  na biblioteca de mídia. Os passos, os números, a galeria e as perguntas são listas
+  que podem receber ou perder itens com um clique.
+* Anúncios: tipo de conteúdo próprio, com preço, link de encaminhamento, texto do
+  botão, selo, linha de apoio, itens inclusos, arte, ordem e destaque na primeira dobra.
+* Vídeos: tipo de conteúdo próprio, com endereço (YouTube, Vimeo ou .mp4), capa
+  (imagem destacada) e descrição (resumo). A seção aparece no site quando houver vídeo.
 
-* Trabalhos: menu "Trabalhos" no painel.
-* Textos do topo, sobre, WhatsApp e aviso de pagamento: Aparência > Personalizar > Site Pai Tiago.
+== Onde mais editar ==
+
 * Menu do topo: Aparência > Menus (opcional; sem menu, o tema usa os links padrão).
+* Logo e título do site: Aparência > Personalizar > Identidade do site.
 
 == Observações ==
 
-* O link de encaminhamento é externo (checkout). Se ficar vazio, o botão abre o
-  WhatsApp configurado no Personalizador.
-* A imagem destacada do trabalho tem prioridade sobre a arte escolhida no campo "Arte".
-* Ao trocar de tema e voltar, as URLs são atualizadas automaticamente.
+* Quando o link de encaminhamento do anúncio está vazio, o botão abre o WhatsApp configurado.
+* A imagem destacada do anúncio tem prioridade sobre a arte escolhida no campo "Arte".
+* A seção de vídeos pode ser desligada em Painel do site > Textos e fotos > Vídeos.
+* O rodapé do site não tem nenhum link para o painel administrativo.
 
 == Changelog ==
+
+= 1.1.0 =
+* Painel do site com controle de textos, fotos, vídeos e anúncios.
+* Seção de vídeos com player (YouTube, Vimeo e arquivo direto).
+* Listas editáveis para passos, números, galeria e perguntas frequentes.
 
 = 1.0.0 =
 * Versão inicial do tema, com os 13 trabalhos de exemplo.

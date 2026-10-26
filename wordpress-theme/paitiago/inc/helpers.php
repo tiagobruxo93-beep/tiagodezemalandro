@@ -10,40 +10,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Valores padrão exibidos enquanto o site não é personalizado.
- *
- * @return array
- */
-function paitiago_defaults() {
-	return array(
-		'hero_eyebrow'     => 'Trabalhos coletivos · Umbanda',
-		'hero_titulo'      => 'A força de muitos,',
-		'hero_destaque'    => 'a firmeza do Seu Zé.',
-		'hero_texto'       => 'Coloque seu nome na corrente de fé do terreiro. Trabalhos realizados com responsabilidade, tradição e o axé de Zé Malandro.',
-		'hero_imagem'      => '',
-		'sobre_titulo'     => 'Pai Tiago de Zé Malandro',
-		'sobre_texto'      => '<p>Sou Pai Tiago, filho de Umbanda e zelador espiritual. Há anos caminho ao lado de Seu Zé Malandro, entidade que me ensinou que a fé, a palavra e o respeito abrem qualquer porta.</p><p>Criei os trabalhos coletivos para que todos tenham acesso à força do terreiro, independente de onde estejam. Cada nome é recebido com carinho e firmado com a mesma seriedade de um trabalho individual.</p><p>Aqui não tem promessa vazia: tem tradição, compromisso e muito axé.</p>',
-		'sobre_imagem'     => '',
-		'whatsapp'         => '5511999999999',
-		'aviso_pagamento'  => 'Pagamento processado com segurança pela Cakto',
-		'rodape_texto'     => 'Tradição, sigilo e axé em cada firmeza.',
-		'instagram'        => 'https://www.instagram.com/tiagodezemalandro/',
-	);
-}
-
-/**
- * Retorna uma opção do tema com o padrão correto.
- *
- * @param string $key Nome da opção.
- * @return string
- */
-function paitiago_option( $key ) {
-	$defaults = paitiago_defaults();
-	$default  = isset( $defaults[ $key ] ) ? $defaults[ $key ] : '';
-	return get_theme_mod( $key, $default );
-}
-
-/**
  * URL de um arquivo de imagem do tema.
  *
  * @param string $file Nome do arquivo.

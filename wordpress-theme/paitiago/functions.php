@@ -14,9 +14,11 @@ define( 'PAITIAGO_DIR', get_template_directory() );
 define( 'PAITIAGO_URI', get_template_directory_uri() );
 
 require_once PAITIAGO_DIR . '/inc/helpers.php';
+require_once PAITIAGO_DIR . '/inc/opcoes.php';
 require_once PAITIAGO_DIR . '/inc/post-types.php';
+require_once PAITIAGO_DIR . '/inc/videos.php';
 require_once PAITIAGO_DIR . '/inc/meta.php';
-require_once PAITIAGO_DIR . '/inc/customizer.php';
+require_once PAITIAGO_DIR . '/inc/painel.php';
 require_once PAITIAGO_DIR . '/inc/demo-import.php';
 
 /**
