@@ -1,82 +1,74 @@
-# Welcome to your Enter project
+# Pai Tiago de Zé Malandro — Trabalhos espirituais
 
-[![Built with enter.pro](https://img.shields.io/badge/Build%20with-Enter.pro-FC5776?style=for-the-badge&labelColor=1F1F1F)](https://enter.pro)
+Site institucional e vitrine dos trabalhos (coletivos, individuais e consultas) com
+painel de administração próprio. Cada anúncio tem uma página individual com botão de
+encaminhamento para o checkout ou para o WhatsApp.
 
-*Automatically synced with your [enter.pro](https://enter.pro) workspace* 
+## Tecnologias
 
----
+- React 19 + TypeScript + Vite
+- Tailwind CSS + componentes shadcn/ui
+- React Router
+- Enter Cloud (banco de dados, autenticação e políticas de acesso) via `@supabase/supabase-js`
 
-## Overview
+## Como rodar localmente
 
-This repository is automatically linked to your app on [enter.pro](https://enter.pro).  
-Every change you make in Enter will be reflected here — and any updates you push to this repo will sync back seamlessly.  
-
-Enter.pro helps you **build, edit, and deploy full-stack web apps by prompting**.  
-Just describe what you want — Enter turns ideas into production-ready code.
-
----
-
-## Project URLs
-
-**Live app:** https://<project-id>-latest.preview.enter.pro  
-**Edit & build in Enter:** https://enter.pro/project/<project-id>
-
-
----
-
-## Continue building
-
-Keep developing your app directly in [Enter.pro](https://enter.pro/project/<project-id>).  
-Prompt new features, refine the UI, or connect integrations — all changes are versioned and synced automatically to GitHub.
-
----
-
-## Local development
-
-Prefer to work locally? You can clone this repo and start developing right away:
+Precisa de Node 20+ e pnpm.
 
 ```bash
-# Step 1: Clone your project repository
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate into the project folder
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install all dependencies
 pnpm install
-
-# Step 4: Start the local development server
 pnpm dev
 ```
 
-Push your commits — Enter.pro will automatically detect and sync your latest changes.
+O site abre em `http://localhost:3000`.
 
----
+Outros comandos:
 
-## Multi-language (i18n)
+```bash
+pnpm build        # build de desenvolvimento
+pnpm build:prod   # build de produção
+pnpm check        # lint + checagem de tipos
+```
 
-This template ships without i18n. When the app needs more than one language, ask Enter for it: the agent turns on the Enter i18n extension, and the built-in `enter_i18n` skill injects the runtime (`i18n.config.json`, `public/locales/`, `src/i18n/`, the language switcher, and the i18next dependencies) into this repository.
+## Estrutura
 
----
+```
+src/
+  components/site/    componentes públicos (header, hero, abas, card, detalhe, FAQ...)
+  components/admin/   painel: login, tabela de anúncios, formulário e configurações
+  components/ui/      componentes base (shadcn/ui)
+  hooks/              sessão do painel e leitura de dados do site
+  lib/ads.ts          tipos, abas, links de encaminhamento e WhatsApp
+  lib/admin-ads.ts    operações do painel (criar, editar, duplicar, reordenar, excluir)
+  pages/              Index (home), AdPage (/anuncio/:slug), Admin (painel), NotFound
+  integrations/       cliente do Enter Cloud (arquivo gerado, não editar)
+public/images/        fotos usadas no site
+supabase/migrations/  migrations do banco (tabelas do site e do painel)
+```
 
-## Tech stack
+## Banco de dados
 
-This project uses:
+Tabelas usadas (todas com RLS ativa):
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- `spiritual_ads` — os anúncios (aba, valor, link de encaminhamento, imagem, ordem, status)
+- `spiritual_site_settings` — textos do hero, sobre, WhatsApp e aviso de pagamento
+- `spiritual_ad_clicks` — contagem de cliques nos botões de encaminhamento
+- `spiritual_admins` — quem tem acesso ao painel
 
----
+O primeiro acesso criado no painel se torna administrador. As demais contas ficam sem
+permissão até serem liberadas no banco.
 
-## Deployment
+## Painel de administração
 
-To deploy, open your Enter.pro project and click "Publish"
+O painel fica em um endereço fixo definido em `src/router.tsx`. Por segurança, ele não
+aparece em nenhum menu do site e está marcado como `noindex` para não ser indexado por
+buscadores. Guarde esse link.
 
-Your app will automatically build and go live at your production URL.
+Dentro do painel você pode criar, editar, duplicar, reordenar, destacar, ativar/desativar
+e excluir anúncios, copiar o link de cada anúncio e o link de pagamento, ver a contagem de
+encaminhamentos e editar os textos e o WhatsApp do site.
 
----
+## Publicação
 
-✨ Keep prompting, keep building — Enter.pro handles the rest.
+O site é publicado pela plataforma Enter (botão **Publish**). O repositório no GitHub é um
+espelho do código: enviar para o GitHub não coloca o site no ar nem altera o domínio.

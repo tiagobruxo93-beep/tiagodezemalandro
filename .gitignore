@@ -24,3 +24,11 @@ reports
 *.sln
 *.sw?
 code_template.zip
+
+# Ambiente local
+.env
+.env.local
+.env.*.local
+
+# Pacote de exportação (não versionar)
+tiagodezemalandro.zip
