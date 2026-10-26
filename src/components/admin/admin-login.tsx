@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { TridentMark } from "@/components/brand/trident-mark";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -52,10 +53,13 @@ export function AdminLogin() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/20" />
         <div className="absolute inset-0 flex flex-col justify-between p-10">
-          <Link to="/" className="flex flex-col leading-none">
-            <span className="font-display text-2xl text-foreground">Pai Tiago</span>
-            <span className="font-display text-sm italic text-primary">
-              de Zé Malandro
+          <Link to="/" className="flex items-center gap-3 leading-none">
+            <TridentMark className="h-8 w-8 text-secondary" />
+            <span className="flex flex-col">
+              <span className="font-display text-2xl text-foreground">Pai Tiago</span>
+              <span className="font-display text-sm italic text-primary">
+                de Zé Malandro
+              </span>
             </span>
           </Link>
           <div className="max-w-sm">

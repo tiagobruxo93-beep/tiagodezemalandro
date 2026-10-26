@@ -1,10 +1,28 @@
 import { safeUrl } from "@/lib/security";
-import type { SiteContent } from "@/lib/site-content";
+import { DEFAULT_CONTENT, type SiteContent } from "@/lib/site-content";
 
 export function GalleryStrip({ content }: { content: SiteContent }) {
   const galeria = content.galeria;
+  const padrao = DEFAULT_CONTENT.galeria.photos;
 
-  if (galeria.photos.length === 0) return null;
+  // Fotos sem endereço válido caem de volta para a imagem padrão do tema,
+  // assim a galeria nunca aparece quebrada no site.
+  const fotos = galeria.photos
+    .map((photo, indice) => {
+      const propria = safeUrl(photo.url);
+      const reserva = padrao[indice] ? padrao[indice].url : "";
+      const url = propria || reserva;
+
+      if (!url) return null;
+
+      return {
+        url,
+        alt: photo.alt || (padrao[indice] ? padrao[indice].alt : ""),
+      };
+    })
+    .filter((item): item is { url: string; alt: string } => item !== null);
+
+  if (fotos.length === 0) return null;
 
   return (
     <section className="py-16 sm:py-20">
@@ -22,14 +40,14 @@ export function GalleryStrip({ content }: { content: SiteContent }) {
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {galeria.photos.map((photo, index) => (
+          {fotos.map((foto, indice) => (
             <div
-              key={`${photo.url}-${index}`}
+              key={`${foto.url}-${indice}`}
               className="group relative overflow-hidden border border-border/60 bg-card/40 p-2"
             >
               <img
-                src={safeUrl(photo.url)}
-                alt={photo.alt}
+                src={foto.url}
+                alt={foto.alt}
                 loading="lazy"
                 className="aspect-square w-full object-contain opacity-90 transition-opacity duration-700 group-hover:opacity-100"
               />

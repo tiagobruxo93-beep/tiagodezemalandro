@@ -1,0 +1,11 @@
+update public.spiritual_site_settings
+set content = jsonb_set(
+  jsonb_set(
+    jsonb_set(
+      jsonb_set(content, '{galeria,photos,0,url}', '"/images/galeria-terreiro.jpg"'::jsonb),
+      '{galeria,photos,1,url}', '"/images/galeria-nomes.jpg"'::jsonb),
+    '{galeria,photos,2,url}', '"/images/trabalho-caminhos.jpg"'::jsonb),
+  '{galeria,photos,3,url}', '"/images/trabalho-demanda.jpg"'::jsonb)
+where id = 1
+  and content->'galeria'->'photos' is not null
+  and jsonb_array_length(content->'galeria'->'photos') >= 4;

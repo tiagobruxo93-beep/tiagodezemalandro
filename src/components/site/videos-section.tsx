@@ -32,7 +32,7 @@ function VideoCard({ item }: { item: VideoItem }) {
           <>
             {item.cover ? (
               <img
-                src={safeUrl(item.cover)}
+                src={safeUrl(item.cover) || "/images/galeria-terreiro.jpg"}
                 alt={item.title}
                 loading="lazy"
                 className="h-full w-full object-cover opacity-85"

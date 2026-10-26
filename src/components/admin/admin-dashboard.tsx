@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { AdsManager } from "@/components/admin/ads-manager";
 import { AdFormDialog } from "@/components/admin/ad-form-dialog";
 import { ContentEditor } from "@/components/admin/content-editor";
+import { TridentMark } from "@/components/brand/trident-mark";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
 import { createAd, fetchClickCounts, updateAd, type AdDraft } from "@/lib/admin-ads";
 import { exportarDados } from "@/lib/backup";
@@ -128,10 +129,13 @@ export function AdminDashboard({
         <aside className="hidden border-r border-border/70 bg-card/30 lg:flex lg:h-screen lg:flex-col lg:justify-between lg:sticky lg:top-0">
           <div>
             <div className="border-b border-border/70 px-6 py-6">
-              <Link to="/" className="flex flex-col leading-none">
-                <span className="font-display text-xl text-foreground">Pai Tiago</span>
-                <span className="font-display text-[12px] italic text-primary">
-                  de Zé Malandro
+              <Link to="/" className="flex items-center gap-2.5 leading-none">
+                <TridentMark className="h-6 w-6 text-secondary" />
+                <span className="flex flex-col">
+                  <span className="font-display text-xl text-foreground">Pai Tiago</span>
+                  <span className="font-display text-[12px] italic text-primary">
+                    de Zé Malandro
+                  </span>
                 </span>
               </Link>
               <p className="mt-3 text-[9px] uppercase tracking-[0.24em] text-secondary">

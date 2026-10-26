@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import { TridentMark } from "@/components/brand/trident-mark";
 import { safeUrl } from "@/lib/security";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
 import type { SiteContent } from "@/lib/site-content";
@@ -16,7 +17,8 @@ export function SiteFooter({
       <div className="section-shell py-14">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <p className="font-display text-2xl text-foreground">
+            <p className="flex items-center gap-2.5 font-display text-2xl text-foreground">
+              <TridentMark className="h-6 w-6 text-secondary" />
               Pai Tiago <span className="italic text-primary">de Zé Malandro</span>
             </p>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">

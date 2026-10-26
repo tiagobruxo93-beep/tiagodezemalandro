@@ -2,7 +2,7 @@ import { Quote } from "lucide-react";
 import { safeUrl } from "@/lib/security";
 import { Button } from "@/components/ui/button";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
-import type { SiteContent } from "@/lib/site-content";
+import { DEFAULT_CONTENT, type SiteContent } from "@/lib/site-content";
 
 export function AboutSection({
   settings,
@@ -25,7 +25,7 @@ export function AboutSection({
           <div className="relative border border-secondary/25 bg-card/40 p-3">
             <div className="relative overflow-hidden">
               <img
-                src={safeUrl(sobre.image)}
+                src={safeUrl(sobre.image) || DEFAULT_CONTENT.sobre.image}
                 alt={sobre.title}
                 loading="lazy"
                 className="aspect-[4/5] w-full object-contain"

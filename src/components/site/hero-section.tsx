@@ -8,7 +8,7 @@ import {
   type Ad,
   type SiteSettings,
 } from "@/lib/ads";
-import type { SiteContent } from "@/lib/site-content";
+import { DEFAULT_CONTENT, type SiteContent } from "@/lib/site-content";
 import { Link } from "react-router-dom";
 
 export function HeroSection({
@@ -75,7 +75,7 @@ export function HeroSection({
             <div className="absolute -inset-3 -z-10 border border-secondary/20" />
             <div className="relative border border-secondary/30 bg-card/40 p-2 shadow-elegant">
               <img
-                src={safeUrl(content.hero.image)}
+                src={safeUrl(content.hero.image) || DEFAULT_CONTENT.hero.image}
                 alt="Altar do terreiro sob a lua vermelha"
                 className="aspect-video w-full object-contain"
               />
