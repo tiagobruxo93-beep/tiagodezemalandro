@@ -30,9 +30,9 @@ const Index = () => {
       <SiteHeader settings={settings} />
       <main>
         <HeroSection settings={settings} content={content} featuredAd={featuredAd} />
+        <AdsTabsSection ads={ads} settings={settings} content={content} loading={loading} />
         <HowItWorks content={content} />
         <CorrenteBanner content={content} />
-        <AdsTabsSection ads={ads} settings={settings} content={content} loading={loading} />
         <VideosSection videos={content.videos} />
         <AboutSection settings={settings} content={content} />
         <GalleryStrip content={content} />

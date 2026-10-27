@@ -35,7 +35,7 @@ export function AdsTabsSection({
   }, [ads]);
 
   return (
-    <section id="trabalhos" className="relative scroll-mt-24 py-20 sm:py-24">
+    <section id="trabalhos" className="relative scroll-mt-24 pb-16 pt-8 sm:pb-24 sm:pt-10">
       <div className="section-shell">
         <div className="flex flex-col gap-8 border-b border-border/60 pb-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl">
