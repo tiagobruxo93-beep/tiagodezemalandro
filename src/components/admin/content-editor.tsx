@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ImageField,
   ListEditor,
+  MultiVideoField,
   SwitchField,
   TextAreaField,
   TextField,
@@ -416,6 +417,15 @@ export function ContentEditor({
             />
 
             <div className="space-y-3">
+              <MultiVideoField
+                onEnviados={(novos) =>
+                  set("videos", {
+                    ...draft.videos,
+                    items: [...draft.videos.items, ...(novos as VideoItem[])],
+                  })
+                }
+              />
+
               <div className="flex flex-wrap items-end justify-between gap-3">
                 <div>
                   <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">

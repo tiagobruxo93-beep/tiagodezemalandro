@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Film, ImagePlus, Loader2, Plus, Trash2 } from "lucide-react";
+import { CheckCircle2, Film, ImagePlus, Loader2, Plus, Trash2, Upload, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -273,6 +273,146 @@ export function VideoField({
       </div>
 
       {ajuda && <p className="text-[11px] text-muted-foreground">{ajuda}</p>}
+    </div>
+  );
+}
+
+type EstadoEnvio = {
+  nome: string;
+  estado: "enviando" | "ok" | "erro";
+  mensagem?: string;
+};
+
+function tituloDoArquivo(nome: string) {
+  const semExtensao = nome.replace(/\.[a-z0-9]+$/i, "");
+  const texto = semExtensao.replace(/[-_]+/g, " ").trim();
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
+/** Envio de vários vídeos de uma vez: cada arquivo vira um card na seção. */
+export function MultiVideoField({
+  onEnviados,
+}: {
+  onEnviados: (itens: { title: string; url: string; text: string; cover: string; link: string }[]) => void;
+}) {
+  const [enviando, setEnviando] = useState(false);
+  const [fila, setFila] = useState<EstadoEnvio[]>([]);
+  const arquivoRef = useRef<HTMLInputElement | null>(null);
+
+  const enviar = async (arquivos: FileList | null) => {
+    if (!arquivos || arquivos.length === 0) return;
+
+    const lista = Array.from(arquivos);
+    setEnviando(true);
+    setFila(lista.map((arquivo) => ({ nome: arquivo.name, estado: "enviando" })));
+
+    const prontos: { title: string; url: string; text: string; cover: string; link: string }[] = [];
+
+    for (let indice = 0; indice < lista.length; indice++) {
+      const arquivo = lista[indice];
+
+      try {
+        const url = await uploadSiteVideo(arquivo);
+        prontos.push({ title: tituloDoArquivo(arquivo.name), url, text: "", cover: "", link: "" });
+        setFila((atual) =>
+          atual.map((item, posicao) =>
+            posicao === indice ? { ...item, estado: "ok" } : item,
+          ),
+        );
+      } catch (err) {
+        const mensagem = err instanceof Error ? err.message : "Falha no envio";
+        setFila((atual) =>
+          atual.map((item, posicao) =>
+            posicao === indice ? { ...item, estado: "erro", mensagem } : item,
+          ),
+        );
+      }
+    }
+
+    if (prontos.length > 0) {
+      onEnviados(prontos);
+      toast.success(
+        prontos.length === 1
+          ? "1 vídeo adicionado à seção"
+          : `${prontos.length} vídeos adicionados à seção`,
+      );
+    }
+
+    setEnviando(false);
+    if (arquivoRef.current) arquivoRef.current.value = "";
+  };
+
+  const falhas = fila.filter((item) => item.estado === "erro").length;
+
+  return (
+    <div className="space-y-3 rounded-sm border border-secondary/30 bg-secondary/5 p-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <input
+          ref={arquivoRef}
+          type="file"
+          accept="video/mp4,video/webm,video/quicktime,video/*"
+          multiple
+          className="hidden"
+          onChange={(event) => void enviar(event.target.files)}
+        />
+
+        <Button
+          type="button"
+          variant="gold"
+          size="lg"
+          disabled={enviando}
+          onClick={() => arquivoRef.current?.click()}
+        >
+          {enviando ? <Loader2 className="animate-spin" /> : <Upload />}
+          {enviando ? "Enviando vídeos..." : "Subir vários vídeos"}
+        </Button>
+
+        <p className="max-w-md text-[11px] leading-relaxed text-muted-foreground">
+          Escolha quantos vídeos quiser de uma vez (MP4, WEBM ou MOV, até 100 MB
+          cada). Cada arquivo vira um card na seção, com o nome do arquivo como
+          título — depois é só ajustar o texto e a capa.
+        </p>
+      </div>
+
+      {fila.length > 0 && (
+        <ul className="space-y-2">
+          {fila.map((item, indice) => (
+            <li
+              key={`${item.nome}-${indice}`}
+              className="flex items-center justify-between gap-3 border border-border/60 bg-background/40 px-3 py-2 text-[12px]"
+            >
+              <span className="min-w-0 truncate text-foreground">{item.nome}</span>
+              <span className="flex shrink-0 items-center gap-2 text-muted-foreground">
+                {item.estado === "enviando" && (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    enviando
+                  </>
+                )}
+                {item.estado === "ok" && (
+                  <>
+                    <CheckCircle2 className="h-3.5 w-3.5 text-secondary" />
+                    enviado
+                  </>
+                )}
+                {item.estado === "erro" && (
+                  <>
+                    <XCircle className="h-3.5 w-3.5 text-destructive" />
+                    {item.mensagem}
+                  </>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {!enviando && falhas > 0 && (
+        <p className="text-[11px] text-destructive">
+          {falhas} arquivo(s) não subiram. Confira o formato e o tamanho (limite de
+          100 MB por vídeo).
+        </p>
+      )}
     </div>
   );
 }
