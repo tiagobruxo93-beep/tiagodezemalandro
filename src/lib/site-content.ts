@@ -1,4 +1,5 @@
-import { supabase } from "@/integrations/supabase/client";
+import { SUPABASE_URL, supabase } from "@/integrations/supabase/client";
+import * as tus from "tus-js-client";
 import { IMAGE_LIBRARY } from "@/lib/ads";
 
 export const CONTENT_IMAGES = IMAGE_LIBRARY;
@@ -442,26 +443,96 @@ const TIPOS_VIDEO = [
   "video/quicktime",
   "video/x-m4v",
   "video/ogg",
+  "video/mpeg",
+  "video/x-msvideo",
 ];
-const VIDEO_MAX_MB = 100;
+const VIDEO_MAX_MB = 5120;
+const LIMITE_BLOCOS_MB = 45;
 
-/** Envia um vídeo do computador para o armazenamento e devolve o endereço público. */
-export async function uploadSiteVideo(file: File): Promise<string> {
+function urlPublicaVideo(caminho: string) {
+  const { data } = supabase.storage.from(BUCKET_VIDEO).getPublicUrl(caminho);
+  if (!data?.publicUrl) throw new Error("Não foi possível obter o endereço do vídeo.");
+  return data.publicUrl;
+}
+
+/** Sobe o arquivo em blocos, permitindo retomar e arquivos de vários GB. */
+async function enviarVideoEmBlocos(
+  file: File,
+  caminho: string,
+  aoProgredir?: (porcentagem: number) => void,
+) {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+
+  if (!token) {
+    throw new Error("Entre no painel para enviar vídeos grandes.");
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    const envio = new tus.Upload(file, {
+      endpoint: `${SUPABASE_URL}/storage/v1/upload/resumable`,
+      retryDelays: [0, 3000, 6000, 12000, 20000, 30000],
+      chunkSize: 6 * 1024 * 1024,
+      uploadDataDuringCreation: true,
+      removeFingerprintOnSuccess: true,
+      headers: {
+        authorization: `Bearer ${token}`,
+        "x-upsert": "false",
+      },
+      metadata: {
+        bucketName: BUCKET_VIDEO,
+        objectName: caminho,
+        contentType: file.type || "video/mp4",
+        cacheControl: "3600",
+      },
+      onError: (erro) => reject(new Error(erro.message)),
+      onProgress: (enviado, total) => {
+        if (aoProgredir && total > 0) {
+          aoProgredir(Math.min(100, Math.round((enviado / total) * 100)));
+        }
+      },
+      onSuccess: () => resolve(),
+    });
+
+    envio.start();
+  });
+}
+
+/**
+ * Envia um vídeo do computador para o armazenamento e devolve o endereço público.
+ * Arquivos grandes sobem em blocos (com retomada automática).
+ */
+export async function uploadSiteVideo(
+  file: File,
+  aoProgredir?: (porcentagem: number) => void,
+): Promise<string> {
   const extensaoArquivo = (file.name.split(".").pop() || "").toLowerCase();
   const tipoOk =
     TIPOS_VIDEO.indexOf(file.type) !== -1 ||
-    ["mp4", "webm", "mov", "m4v", "ogv", "ogg"].indexOf(extensaoArquivo) !== -1;
+    ["mp4", "webm", "mov", "m4v", "ogv", "ogg", "mpeg", "avi"].indexOf(extensaoArquivo) !== -1;
 
   if (!tipoOk) {
-    throw new Error("Formato não aceito. Use MP4, WEBM ou MOV.");
+    throw new Error("Formato não aceito. Use MP4, WEBM, MOV, MPEG ou AVI.");
   }
 
   if (file.size > VIDEO_MAX_MB * 1024 * 1024) {
-    throw new Error(`Vídeo muito grande (${Math.round(file.size / 1024 / 1024)} MB). O limite é ${VIDEO_MAX_MB} MB.`);
+    throw new Error(
+      `Vídeo muito grande (${Math.round(file.size / 1024 / 1024)} MB). O limite é ${VIDEO_MAX_MB} MB.`,
+    );
   }
 
   const extensao = extensaoArquivo || "mp4";
   const caminho = `conteudo/${crypto.randomUUID()}.${extensao}`;
+  const grande = file.size > LIMITE_BLOCOS_MB * 1024 * 1024;
+
+  if (grande) {
+    try {
+      await enviarVideoEmBlocos(file, caminho, aoProgredir);
+      return urlPublicaVideo(caminho);
+    } catch {
+      // Se o envio em blocos não for aceito pelo servidor, tenta o envio direto.
+    }
+  }
 
   const { error } = await supabase.storage.from(BUCKET_VIDEO).upload(caminho, file, {
     contentType: file.type || "video/mp4",
@@ -470,10 +541,7 @@ export async function uploadSiteVideo(file: File): Promise<string> {
 
   if (error) throw new Error(error.message);
 
-  const { data } = supabase.storage.from(BUCKET_VIDEO).getPublicUrl(caminho);
-  if (!data?.publicUrl) throw new Error("Não foi possível obter o endereço do vídeo.");
-
-  return data.publicUrl;
+  return urlPublicaVideo(caminho);
 }
 
 /** Endereço pronto para incorporar (YouTube/Vimeo) ou vazio. */

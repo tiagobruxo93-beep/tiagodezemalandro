@@ -210,20 +210,23 @@ export function VideoField({
   ajuda?: string;
 }) {
   const [enviando, setEnviando] = useState(false);
+  const [progresso, setProgresso] = useState(0);
   const arquivoRef = useRef<HTMLInputElement | null>(null);
 
   const enviar = async (file: File | undefined) => {
     if (!file) return;
     setEnviando(true);
+    setProgresso(0);
 
     try {
-      const url = await uploadSiteVideo(file);
+      const url = await uploadSiteVideo(file, setProgresso);
       onChange(url);
       toast.success("Vídeo enviado");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Falha no envio do vídeo");
     } finally {
       setEnviando(false);
+      setProgresso(0);
       if (arquivoRef.current) arquivoRef.current.value = "";
     }
   };
@@ -265,10 +268,11 @@ export function VideoField({
           onClick={() => arquivoRef.current?.click()}
         >
           {enviando ? <Loader2 className="animate-spin" /> : <Film />}
-          {enviando ? "Enviando vídeo..." : "Enviar vídeo do computador"}
+          {enviando ? `Enviando vídeo... ${progresso}%` : "Enviar vídeo do computador"}
         </Button>
         <span className="text-[11px] text-muted-foreground">
-          MP4, WEBM ou MOV até 100 MB. Vídeos grandes podem levar alguns minutos.
+          MP4, WEBM, MOV, MPEG ou AVI até 5 GB. Acima de 45 MB o envio é feito em
+          blocos, com retomada automática se a conexão oscilar.
         </span>
       </div>
 
@@ -281,6 +285,7 @@ type EstadoEnvio = {
   nome: string;
   estado: "enviando" | "ok" | "erro";
   mensagem?: string;
+  progresso?: number;
 };
 
 function tituloDoArquivo(nome: string) {
@@ -312,7 +317,13 @@ export function MultiVideoField({
       const arquivo = lista[indice];
 
       try {
-        const url = await uploadSiteVideo(arquivo);
+        const url = await uploadSiteVideo(arquivo, (porcentagem) =>
+          setFila((atual) =>
+            atual.map((item, posicao) =>
+              posicao === indice ? { ...item, progresso: porcentagem } : item,
+            ),
+          ),
+        );
         prontos.push({ title: tituloDoArquivo(arquivo.name), url, text: "", cover: "", link: "" });
         setFila((atual) =>
           atual.map((item, posicao) =>
@@ -367,11 +378,19 @@ export function MultiVideoField({
           {enviando ? "Enviando vídeos..." : "Subir vários vídeos"}
         </Button>
 
-        <p className="max-w-md text-[11px] leading-relaxed text-muted-foreground">
-          Escolha quantos vídeos quiser de uma vez (MP4, WEBM ou MOV, até 100 MB
-          cada). Cada arquivo vira um card na seção, com o nome do arquivo como
-          título — depois é só ajustar o texto e a capa.
-        </p>
+        <div className="max-w-md space-y-1 text-[11px] leading-relaxed text-muted-foreground">
+          <p>
+            Escolha quantos vídeos quiser de uma vez (MP4, WEBM, MOV, MPEG ou AVI,
+            até 5 GB cada). Cada arquivo vira um card, com o nome do arquivo como
+            título — depois é só ajustar o texto e a capa.
+          </p>
+          <p>
+            Arquivos acima de 45 MB sobem em blocos, com retomada automática. Para
+            vídeos muito longos (mais de 1 GB), o caminho mais leve é subir no
+            YouTube como “não listado” e colar o link — não consome o seu
+            armazenamento.
+          </p>
+        </div>
       </div>
 
       {fila.length > 0 && (
@@ -386,7 +405,7 @@ export function MultiVideoField({
                 {item.estado === "enviando" && (
                   <>
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    enviando
+                    {item.progresso ? `${item.progresso}%` : "enviando"}
                   </>
                 )}
                 {item.estado === "ok" && (

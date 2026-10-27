@@ -434,9 +434,9 @@ export function ContentEditor({
                     Vídeos do site
                   </Label>
                   <p className="mt-1 max-w-lg text-[11px] leading-relaxed text-muted-foreground">
-                    Envie o vídeo direto do computador ou celular (MP4, WEBM ou MOV)
-                    ou cole um link do YouTube/Vimeo. Cada vídeo vira um card na
-                    seção "Assista e entenda".
+                    Envie o vídeo direto do computador ou celular (MP4, WEBM, MOV,
+                    MPEG ou AVI, até 5 GB) ou cole um link do YouTube/Vimeo. Cada
+                    vídeo vira um card na seção "Assista e entenda".
                   </p>
                 </div>
                 <Button
