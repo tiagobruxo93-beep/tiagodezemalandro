@@ -70,6 +70,7 @@ export interface SiteContent {
   faq: { eyebrow: string; title: string; highlight: string; intro: string; items: FaqItem[] };
   abas: { ordem: FrenteKey[]; inicial: FrenteKey; itens: Record<FrenteKey, AbaConfig> };
   secoes: { ordem: SecaoKey[] };
+  manutencao: { ativo: boolean; mensagem: string };
   rodape: { note: string };
   contato: { whatsapp: string; instagram: string; paymentNote: string };
 }
@@ -177,6 +178,10 @@ export const DEFAULT_CONTENT: SiteContent = {
   secoes: {
     ordem: ["trabalhos", "como-funciona", "corrente", "videos", "sobre", "galeria", "duvidas"],
   },
+  manutencao: {
+    ativo: false,
+    mensagem: "O site está em manutenção por alguns instantes. Fale comigo no WhatsApp que eu te atendo.",
+  },
   rodape: { note: "Tradição, sigilo e axé em cada firmeza." },
   contato: {
     whatsapp: "5511999999999",
@@ -268,6 +273,7 @@ export function mergeContent(raw: unknown): SiteContent {
   const faq = bloco("faq");
   const abas = bloco("abas");
   const secoes = bloco("secoes");
+  const manutencao = bloco("manutencao");
   const rodape = bloco("rodape");
   const contato = bloco("contato");
 
@@ -336,6 +342,10 @@ export function mergeContent(raw: unknown): SiteContent {
     },
     abas: mergeAbas(abas, base.abas),
     secoes: { ordem: mergeSecoes(secoes.ordem, base.secoes.ordem) },
+    manutencao: {
+      ativo: typeof manutencao.ativo === "boolean" ? manutencao.ativo : base.manutencao.ativo,
+      mensagem: texto(manutencao.mensagem, base.manutencao.mensagem),
+    },
     rodape: { note: texto(rodape.note, base.rodape.note) },
     contato: {
       whatsapp: texto(contato.whatsapp, base.contato.whatsapp),

@@ -21,6 +21,7 @@ import {
   VideoField,
 } from "@/components/admin/fields";
 import type { Ad } from "@/lib/ads";
+import { registrarAtividade } from "@/lib/activity";
 import {
   FRENTES,
   SECOES_META,
@@ -121,6 +122,7 @@ export function ContentEditor({
       );
 
       await saveSiteContent({ ...draft, videos: { ...draft.videos, items: limpos } });
+      await registrarAtividade("conteudo_salvo", { secoes: draft.secoes.ordem.length });
       await onSaved();
       toast.success("Conteúdo salvo");
     } catch (err) {

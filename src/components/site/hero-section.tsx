@@ -62,7 +62,7 @@ export function HeroSection({
               </div>
               <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
                 <CalendarDays className="h-3.5 w-3.5 text-secondary" />
-                Gira toda semana
+                Trabalhos todos os dias
               </div>
               <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />

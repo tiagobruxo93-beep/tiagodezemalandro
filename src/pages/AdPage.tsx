@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import { ManutencaoScreen } from "@/components/site/manutencao-screen";
 import { WhatsAppFab } from "@/components/site/whatsapp-fab";
 import { AdDetail } from "@/components/site/ad-detail";
 import { useAd, useAds, useSiteSettings } from "@/hooks/use-site-data";
@@ -32,6 +33,12 @@ const AdPage = () => {
         .slice(0, 3),
     [ads, ad],
   );
+
+  if (content.manutencao.ativo) {
+    return (
+      <ManutencaoScreen settings={settings} mensagem={content.manutencao.mensagem} />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

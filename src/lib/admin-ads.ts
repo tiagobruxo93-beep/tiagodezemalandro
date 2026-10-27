@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { registrarAtividade } from "@/lib/activity";
 import type { Ad, SiteSettings } from "@/lib/ads";
 
 export type AdDraft = {
@@ -86,6 +87,9 @@ export async function createAd(draft: AdDraft) {
     .select("id")
     .maybeSingle();
   if (error) throw new Error(error.message);
+
+  await registrarAtividade("anuncio_criado", { titulo: draft.title, slug: draft.slug });
+
   return data;
 }
 
@@ -95,11 +99,25 @@ export async function updateAd(id: string, draft: AdDraft) {
     .update(clean(draft))
     .eq("id", id);
   if (error) throw new Error(error.message);
+
+  await registrarAtividade("anuncio_editado", { titulo: draft.title, slug: draft.slug });
 }
 
 export async function deleteAd(id: string) {
+  // Guarda uma cópia do anúncio no histórico antes de excluir.
+  const { data: copia } = await supabase
+    .from("spiritual_ads")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
   const { error } = await supabase.from("spiritual_ads").delete().eq("id", id);
   if (error) throw new Error(error.message);
+
+  await registrarAtividade("anuncio_excluido", {
+    titulo: copia && typeof copia === "object" && "title" in copia ? copia.title : id,
+    copia,
+  });
 }
 
 export async function toggleAdActive(ad: Ad) {
@@ -145,6 +163,8 @@ export async function duplicateAd(ad: Ad) {
     sort_order: ad.sortOrder + 1,
   });
   if (error) throw new Error(error.message);
+
+  await registrarAtividade("anuncio_duplicado", { titulo: ad.title });
 }
 
 export async function fetchClickCounts(): Promise<{

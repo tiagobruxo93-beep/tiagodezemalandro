@@ -1,0 +1,17 @@
+create table if not exists public.spiritual_activity_log (
+  id bigserial primary key,
+  acao text not null,
+  detalhes jsonb not null default '{}'::jsonb,
+  quem text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists spiritual_activity_log_data_idx on public.spiritual_activity_log (created_at desc);
+
+alter table public.spiritual_activity_log enable row level security;
+
+create policy "atividade admin read" on public.spiritual_activity_log
+  for select to authenticated using (public.spiritual_is_admin());
+
+create policy "atividade admin insert" on public.spiritual_activity_log
+  for insert to authenticated with check (public.spiritual_is_admin());

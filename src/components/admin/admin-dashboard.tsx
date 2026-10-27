@@ -341,7 +341,7 @@ export function AdminDashboard({
                   </p>
                 </div>
                 <div className="mt-7 max-w-3xl">
-                  <SecurityPanel email={email} />
+                  <SecurityPanel email={email} content={content} onSaved={reloadSettings} />
                 </div>
               </>
             ) : (

@@ -3360,6 +3360,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      spiritual_activity_log: {
+        Row: {
+          acao: string
+          created_at: string
+          detalhes: Json
+          id: number
+          quem: string | null
+        }
+        Insert: {
+          acao: string
+          created_at?: string
+          detalhes?: Json
+          id?: number
+          quem?: string | null
+        }
+        Update: {
+          acao?: string
+          created_at?: string
+          detalhes?: Json
+          id?: number
+          quem?: string | null
+        }
+        Relationships: []
+      }
       spiritual_ad_clicks: {
         Row: {
           ad_id: string

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { registrarAtividade } from "@/lib/activity";
 import { Button } from "@/components/ui/button";
 import { TridentMark } from "@/components/brand/trident-mark";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,7 @@ export function AdminLogin() {
       if (authError) throw new Error(authError.message);
 
       setTentativas(0);
+      void registrarAtividade("login", { email }, email);
     } catch (err) {
       const total = tentativas + 1;
 

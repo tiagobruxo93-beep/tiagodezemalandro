@@ -1,8 +1,20 @@
-import { useState } from "react";
-import { KeyRound, Loader2, LogOut, ShieldCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  History,
+  KeyRound,
+  Loader2,
+  LogOut,
+  MonitorSmartphone,
+  RefreshCw,
+  ShieldCheck,
+  Wrench,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { TextAreaField, TextField, SwitchField } from "@/components/admin/fields";
+import { ACOES, fetchAtividade, registrarAtividade, type Atividade } from "@/lib/activity";
+import { saveSiteContent, type SiteContent } from "@/lib/site-content";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -36,12 +48,78 @@ function Cartao({
   );
 }
 
-export function SecurityPanel({ email }: { email: string }) {
+function dataLegivel(valor: string) {
+  try {
+    return new Date(valor).toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return valor;
+  }
+}
+
+export function SecurityPanel({
+  email,
+  content,
+  onSaved,
+}: {
+  email: string;
+  content: SiteContent;
+  onSaved: () => Promise<void>;
+}) {
   const [atual, setAtual] = useState("");
   const [nova, setNova] = useState("");
   const [confirma, setConfirma] = useState("");
   const [salvando, setSalvando] = useState(false);
   const [encerrando, setEncerrando] = useState(false);
+  const [manutencaoAtiva, setManutencaoAtiva] = useState(content.manutencao.ativo);
+  const [manutencaoTexto, setManutencaoTexto] = useState(content.manutencao.mensagem);
+  const [salvandoControle, setSalvandoControle] = useState(false);
+  const [historico, setHistorico] = useState<Atividade[]>([]);
+  const [carregandoHistorico, setCarregandoHistorico] = useState(true);
+
+  const carregarHistorico = async () => {
+    setCarregandoHistorico(true);
+    setHistorico(await fetchAtividade(20));
+    setCarregandoHistorico(false);
+  };
+
+  useEffect(() => {
+    void carregarHistorico();
+  }, []);
+
+  const salvarControle = async () => {
+    setSalvandoControle(true);
+
+    try {
+      await saveSiteContent({
+        ...content,
+        manutencao: { ativo: manutencaoAtiva, mensagem: manutencaoTexto },
+      });
+      await registrarAtividade(
+        manutencaoAtiva ? "manutencao_ativada" : "manutencao_desativada",
+        { mensagem: manutencaoTexto },
+      );
+      await onSaved();
+      await carregarHistorico();
+      toast.success(
+        manutencaoAtiva ? "Site em manutenção" : "Site liberado para os visitantes",
+      );
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Não foi possível salvar");
+    } finally {
+      setSalvandoControle(false);
+    }
+  };
+
+  const encerrarAqui = async () => {
+    await registrarAtividade("sessoes_encerradas", { escopo: "dispositivo" });
+    await supabase.auth.signOut();
+  };
 
   const trocarSenha = async (evento: React.FormEvent) => {
     evento.preventDefault();
@@ -83,6 +161,8 @@ export function SecurityPanel({ email }: { email: string }) {
       setAtual("");
       setNova("");
       setConfirma("");
+      await registrarAtividade("senha_trocada", {});
+      await carregarHistorico();
       toast.success("Senha atualizada. Entre de novo nos outros aparelhos.");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Não foi possível trocar a senha");
@@ -101,6 +181,7 @@ export function SecurityPanel({ email }: { email: string }) {
         throw new Error(error.message);
       }
 
+      await registrarAtividade("sessoes_encerradas", { escopo: "todos" });
       toast.success("Todas as sessões foram encerradas.");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Não foi possível encerrar as sessões");
@@ -191,6 +272,89 @@ export function SecurityPanel({ email }: { email: string }) {
             Salvar nova senha
           </Button>
         </form>
+      </Cartao>
+
+      <Cartao
+        titulo="Controle do site"
+        descricao="Trave o site para os visitantes quando precisar (manutenção, correção de conteúdo ou alguma instabilidade). O painel continua funcionando normalmente."
+        icone={<Wrench className="h-5 w-5" />}
+      >
+        <SwitchField
+          rotulo="Colocar o site em manutenção"
+          valor={manutencaoAtiva}
+          onChange={setManutencaoAtiva}
+          ajuda="Durante a manutenção, quem abrir o site vê apenas o aviso abaixo."
+        />
+
+        <TextAreaField
+          rotulo="Aviso mostrado aos visitantes"
+          valor={manutencaoTexto}
+          onChange={setManutencaoTexto}
+          rows={3}
+        />
+
+        <Button
+          type="button"
+          variant="forward"
+          onClick={() => void salvarControle()}
+          disabled={salvandoControle}
+        >
+          {salvandoControle ? <Loader2 className="animate-spin" /> : <Wrench />}
+          {manutencaoAtiva ? "Ativar manutenção" : "Salvar e manter o site no ar"}
+        </Button>
+      </Cartao>
+
+      <Cartao
+        titulo="Sessão atual"
+        descricao="Encerrar aqui é útil quando você entrou em um computador ou celular que não é seu."
+        icone={<MonitorSmartphone className="h-5 w-5" />}
+      >
+        <Button type="button" variant="hairline" onClick={() => void encerrarAqui()}>
+          <LogOut />
+          Encerrar sessão neste dispositivo
+        </Button>
+      </Cartao>
+
+      <Cartao
+        titulo="Registro de atividades"
+        descricao="Tudo que foi feito no painel, com data e hora. Serve para conferir se alguém mexeu em algo sem você."
+        icone={<History className="h-5 w-5" />}
+      >
+        <Button
+          type="button"
+          variant="hairline"
+          size="sm"
+          onClick={() => void carregarHistorico()}
+          disabled={carregandoHistorico}
+        >
+          {carregandoHistorico ? <Loader2 className="animate-spin" /> : <RefreshCw />}
+          Atualizar lista
+        </Button>
+
+        {historico.length === 0 ? (
+          <p className="text-[12px] text-muted-foreground">
+            Nenhuma atividade registrada ainda.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {historico.map((item) => (
+              <li
+                key={item.id}
+                className="flex flex-wrap items-center justify-between gap-2 border border-border/60 bg-background/40 px-3 py-2 text-[12px]"
+              >
+                <span className="text-foreground">
+                  {ACOES[item.acao] ?? item.acao}
+                  {item.detalhes && typeof item.detalhes.titulo === "string" && item.detalhes.titulo
+                    ? ` — ${item.detalhes.titulo}`
+                    : ""}
+                </span>
+                <span className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                  {dataLegivel(item.created_at)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </Cartao>
 
       <Cartao

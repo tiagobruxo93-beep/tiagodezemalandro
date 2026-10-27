@@ -1,5 +1,6 @@
 import { fetchAds, fetchSiteSettings } from "@/lib/ads";
 import { fetchSiteContent } from "@/lib/site-content";
+import { registrarAtividade } from "@/lib/activity";
 
 /**
  * Gera uma cópia de segurança dos dados do site (anúncios, textos e configurações).
@@ -35,4 +36,6 @@ export async function exportarDados() {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+
+  await registrarAtividade("backup_baixado", { anuncios: anuncios.length });
 }

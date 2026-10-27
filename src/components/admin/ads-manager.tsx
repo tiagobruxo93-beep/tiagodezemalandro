@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
@@ -71,6 +72,7 @@ export function AdsManager({ ads, clickCounts, onEdit, onChanged }: Props) {
   const [status, setStatus] = useState<string>("todos");
   const [pendingDelete, setPendingDelete] = useState<Ad | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [confirmacao, setConfirmacao] = useState("");
 
   const filtered = useMemo(() => {
     return ads.filter((ad) => {
@@ -372,7 +374,15 @@ export function AdsManager({ ads, clickCounts, onEdit, onChanged }: Props) {
         ))}
       </div>
 
-      <AlertDialog open={Boolean(pendingDelete)} onOpenChange={(open) => !open && setPendingDelete(null)}>
+      <AlertDialog
+        open={Boolean(pendingDelete)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPendingDelete(null);
+            setConfirmacao("");
+          }
+        }}
+      >
         <AlertDialogContent className="rounded-sm border-border bg-card">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display text-2xl text-foreground">
@@ -383,14 +393,28 @@ export function AdsManager({ ads, clickCounts, onEdit, onChanged }: Props) {
               quiser só tirar do ar, use o botão de ativar/desativar.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <div className="space-y-2">
+            <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+              Digite EXCLUIR para liberar o botão
+            </Label>
+            <Input
+              value={confirmacao}
+              onChange={(evento) => setConfirmacao(evento.target.value)}
+              placeholder="EXCLUIR"
+              className="rounded-sm border-border bg-background/70 text-sm uppercase"
+            />
+          </div>
+
           <AlertDialogFooter>
             <AlertDialogCancel className="rounded-sm border-border">Cancelar</AlertDialogCancel>
             <AlertDialogAction
+              disabled={confirmacao.trim().toUpperCase() !== "EXCLUIR"}
               className="rounded-sm bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => {
                 if (!pendingDelete) return;
                 const target = pendingDelete;
                 setPendingDelete(null);
+                setConfirmacao("");
                 void run(target.id, () => deleteAd(target.id), "Anúncio excluído");
               }}
             >

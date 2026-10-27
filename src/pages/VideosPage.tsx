@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import { ManutencaoScreen } from "@/components/site/manutencao-screen";
 import { WhatsAppFab } from "@/components/site/whatsapp-fab";
 import { VideoCard } from "@/components/site/video-card";
 import { useSiteSettings } from "@/hooks/use-site-data";
@@ -17,6 +18,12 @@ const VideosPage = () => {
       document.title = "Pai Tiago de Zé Malandro — Trabalhos espirituais";
     };
   }, []);
+
+  if (content.manutencao.ativo) {
+    return (
+      <ManutencaoScreen settings={settings} mensagem={content.manutencao.mensagem} />
+    );
+  }
 
   const itens = content.videos.items.filter(
     (item) => item.url.trim() !== "" || item.title.trim() !== "",
