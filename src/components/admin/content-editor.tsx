@@ -17,6 +17,7 @@ import {
   SwitchField,
   TextAreaField,
   TextField,
+  VideoField,
 } from "@/components/admin/fields";
 import {
   FRENTES,
@@ -82,6 +83,12 @@ export function ContentEditor({
   const set = <K extends keyof SiteContent>(chave: K, valor: SiteContent[K]) =>
     setDraft((atual) => ({ ...atual, [chave]: valor }));
 
+  const atualizarVideo = (indice: number, campo: keyof VideoItem, valor: string) => {
+    const itens = [...draft.videos.items];
+    itens[indice] = { ...itens[indice], [campo]: valor };
+    set("videos", { ...draft.videos, items: itens });
+  };
+
   const moverAba = (indice: number, direcao: -1 | 1) => {
     const ordem = [...draft.abas.ordem];
     const alvo = indice + direcao;
@@ -105,7 +112,11 @@ export function ContentEditor({
   const salvar = async () => {
     setSalvando(true);
     try {
-      await saveSiteContent(draft);
+      const limpos = draft.videos.items.filter(
+        (item) => item.url.trim() !== "" || item.title.trim() !== "",
+      );
+
+      await saveSiteContent({ ...draft, videos: { ...draft.videos, items: limpos } });
       await onSaved();
       toast.success("Conteúdo salvo");
     } catch (err) {
@@ -401,20 +412,96 @@ export function ContentEditor({
               onChange={(valor) => set("videos", { ...draft.videos, text: valor })}
             />
 
-            <ListEditor<VideoItem>
-              rotulo="Vídeos"
-              itens={draft.videos.items}
-              onChange={(itens) => set("videos", { ...draft.videos, items: itens })}
-              vazio={{ title: "", text: "", url: "", cover: "" }}
-              campos={[
-                { chave: "title", rotulo: "Título do vídeo" },
-                { chave: "url", rotulo: "Endereço do vídeo", ajuda: "Link do YouTube, Vimeo ou .mp4" },
-                { chave: "text", rotulo: "Descrição", tipo: "textarea" },
-                { chave: "cover", rotulo: "Capa (endereço da imagem)" },
-              ]}
-              ajuda="Se a capa ficar vazia, aparece um retângulo escuro com o botão de play."
-              botao="Adicionar vídeo"
-            />
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                    Vídeos do site
+                  </Label>
+                  <p className="mt-1 max-w-lg text-[11px] leading-relaxed text-muted-foreground">
+                    Envie o vídeo direto do computador ou celular (MP4, WEBM ou MOV)
+                    ou cole um link do YouTube/Vimeo. Cada vídeo vira um card na
+                    seção "Assista e entenda".
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="hairline"
+                  size="sm"
+                  onClick={() =>
+                    set("videos", {
+                      ...draft.videos,
+                      items: [
+                        ...draft.videos.items,
+                        { title: "", text: "", url: "", cover: "" } as VideoItem,
+                      ],
+                    })
+                  }
+                >
+                  Adicionar vídeo
+                </Button>
+              </div>
+
+              {draft.videos.items.length === 0 && (
+                <p className="rounded-sm border border-dashed border-border/70 px-4 py-8 text-center text-[12px] text-muted-foreground">
+                  Nenhum vídeo ainda. Clique em "Adicionar vídeo" e envie o arquivo
+                  do seu computador.
+                </p>
+              )}
+
+              {draft.videos.items.map((item, indice) => (
+                <div
+                  key={indice}
+                  className="space-y-4 rounded-sm border border-border/70 bg-background/40 p-4"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-[11px] uppercase tracking-[0.16em] text-secondary">
+                      Vídeo {indice + 1}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:bg-destructive/10"
+                      onClick={() =>
+                        set("videos", {
+                          ...draft.videos,
+                          items: draft.videos.items.filter((_, posicao) => posicao !== indice),
+                        })
+                      }
+                    >
+                      Remover
+                    </Button>
+                  </div>
+
+                  <TextField
+                    rotulo="Título do vídeo"
+                    valor={item.title}
+                    onChange={(valor) => atualizarVideo(indice, "title", valor)}
+                  />
+
+                  <VideoField
+                    rotulo="Vídeo (arquivo do computador ou link)"
+                    valor={item.url}
+                    onChange={(valor) => atualizarVideo(indice, "url", valor)}
+                  />
+
+                  <ImageField
+                    rotulo="Capa (aparece antes de tocar)"
+                    valor={item.cover}
+                    onChange={(valor) => atualizarVideo(indice, "cover", valor)}
+                    ajuda="Se ficar vazia, aparece um retângulo escuro com o botão de play."
+                  />
+
+                  <TextAreaField
+                    rotulo="Descrição"
+                    valor={item.text}
+                    onChange={(valor) => atualizarVideo(indice, "text", valor)}
+                    rows={2}
+                  />
+                </div>
+              ))}
+            </div>
           </Grupo>
         </TabsContent>
 

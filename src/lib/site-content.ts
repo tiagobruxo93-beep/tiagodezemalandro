@@ -411,6 +411,47 @@ export async function uploadSiteImage(file: File): Promise<string> {
   return data.publicUrl;
 }
 
+const BUCKET_VIDEO = "videos";
+const TIPOS_VIDEO = [
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
+  "video/x-m4v",
+  "video/ogg",
+];
+const VIDEO_MAX_MB = 100;
+
+/** Envia um vídeo do computador para o armazenamento e devolve o endereço público. */
+export async function uploadSiteVideo(file: File): Promise<string> {
+  const extensaoArquivo = (file.name.split(".").pop() || "").toLowerCase();
+  const tipoOk =
+    TIPOS_VIDEO.indexOf(file.type) !== -1 ||
+    ["mp4", "webm", "mov", "m4v", "ogv", "ogg"].indexOf(extensaoArquivo) !== -1;
+
+  if (!tipoOk) {
+    throw new Error("Formato não aceito. Use MP4, WEBM ou MOV.");
+  }
+
+  if (file.size > VIDEO_MAX_MB * 1024 * 1024) {
+    throw new Error(`Vídeo muito grande (${Math.round(file.size / 1024 / 1024)} MB). O limite é ${VIDEO_MAX_MB} MB.`);
+  }
+
+  const extensao = extensaoArquivo || "mp4";
+  const caminho = `conteudo/${crypto.randomUUID()}.${extensao}`;
+
+  const { error } = await supabase.storage.from(BUCKET_VIDEO).upload(caminho, file, {
+    contentType: file.type || "video/mp4",
+    upsert: false,
+  });
+
+  if (error) throw new Error(error.message);
+
+  const { data } = supabase.storage.from(BUCKET_VIDEO).getPublicUrl(caminho);
+  if (!data?.publicUrl) throw new Error("Não foi possível obter o endereço do vídeo.");
+
+  return data.publicUrl;
+}
+
 /** Endereço pronto para incorporar (YouTube/Vimeo) ou vazio. */
 export function videoEmbedUrl(url: string): string {
   const valor = (url || "").trim();

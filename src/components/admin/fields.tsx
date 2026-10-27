@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ImagePlus, Loader2, Plus, Trash2 } from "lucide-react";
+import { Film, ImagePlus, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CONTENT_IMAGES, uploadSiteImage } from "@/lib/site-content";
+import { CONTENT_IMAGES, uploadSiteImage, uploadSiteVideo } from "@/lib/site-content";
 import { safeUrl } from "@/lib/security";
 
 const LABEL = "text-[10px] uppercase tracking-[0.16em] text-muted-foreground";
@@ -194,6 +194,85 @@ export function ImageField({
           {ajuda && <p className="text-[11px] text-muted-foreground">{ajuda}</p>}
         </div>
       </div>
+    </div>
+  );
+}
+
+export function VideoField({
+  rotulo,
+  valor,
+  onChange,
+  ajuda,
+}: {
+  rotulo: string;
+  valor: string;
+  onChange: (valor: string) => void;
+  ajuda?: string;
+}) {
+  const [enviando, setEnviando] = useState(false);
+  const arquivoRef = useRef<HTMLInputElement | null>(null);
+
+  const enviar = async (file: File | undefined) => {
+    if (!file) return;
+    setEnviando(true);
+
+    try {
+      const url = await uploadSiteVideo(file);
+      onChange(url);
+      toast.success("Vídeo enviado");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Falha no envio do vídeo");
+    } finally {
+      setEnviando(false);
+      if (arquivoRef.current) arquivoRef.current.value = "";
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <Label className={LABEL}>{rotulo}</Label>
+
+      {valor && (
+        <video
+          src={safeUrl(valor)}
+          controls
+          preload="metadata"
+          className="max-h-64 w-full rounded-sm border border-border/70 bg-black"
+        />
+      )}
+
+      <Input
+        value={valor}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder="https://www.youtube.com/watch?v=... ou arquivo enviado"
+        maxLength={500}
+        className={FIELD}
+      />
+
+      <div className="flex flex-wrap items-center gap-3">
+        <input
+          ref={arquivoRef}
+          type="file"
+          accept="video/mp4,video/webm,video/quicktime,video/*"
+          className="hidden"
+          onChange={(event) => void enviar(event.target.files?.[0])}
+        />
+        <Button
+          type="button"
+          variant="hairline"
+          size="sm"
+          disabled={enviando}
+          onClick={() => arquivoRef.current?.click()}
+        >
+          {enviando ? <Loader2 className="animate-spin" /> : <Film />}
+          {enviando ? "Enviando vídeo..." : "Enviar vídeo do computador"}
+        </Button>
+        <span className="text-[11px] text-muted-foreground">
+          MP4, WEBM ou MOV até 100 MB. Vídeos grandes podem levar alguns minutos.
+        </span>
+      </div>
+
+      {ajuda && <p className="text-[11px] text-muted-foreground">{ajuda}</p>}
     </div>
   );
 }

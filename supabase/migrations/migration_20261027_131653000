@@ -1,0 +1,11 @@
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('videos', 'videos', true, 104857600, array['video/mp4','video/webm','video/quicktime','video/x-m4v','video/ogg']::text[])
+on conflict (id) do nothing;
+
+create policy "paitiago_videos_read"
+on storage.objects for select to public
+using (bucket_id = 'videos' and name like 'conteudo/%');
+
+create policy "paitiago_videos_insert"
+on storage.objects for insert to authenticated
+with check (bucket_id = 'videos' and name like 'conteudo/%' and public.spiritual_is_admin());

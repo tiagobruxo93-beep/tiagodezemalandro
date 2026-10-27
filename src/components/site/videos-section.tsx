@@ -85,7 +85,11 @@ function VideoCard({ item }: { item: VideoItem }) {
 }
 
 export function VideosSection({ videos }: { videos: SiteContent["videos"] }) {
-  if (!videos.enabled || videos.items.length === 0) return null;
+  const itens = videos.items.filter(
+    (item) => item.url.trim() !== "" || item.title.trim() !== "",
+  );
+
+  if (!videos.enabled || itens.length === 0) return null;
 
   return (
     <section id="videos" className="scroll-mt-24 py-20 sm:py-24">
@@ -101,7 +105,7 @@ export function VideosSection({ videos }: { videos: SiteContent["videos"] }) {
         </div>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {videos.items.map((item) => (
+          {itens.map((item) => (
             <VideoCard key={`${item.title}-${item.url}`} item={item} />
           ))}
         </div>
