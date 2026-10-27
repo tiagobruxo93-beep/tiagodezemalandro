@@ -28,7 +28,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader settings={settings} />
+      <SiteHeader settings={settings} content={content} />
       <main>
         <HeroSection settings={settings} content={content} featuredAd={featuredAd} />
 

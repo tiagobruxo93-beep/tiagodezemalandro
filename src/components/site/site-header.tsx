@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { TridentMark } from "@/components/brand/trident-mark";
 import { cn } from "@/lib/utils";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
+import type { SiteContent } from "@/lib/site-content";
 
 const NAV_LINKS = [
   { href: "/#trabalhos", label: "Trabalhos" },
@@ -13,9 +14,31 @@ const NAV_LINKS = [
   { href: "/#duvidas", label: "Dúvidas" },
 ];
 
-export function SiteHeader({ settings }: { settings: SiteSettings }) {
+export function SiteHeader({
+  settings,
+  content,
+}: {
+  settings: SiteSettings;
+  content: SiteContent;
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const temVideos =
+    content.videos.enabled &&
+    content.videos.items.some(
+      (item) => item.url.trim() !== "" || item.title.trim() !== "",
+    );
+
+  const links = temVideos
+    ? [
+        { href: "/#trabalhos", label: "Trabalhos" },
+        { href: "/videos", label: "Vídeos" },
+        { href: "/#como-funciona", label: "Como funciona" },
+        { href: "/#sobre", label: "Sobre mim" },
+        { href: "/#duvidas", label: "Dúvidas" },
+      ]
+    : NAV_LINKS;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -58,7 +81,7 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
-          {NAV_LINKS.map((link) => (
+          {links.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -95,7 +118,7 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
       {open && (
         <div className="border-t border-border/70 bg-background/98 backdrop-blur-xl lg:hidden">
           <div className="section-shell flex flex-col py-4">
-            {NAV_LINKS.map((link) => (
+            {links.map((link) => (
               <a
                 key={link.href}
                 href={link.href}

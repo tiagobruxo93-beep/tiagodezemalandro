@@ -35,7 +35,13 @@ export const SECOES_META: Record<SecaoKey, { label: string; descricao: string }>
 export type StepItem = { title: string; text: string };
 export type StatItem = { value: string; label: string };
 export type PhotoItem = { url: string; alt: string };
-export type VideoItem = { title: string; text: string; url: string; cover: string };
+export type VideoItem = {
+  title: string;
+  text: string;
+  url: string;
+  cover: string;
+  link: string;
+};
 export type FaqItem = { q: string; a: string };
 
 export interface SiteContent {
@@ -311,7 +317,15 @@ export function mergeContent(raw: unknown): SiteContent {
       eyebrow: texto(videos.eyebrow, base.videos.eyebrow),
       title: texto(videos.title, base.videos.title),
       text: texto(videos.text, base.videos.text),
-      items: Array.isArray(videos.items) ? (videos.items as VideoItem[]) : base.videos.items,
+      items: Array.isArray(videos.items)
+        ? (videos.items as VideoItem[]).map((item) => ({
+            title: typeof item?.title === "string" ? item.title : "",
+            text: typeof item?.text === "string" ? item.text : "",
+            url: typeof item?.url === "string" ? item.url : "",
+            cover: typeof item?.cover === "string" ? item.cover : "",
+            link: typeof item?.link === "string" ? item.link : "",
+          }))
+        : base.videos.items,
     },
     faq: {
       eyebrow: texto(faq.eyebrow, base.faq.eyebrow),

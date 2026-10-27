@@ -1,5 +1,6 @@
 import Index from "./pages/Index";
 import AdPage from "./pages/AdPage";
+import VideosPage from "./pages/VideosPage";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -18,6 +19,11 @@ export const routers = [
     path: "/painel-do-pai-tiago-93k",
     name: "painel",
     element: <Admin />,
+  },
+  {
+    path: "/videos",
+    name: "videos",
+    element: <VideosPage />,
   },
   /* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */
   {

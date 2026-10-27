@@ -1,0 +1,8 @@
+update public.spiritual_site_settings
+set content = jsonb_set(
+  coalesce(content, '{}'::jsonb),
+  '{videos,items}',
+  '[{"title":"Caixão dos Inimigos por vídeo","text":"Veja como o trabalho é preparado no cemitério.","url":"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4","cover":"/images/arte-caixao-inimigos.jpg","link":"/anuncio/caixao-dos-inimigos"},{"title":"Cova dos Inimigos por vídeo","text":"A firmeza feita em corrente, do começo ao fim.","url":"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4","cover":"/images/arte-cova-inimigos.jpg","link":""}]'::jsonb,
+  true
+)
+where id = 1;

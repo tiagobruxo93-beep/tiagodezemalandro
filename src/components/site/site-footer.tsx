@@ -36,6 +36,11 @@ export function SiteFooter({
                 </a>
               </li>
               <li>
+                <a className="transition-colors hover:text-secondary" href="/videos">
+                  Vídeos dos trabalhos
+                </a>
+              </li>
+              <li>
                 <a className="transition-colors hover:text-secondary" href="/#como-funciona">
                   Como funciona
                 </a>

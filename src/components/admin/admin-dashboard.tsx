@@ -357,7 +357,7 @@ export function AdminDashboard({
                   </p>
                 </div>
                 <div className="mt-7 max-w-4xl">
-                  <ContentEditor content={content} onSaved={reloadSettings} />
+                  <ContentEditor content={content} ads={ads} onSaved={reloadSettings} />
                 </div>
               </>
             )}

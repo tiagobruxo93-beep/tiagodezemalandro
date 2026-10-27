@@ -35,7 +35,7 @@ const AdPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader settings={settings} />
+      <SiteHeader settings={settings} content={content} />
 
       {loading ? (
         <div className="section-shell pt-[140px]">

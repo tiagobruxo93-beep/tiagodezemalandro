@@ -19,6 +19,7 @@ import {
   TextField,
   VideoField,
 } from "@/components/admin/fields";
+import type { Ad } from "@/lib/ads";
 import {
   FRENTES,
   SECOES_META,
@@ -68,9 +69,11 @@ function Grupo({
 
 export function ContentEditor({
   content,
+  ads,
   onSaved,
 }: {
   content: SiteContent;
+  ads: Ad[];
   onSaved: () => Promise<void>;
 }) {
   const [draft, setDraft] = useState<SiteContent>(content);
@@ -492,6 +495,34 @@ export function ContentEditor({
                     onChange={(valor) => atualizarVideo(indice, "cover", valor)}
                     ajuda="Se ficar vazia, aparece um retângulo escuro com o botão de play."
                   />
+
+                  <div className="space-y-2">
+                    <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                      Trabalho relacionado (opcional)
+                    </Label>
+                    <Select
+                      value={item.link.trim() === "" ? "__nenhum__" : item.link}
+                      onValueChange={(valor) =>
+                        atualizarVideo(indice, "link", valor === "__nenhum__" ? "" : valor)
+                      }
+                    >
+                      <SelectTrigger className="rounded-sm border-border bg-background/70 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__nenhum__">Nenhum</SelectItem>
+                        {ads.map((ad) => (
+                          <SelectItem key={ad.id} value={`/anuncio/${ad.slug}`}>
+                            {ad.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[11px] text-muted-foreground">
+                      Escolhendo um anúncio, o vídeo ganha o botão “Ver o trabalho”,
+                      que leva direto para a ficha dele.
+                    </p>
+                  </div>
 
                   <TextAreaField
                     rotulo="Descrição"
