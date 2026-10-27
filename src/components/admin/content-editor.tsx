@@ -395,7 +395,7 @@ export function ContentEditor({
         <TabsContent value="videos" className="mt-6 space-y-5">
           <Grupo
             titulo="Seção de vídeos"
-            descricao="Aceita YouTube, Vimeo ou arquivo .mp4. A capa é a imagem que aparece antes de tocar."
+            descricao="Aceita qualquer formato de arquivo, ou link do YouTube/Vimeo. A capa é a imagem que aparece antes de tocar."
           >
             <SwitchField
               rotulo="Mostrar a seção de vídeos no site"
@@ -434,9 +434,9 @@ export function ContentEditor({
                     Vídeos do site
                   </Label>
                   <p className="mt-1 max-w-lg text-[11px] leading-relaxed text-muted-foreground">
-                    Envie o vídeo direto do computador ou celular (MP4, WEBM, MOV,
-                    MPEG ou AVI, até 5 GB) ou cole um link do YouTube/Vimeo. Cada
-                    vídeo vira um card na seção "Assista e entenda".
+                    Envie o arquivo direto do computador ou celular (qualquer
+                    formato, até 5 GB) ou cole um link do YouTube/Vimeo. Cada vídeo
+                    vira um card na seção "Assista e entenda".
                   </p>
                 </div>
                 <Button

@@ -408,44 +408,67 @@ export async function saveSiteContent(content: SiteContent) {
 }
 
 const BUCKET = "images";
-const TIPOS = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-const MAX_MB = 10;
 
-/** Envia uma foto para o armazenamento e devolve o endereço público. */
+/** Extensões perigosas: páginas e executáveis que poderiam rodar código. */
+const EXTENSOES_BLOQUEADAS = [
+  "html",
+  "htm",
+  "xhtml",
+  "svg",
+  "js",
+  "mjs",
+  "php",
+  "phtml",
+  "exe",
+  "bat",
+  "cmd",
+  "com",
+  "scr",
+  "msi",
+  "vbs",
+  "ps1",
+  "sh",
+  "jar",
+  "apk",
+];
+
+/** Confere o arquivo antes do envio. Libera qualquer formato fora da lista de risco. */
+export function conferirArquivo(file: File, maxMB: number) {
+  const extensao = (file.name.split(".").pop() || "").toLowerCase();
+
+  if (EXTENSOES_BLOQUEADAS.indexOf(extensao) !== -1) {
+    throw new Error(
+      `Arquivos .${extensao} são bloqueados por segurança (poderiam executar código).`,
+    );
+  }
+
+  if (file.size > maxMB * 1024 * 1024) {
+    const tamanho = (file.size / 1024 / 1024).toFixed(1);
+    throw new Error(`Arquivo muito grande (${tamanho} MB). O limite é ${maxMB} MB.`);
+  }
+
+  return extensao || "bin";
+}
+
+/** Envia imagem ou arquivo (qualquer formato) e devolve o endereço público. */
 export async function uploadSiteImage(file: File): Promise<string> {
-  if (TIPOS.indexOf(file.type) === -1) {
-    throw new Error("Formato não aceito. Use JPG, PNG, WEBP ou GIF.");
-  }
-  if (file.size > MAX_MB * 1024 * 1024) {
-    throw new Error(`Imagem muito grande. O limite é ${MAX_MB} MB.`);
-  }
-
-  const extensao = (file.name.split(".").pop() || "jpg").toLowerCase().replace("jpeg", "jpg");
+  const extensao = conferirArquivo(file, 50);
   const caminho = `conteudo/${crypto.randomUUID()}.${extensao}`;
 
   const { error } = await supabase.storage.from(BUCKET).upload(caminho, file, {
-    contentType: file.type || "image/jpeg",
+    contentType: file.type || "application/octet-stream",
     upsert: false,
   });
 
   if (error) throw new Error(error.message);
 
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(caminho);
-  if (!data?.publicUrl) throw new Error("Não foi possível obter o endereço da imagem.");
+  if (!data?.publicUrl) throw new Error("Não foi possível obter o endereço do arquivo.");
 
   return data.publicUrl;
 }
 
 const BUCKET_VIDEO = "videos";
-const TIPOS_VIDEO = [
-  "video/mp4",
-  "video/webm",
-  "video/quicktime",
-  "video/x-m4v",
-  "video/ogg",
-  "video/mpeg",
-  "video/x-msvideo",
-];
 const VIDEO_MAX_MB = 5120;
 const LIMITE_BLOCOS_MB = 45;
 
@@ -506,22 +529,7 @@ export async function uploadSiteVideo(
   file: File,
   aoProgredir?: (porcentagem: number) => void,
 ): Promise<string> {
-  const extensaoArquivo = (file.name.split(".").pop() || "").toLowerCase();
-  const tipoOk =
-    TIPOS_VIDEO.indexOf(file.type) !== -1 ||
-    ["mp4", "webm", "mov", "m4v", "ogv", "ogg", "mpeg", "avi"].indexOf(extensaoArquivo) !== -1;
-
-  if (!tipoOk) {
-    throw new Error("Formato não aceito. Use MP4, WEBM, MOV, MPEG ou AVI.");
-  }
-
-  if (file.size > VIDEO_MAX_MB * 1024 * 1024) {
-    throw new Error(
-      `Vídeo muito grande (${Math.round(file.size / 1024 / 1024)} MB). O limite é ${VIDEO_MAX_MB} MB.`,
-    );
-  }
-
-  const extensao = extensaoArquivo || "mp4";
+  const extensao = conferirArquivo(file, VIDEO_MAX_MB);
   const caminho = `conteudo/${crypto.randomUUID()}.${extensao}`;
   const grande = file.size > LIMITE_BLOCOS_MB * 1024 * 1024;
 
@@ -560,6 +568,14 @@ export function videoEmbedUrl(url: string): string {
   if (/\.(mp4|webm|ogv|ogg|m4v)$/i.test(valor)) return valor;
 
   return "";
+}
+
+/** Considera vídeo quando é arquivo enviado para a pasta de vídeos ou extensão de vídeo. */
+export function pareceVideo(url: string): boolean {
+  const valor = (url || "").trim();
+  if (!valor) return false;
+  if (/\/videos\/conteudo\//i.test(valor)) return true;
+  return /\.(mp4|webm|ogv|ogg|m4v|mov)$/i.test(valor);
 }
 
 export function isDirectVideo(url: string): boolean {

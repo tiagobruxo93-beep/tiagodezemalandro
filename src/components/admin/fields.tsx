@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Film, ImagePlus, Loader2, Plus, Trash2, Upload, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CONTENT_IMAGES, uploadSiteImage, uploadSiteVideo } from "@/lib/site-content";
+import {
+  CONTENT_IMAGES,
+  pareceVideo,
+  uploadSiteImage,
+  uploadSiteVideo,
+} from "@/lib/site-content";
 import { safeUrl } from "@/lib/security";
 
 const LABEL = "text-[10px] uppercase tracking-[0.16em] text-muted-foreground";
@@ -109,7 +114,12 @@ export function ImageField({
   ajuda?: string;
 }) {
   const [enviando, setEnviando] = useState(false);
+  const [previaFalhou, setPreviaFalhou] = useState(false);
   const arquivoRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    setPreviaFalhou(false);
+  }, [valor]);
 
   const enviar = async (file: File | undefined) => {
     if (!file) return;
@@ -132,10 +142,18 @@ export function ImageField({
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="flex h-28 w-full shrink-0 items-center justify-center overflow-hidden border border-border/70 bg-background/60 sm:w-44">
-          {valor ? (
-            <img src={safeUrl(valor)} alt="" className="h-full w-full object-contain" />
+          {valor && !previaFalhou ? (
+            <img
+              src={safeUrl(valor)}
+              alt=""
+              onError={() => setPreviaFalhou(true)}
+              className="h-full w-full object-contain"
+            />
           ) : (
-            <ImagePlus className="h-5 w-5 text-muted-foreground/60" />
+            <span className="flex flex-col items-center gap-1 px-2 text-center text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              <ImagePlus className="h-5 w-5 text-muted-foreground/60" />
+              {valor ? "sem prévia" : "sem arquivo"}
+            </span>
           )}
         </div>
 
@@ -152,7 +170,6 @@ export function ImageField({
             <input
               ref={arquivoRef}
               type="file"
-              accept="image/*"
               className="hidden"
               onChange={(event) => void enviar(event.target.files?.[0])}
             />
@@ -164,7 +181,7 @@ export function ImageField({
               onClick={() => arquivoRef.current?.click()}
             >
               {enviando ? <Loader2 className="animate-spin" /> : <ImagePlus />}
-              Enviar foto
+              Enviar arquivo
             </Button>
 
             <Select
@@ -235,14 +252,27 @@ export function VideoField({
     <div className="space-y-3">
       <Label className={LABEL}>{rotulo}</Label>
 
-      {valor && (
-        <video
-          src={safeUrl(valor)}
-          controls
-          preload="metadata"
-          className="max-h-64 w-full rounded-sm border border-border/70 bg-black"
-        />
-      )}
+      {valor &&
+        (pareceVideo(valor) ? (
+          <video
+            src={safeUrl(valor)}
+            controls
+            preload="metadata"
+            className="max-h-64 w-full rounded-sm border border-border/70 bg-black"
+          />
+        ) : (
+          <p className="border border-border/70 bg-background/40 px-3 py-2 text-[12px] text-muted-foreground">
+            Arquivo enviado (sem prévia no painel).{" "}
+            <a
+              href={safeUrl(valor, "#")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-secondary underline"
+            >
+              abrir em nova aba
+            </a>
+          </p>
+        ))}
 
       <Input
         value={valor}
@@ -256,7 +286,6 @@ export function VideoField({
         <input
           ref={arquivoRef}
           type="file"
-          accept="video/mp4,video/webm,video/quicktime,video/*"
           className="hidden"
           onChange={(event) => void enviar(event.target.files?.[0])}
         />
@@ -271,8 +300,8 @@ export function VideoField({
           {enviando ? `Enviando vídeo... ${progresso}%` : "Enviar vídeo do computador"}
         </Button>
         <span className="text-[11px] text-muted-foreground">
-          MP4, WEBM, MOV, MPEG ou AVI até 5 GB. Acima de 45 MB o envio é feito em
-          blocos, com retomada automática se a conexão oscilar.
+          Qualquer formato, até 5 GB. Acima de 45 MB o envio é feito em blocos, com
+          retomada automática se a conexão oscilar.
         </span>
       </div>
 
@@ -361,7 +390,6 @@ export function MultiVideoField({
         <input
           ref={arquivoRef}
           type="file"
-          accept="video/mp4,video/webm,video/quicktime,video/*"
           multiple
           className="hidden"
           onChange={(event) => void enviar(event.target.files)}
@@ -380,9 +408,9 @@ export function MultiVideoField({
 
         <div className="max-w-md space-y-1 text-[11px] leading-relaxed text-muted-foreground">
           <p>
-            Escolha quantos vídeos quiser de uma vez (MP4, WEBM, MOV, MPEG ou AVI,
-            até 5 GB cada). Cada arquivo vira um card, com o nome do arquivo como
-            título — depois é só ajustar o texto e a capa.
+            Escolha quantos arquivos quiser de uma vez (qualquer formato, até 5 GB
+            cada). Cada arquivo vira um card, com o nome do arquivo como título —
+            depois é só ajustar o texto e a capa.
           </p>
           <p>
             Arquivos acima de 45 MB sobem em blocos, com retomada automática. Para

@@ -1,0 +1,4 @@
+update storage.buckets
+set allowed_mime_types = null,
+    file_size_limit = case when id = 'videos' then 5368709120::bigint else 52428800::bigint end
+where id in ('images', 'videos');

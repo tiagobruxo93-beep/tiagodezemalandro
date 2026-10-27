@@ -59,7 +59,7 @@ export function VideoCard({ item }: { item: VideoItem }) {
                 rel="noopener noreferrer"
                 className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 border border-secondary/40 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-secondary backdrop-blur-sm"
               >
-                Abrir vídeo <ArrowUpRight className="h-3 w-3" />
+                Abrir arquivo <ArrowUpRight className="h-3 w-3" />
               </a>
             ) : (
               <span className="absolute bottom-3 left-3 border border-secondary/40 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-secondary">
