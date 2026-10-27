@@ -8,6 +8,7 @@ export type AdminState = {
   isAdmin: boolean;
   loading: boolean;
   checking: boolean;
+  bloqueado: boolean;
 };
 
 export function useAdminSession() {
@@ -15,6 +16,7 @@ export function useAdminSession() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
+  const [bloqueado, setBloqueado] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -45,13 +47,25 @@ export function useAdminSession() {
     }
     let active = true;
     setChecking(true);
+
     checkAdminAccess()
       .then((value) => {
-        if (active) setIsAdmin(value);
+        if (!active) return;
+
+        if (!value) {
+          // Conta sem permissão: encerra a sessão na hora.
+          setBloqueado(true);
+          setIsAdmin(false);
+          void supabase.auth.signOut();
+          return;
+        }
+
+        setIsAdmin(true);
       })
       .finally(() => {
         if (active) setChecking(false);
       });
+
     return () => {
       active = false;
     };
@@ -89,5 +103,5 @@ export function useAdminSession() {
     setIsAdmin(false);
   };
 
-  return { session, isAdmin, loading, checking, signOut };
+  return { session, isAdmin, loading, checking, bloqueado, signOut };
 }

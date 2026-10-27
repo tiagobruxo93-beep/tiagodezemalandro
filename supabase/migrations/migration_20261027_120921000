@@ -1,0 +1,1 @@
+create unique index if not exists espiritual_admin_unico on public.spiritual_admins ((true));

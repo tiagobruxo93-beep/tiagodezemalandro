@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAdminSession } from "@/hooks/use-admin-session";
 
 const Admin = () => {
-  const { session, isAdmin, loading, checking, signOut } = useAdminSession();
+  const { session, isAdmin, loading, checking, bloqueado, signOut } = useAdminSession();
 
   useEffect(() => {
     document.title = "Painel — Pai Tiago de Zé Malandro";
@@ -27,6 +27,24 @@ const Admin = () => {
         <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
           Abrindo o painel
         </p>
+      </div>
+    );
+  }
+
+  if (bloqueado) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5 text-center">
+        <span className="flex h-12 w-12 items-center justify-center border border-secondary/40 text-secondary">
+          <Lock className="h-5 w-5" />
+        </span>
+        <h1 className="mt-6 font-display text-4xl text-foreground">Acesso encerrado</h1>
+        <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
+          Este painel é exclusivo de uma única conta. A sessão usada não tem
+          permissão e foi desconectada automaticamente.
+        </p>
+        <Button asChild variant="hairline" size="lg" className="mt-8">
+          <Link to="/">Voltar ao site</Link>
+        </Button>
       </div>
     );
   }

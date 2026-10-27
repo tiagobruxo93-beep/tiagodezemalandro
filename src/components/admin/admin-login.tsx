@@ -166,9 +166,9 @@ export function AdminLogin() {
           </form>
 
           <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
-            O cadastro de novas contas está fechado por segurança. Se precisar de
-            outro acesso, ele é criado pelo responsável da casa. Depois de alguns
-            minutos sem uso, o painel desconecta sozinho.
+            Painel de conta única: só esta conta entra, e o cadastro de novas
+            contas está fechado. Depois de 60 minutos sem uso, o painel desconecta
+            sozinho.
           </p>
         </div>
       </div>
