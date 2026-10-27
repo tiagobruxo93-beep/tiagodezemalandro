@@ -8,9 +8,13 @@ import {
   type SiteSettings,
 } from "@/lib/ads";
 import { DEFAULT_CONTENT, fetchSiteContent, type SiteContent } from "@/lib/site-content";
+import { gravarCache, lerCache } from "@/lib/cache";
+
+const CACHE_ANUNCIOS = "anuncios";
+const CACHE_CONTEUDO = "conteudo";
 
 export function useAds() {
-  const [ads, setAds] = useState<Ad[]>([]);
+  const [ads, setAds] = useState<Ad[]>(() => lerCache<Ad[]>(CACHE_ANUNCIOS) ?? []);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,8 +23,12 @@ export function useAds() {
     try {
       const data = await fetchAds();
       setAds(data);
+      gravarCache(CACHE_ANUNCIOS, data);
       setError(null);
     } catch (err) {
+      // Backend fora do ar: mantém a última cópia boa em vez de mostrar página vazia.
+      const reserva = lerCache<Ad[]>(CACHE_ANUNCIOS);
+      if (reserva) setAds(reserva);
       setError(err instanceof Error ? err.message : "Erro ao carregar os trabalhos");
     } finally {
       setLoading(false);
@@ -35,8 +43,14 @@ export function useAds() {
 }
 
 export function useSiteSettings() {
-  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
-  const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
+  const [settings, setSettings] = useState<SiteSettings>(() => {
+    const reserva = lerCache<{ settings: SiteSettings; content: SiteContent }>(CACHE_CONTEUDO);
+    return reserva ? reserva.settings : DEFAULT_SETTINGS;
+  });
+  const [content, setContent] = useState<SiteContent>(() => {
+    const reserva = lerCache<{ settings: SiteSettings; content: SiteContent }>(CACHE_CONTEUDO);
+    return reserva ? reserva.content : DEFAULT_CONTENT;
+  });
   const [loading, setLoading] = useState(true);
 
   const reload = useCallback(async () => {
@@ -44,9 +58,11 @@ export function useSiteSettings() {
       const [dados, texto] = await Promise.all([fetchSiteSettings(), fetchSiteContent()]);
       setSettings(dados);
       setContent(texto);
+      gravarCache(CACHE_CONTEUDO, { settings: dados, content: texto });
     } catch {
-      setSettings(DEFAULT_SETTINGS);
-      setContent(DEFAULT_CONTENT);
+      const reserva = lerCache<{ settings: SiteSettings; content: SiteContent }>(CACHE_CONTEUDO);
+      setSettings(reserva ? reserva.settings : DEFAULT_SETTINGS);
+      setContent(reserva ? reserva.content : DEFAULT_CONTENT);
     } finally {
       setLoading(false);
     }

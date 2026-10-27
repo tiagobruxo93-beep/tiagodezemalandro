@@ -9,6 +9,7 @@ import {
   Megaphone,
   Plus,
   Settings2,
+  ShieldCheck,
   Star,
   Wallet,
   Video,
@@ -18,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { AdsManager } from "@/components/admin/ads-manager";
 import { AdFormDialog } from "@/components/admin/ad-form-dialog";
 import { ContentEditor } from "@/components/admin/content-editor";
+import { SecurityPanel } from "@/components/admin/security-panel";
 import { TridentMark } from "@/components/brand/trident-mark";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
 import { createAd, fetchClickCounts, updateAd, type AdDraft } from "@/lib/admin-ads";
@@ -25,7 +27,7 @@ import { exportarDados } from "@/lib/backup";
 import type { Ad } from "@/lib/ads";
 import { cn } from "@/lib/utils";
 
-type View = "anuncios" | "conteudo";
+type View = "anuncios" | "conteudo" | "seguranca";
 
 export function AdminDashboard({
   email,
@@ -121,6 +123,7 @@ export function AdminDashboard({
   const navItems: { id: View; label: string; icon: typeof LayoutList }[] = [
     { id: "anuncios", label: "Anúncios", icon: Megaphone },
     { id: "conteudo", label: "Conteúdo do site", icon: Settings2 },
+    { id: "seguranca", label: "Segurança", icon: ShieldCheck },
   ];
 
   return (
@@ -323,6 +326,22 @@ export function AdminDashboard({
                       onChanged={refreshAll}
                     />
                   )}
+                </div>
+              </>
+            ) : view === "seguranca" ? (
+              <>
+                <div>
+                  <p className="eyebrow">Painel de administração</p>
+                  <h1 className="mt-3 font-display text-4xl text-foreground sm:text-5xl">
+                    Segurança
+                  </h1>
+                  <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
+                    Conta única, senha e sessões. Tudo que protege o painel e o
+                    conteúdo do site.
+                  </p>
+                </div>
+                <div className="mt-7 max-w-3xl">
+                  <SecurityPanel email={email} />
                 </div>
               </>
             ) : (

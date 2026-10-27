@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,9 +13,22 @@ export function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [tentativas, setTentativas] = useState(0);
+  const [bloqueadoAte, setBloqueadoAte] = useState(0);
+  const [agora, setAgora] = useState(Date.now());
+
+  useEffect(() => {
+    const relogio = window.setInterval(() => setAgora(Date.now()), 1000);
+    return () => window.clearInterval(relogio);
+  }, []);
+
+  const espera = Math.max(0, Math.ceil((bloqueadoAte - agora) / 1000));
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (espera > 0) return;
+
     setError(null);
     setLoading(true);
 
@@ -26,7 +39,19 @@ export function AdminLogin() {
       });
 
       if (authError) throw new Error(authError.message);
+
+      setTentativas(0);
     } catch (err) {
+      const total = tentativas + 1;
+
+      if (total >= 5) {
+        setTentativas(0);
+        setBloqueadoAte(Date.now() + 60_000);
+        setError("Muitas tentativas. Aguarde 60 segundos antes de tentar de novo.");
+        return;
+      }
+
+      setTentativas(total);
       const mensagem = err instanceof Error ? err.message : "Não foi possível entrar";
 
       if (mensagem.includes("Invalid login credentials")) {
@@ -36,7 +61,7 @@ export function AdminLogin() {
       } else if (mensagem.toLowerCase().includes("rate") || mensagem.includes("too many")) {
         setError("Muitas tentativas. Aguarde alguns minutos e tente de novo.");
       } else {
-        setError(mensagem);
+        setError(`${mensagem} (tentativa ${total} de 5)`);
       }
     } finally {
       setLoading(false);
@@ -159,9 +184,15 @@ export function AdminLogin() {
               </p>
             )}
 
-            <Button type="submit" variant="forward" size="xl" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              variant="forward"
+              size="xl"
+              className="w-full"
+              disabled={loading || espera > 0}
+            >
               {loading ? <Loader2 className="animate-spin" /> : <ArrowRight />}
-              Entrar no painel
+              {espera > 0 ? `Aguarde ${espera}s` : "Entrar no painel"}
             </Button>
           </form>
 
