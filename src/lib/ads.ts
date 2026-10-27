@@ -3,6 +3,7 @@ import { onlyDigits, safeUrl } from "@/lib/security";
 
 export type AdCategory = "coletivo" | "individual" | "consulta";
 export type AdTab = AdCategory;
+export type FrenteKey = AdCategory;
 
 export interface Ad {
   id: string;

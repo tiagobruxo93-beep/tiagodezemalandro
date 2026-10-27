@@ -10,6 +10,7 @@ import { VideosSection } from "@/components/site/videos-section";
 import { SiteFooter } from "@/components/site/site-footer";
 import { WhatsAppFab } from "@/components/site/whatsapp-fab";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
+import type { SecaoKey } from "@/lib/site-content";
 
 const Index = () => {
   const { ads, loading } = useAds();
@@ -30,13 +31,37 @@ const Index = () => {
       <SiteHeader settings={settings} />
       <main>
         <HeroSection settings={settings} content={content} featuredAd={featuredAd} />
-        <AdsTabsSection ads={ads} settings={settings} content={content} loading={loading} />
-        <HowItWorks content={content} />
-        <CorrenteBanner content={content} />
-        <VideosSection videos={content.videos} />
-        <AboutSection settings={settings} content={content} />
-        <GalleryStrip content={content} />
-        <FaqSection content={content} />
+
+        {content.secoes.ordem.map((secao: SecaoKey) => {
+          switch (secao) {
+            case "trabalhos":
+              return (
+                <AdsTabsSection
+                  key={secao}
+                  ads={ads}
+                  settings={settings}
+                  content={content}
+                  loading={loading}
+                />
+              );
+            case "como-funciona":
+              return <HowItWorks key={secao} content={content} />;
+            case "corrente":
+              return <CorrenteBanner key={secao} content={content} />;
+            case "videos":
+              return <VideosSection key={secao} videos={content.videos} />;
+            case "sobre":
+              return (
+                <AboutSection key={secao} settings={settings} content={content} />
+              );
+            case "galeria":
+              return <GalleryStrip key={secao} content={content} />;
+            case "duvidas":
+              return <FaqSection key={secao} content={content} />;
+            default:
+              return null;
+          }
+        })}
       </main>
       <SiteFooter settings={settings} content={content} />
       <WhatsAppFab settings={settings} />

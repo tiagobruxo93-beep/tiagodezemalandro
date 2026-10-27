@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
-import { Loader2, Save } from "lucide-react";
+import { ArrowDown, ArrowUp, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ImageField,
@@ -11,6 +19,8 @@ import {
   TextField,
 } from "@/components/admin/fields";
 import {
+  FRENTES,
+  SECOES_META,
   saveSiteContent,
   type FaqItem,
   type PhotoItem,
@@ -18,11 +28,15 @@ import {
   type StatItem,
   type StepItem,
   type VideoItem,
+  type FrenteKey,
+  type SecaoKey,
 } from "@/lib/site-content";
 
 const ABAS = [
   { id: "textos", rotulo: "Textos" },
   { id: "fotos", rotulo: "Fotos" },
+  { id: "abas", rotulo: "Abas" },
+  { id: "secoes", rotulo: "Seções" },
   { id: "sobre", rotulo: "Sobre" },
   { id: "videos", rotulo: "Vídeos" },
   { id: "duvidas", rotulo: "Dúvidas" },
@@ -67,6 +81,26 @@ export function ContentEditor({
 
   const set = <K extends keyof SiteContent>(chave: K, valor: SiteContent[K]) =>
     setDraft((atual) => ({ ...atual, [chave]: valor }));
+
+  const moverAba = (indice: number, direcao: -1 | 1) => {
+    const ordem = [...draft.abas.ordem];
+    const alvo = indice + direcao;
+
+    if (alvo < 0 || alvo >= ordem.length) return;
+
+    [ordem[indice], ordem[alvo]] = [ordem[alvo], ordem[indice]];
+    set("abas", { ...draft.abas, ordem });
+  };
+
+  const moverSecao = (indice: number, direcao: -1 | 1) => {
+    const ordem = [...draft.secoes.ordem];
+    const alvo = indice + direcao;
+
+    if (alvo < 0 || alvo >= ordem.length) return;
+
+    [ordem[indice], ordem[alvo]] = [ordem[alvo], ordem[indice]];
+    set("secoes", { ordem });
+  };
 
   const salvar = async () => {
     setSalvando(true);
@@ -448,6 +482,182 @@ export function ContentEditor({
             />
           </Grupo>
         </TabsContent>
+        <TabsContent value="abas" className="mt-6 space-y-5">
+          <Grupo
+            titulo="Abas dos trabalhos"
+            descricao="Defina o nome de cada aba, a ordem, qual abre primeiro e quais aparecem no site. Anúncios de uma aba desligada deixam de aparecer na página inicial."
+          >
+            <div className="max-w-xs space-y-2">
+              <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                Aba que abre primeiro
+              </Label>
+              <Select
+                value={draft.abas.inicial}
+                onValueChange={(valor) =>
+                  set("abas", { ...draft.abas, inicial: valor as FrenteKey })
+                }
+              >
+                <SelectTrigger className="rounded-sm border-border bg-background/70 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {FRENTES.map((frente) => (
+                    <SelectItem key={frente} value={frente}>
+                      {draft.abas.itens[frente].label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-4">
+              {draft.abas.ordem.map((frente, indice) => {
+                const item = draft.abas.itens[frente];
+
+                return (
+                  <div
+                    key={frente}
+                    className="rounded-sm border border-border/70 bg-background/40 p-4"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <p className="text-[11px] uppercase tracking-[0.16em] text-secondary">
+                        {item.label || frente} · {indice + 1}ª posição
+                      </p>
+                      <div className="flex gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Mover para cima"
+                          disabled={indice === 0}
+                          onClick={() => moverAba(indice, -1)}
+                        >
+                          <ArrowUp />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Mover para baixo"
+                          disabled={indice === draft.abas.ordem.length - 1}
+                          onClick={() => moverAba(indice, 1)}
+                        >
+                          <ArrowDown />
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 space-y-3">
+                      <SwitchField
+                        rotulo="Mostrar esta aba no site"
+                        valor={item.active}
+                        onChange={(valor) =>
+                          set("abas", {
+                            ...draft.abas,
+                            itens: {
+                              ...draft.abas.itens,
+                              [frente]: { ...item, active: valor },
+                            },
+                          })
+                        }
+                      />
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <TextField
+                          rotulo="Nome da aba"
+                          valor={item.label}
+                          onChange={(valor) =>
+                            set("abas", {
+                              ...draft.abas,
+                              itens: {
+                                ...draft.abas.itens,
+                                [frente]: { ...item, label: valor },
+                              },
+                            })
+                          }
+                        />
+                        <TextField
+                          rotulo="Frase à direita"
+                          valor={item.hint}
+                          onChange={(valor) =>
+                            set("abas", {
+                              ...draft.abas,
+                              itens: {
+                                ...draft.abas.itens,
+                                [frente]: { ...item, hint: valor },
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                      <TextAreaField
+                        rotulo="Descrição da aba"
+                        valor={item.text}
+                        onChange={(valor) =>
+                          set("abas", {
+                            ...draft.abas,
+                            itens: {
+                              ...draft.abas.itens,
+                              [frente]: { ...item, text: valor },
+                            },
+                          })
+                        }
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Grupo>
+        </TabsContent>
+
+        <TabsContent value="secoes" className="mt-6 space-y-5">
+          <Grupo
+            titulo="Ordem das seções da página inicial"
+            descricao="O topo fica sempre primeiro. Use as setas para decidir o que vem depois — por exemplo, trabalhos logo abaixo do topo e depois como funciona."
+          >
+            <ul className="space-y-2">
+              {draft.secoes.ordem.map((secao, indice) => (
+                <li
+                  key={secao}
+                  className="flex items-center justify-between gap-3 rounded-sm border border-border/70 bg-background/40 px-4 py-3"
+                >
+                  <div>
+                    <p className="text-[13px] text-foreground">
+                      {indice + 1}. {SECOES_META[secao as SecaoKey].label}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {SECOES_META[secao as SecaoKey].descricao}
+                    </p>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Mover para cima"
+                      disabled={indice === 0}
+                      onClick={() => moverSecao(indice, -1)}
+                    >
+                      <ArrowUp />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Mover para baixo"
+                      disabled={indice === draft.secoes.ordem.length - 1}
+                      onClick={() => moverSecao(indice, 1)}
+                    >
+                      <ArrowDown />
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Grupo>
+        </TabsContent>
+
       </Tabs>
 
       <div className="sticky bottom-0 z-20 -mx-4 flex justify-end border-t border-border/70 bg-background/95 px-4 py-3 backdrop-blur sm:-mx-0 sm:rounded-sm sm:border">

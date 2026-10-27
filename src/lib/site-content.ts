@@ -3,6 +3,35 @@ import { IMAGE_LIBRARY } from "@/lib/ads";
 
 export const CONTENT_IMAGES = IMAGE_LIBRARY;
 
+export type FrenteKey = "coletivo" | "individual" | "consulta";
+export type SecaoKey =
+  | "trabalhos"
+  | "como-funciona"
+  | "corrente"
+  | "videos"
+  | "sobre"
+  | "galeria"
+  | "duvidas";
+
+export type AbaConfig = {
+  label: string;
+  hint: string;
+  text: string;
+  active: boolean;
+};
+
+export const FRENTES: FrenteKey[] = ["coletivo", "individual", "consulta"];
+
+export const SECOES_META: Record<SecaoKey, { label: string; descricao: string }> = {
+  trabalhos: { label: "Trabalhos", descricao: "Abas e cards dos anúncios" },
+  "como-funciona": { label: "Como funciona", descricao: "Os passos do trabalho coletivo" },
+  corrente: { label: "Corrente de fé", descricao: "Faixa com chamada e foto" },
+  videos: { label: "Vídeos", descricao: "Seção de vídeos (se houver vídeo)" },
+  sobre: { label: "Sobre mim", descricao: "Apresentação, foto e números" },
+  galeria: { label: "Galeria", descricao: "Fotos do terreiro" },
+  duvidas: { label: "Dúvidas", descricao: "Perguntas frequentes" },
+};
+
 export type StepItem = { title: string; text: string };
 export type StatItem = { value: string; label: string };
 export type PhotoItem = { url: string; alt: string };
@@ -33,6 +62,8 @@ export interface SiteContent {
   galeria: { title: string; text: string; photos: PhotoItem[] };
   videos: { enabled: boolean; eyebrow: string; title: string; text: string; items: VideoItem[] };
   faq: { eyebrow: string; title: string; highlight: string; intro: string; items: FaqItem[] };
+  abas: { ordem: FrenteKey[]; inicial: FrenteKey; itens: Record<FrenteKey, AbaConfig> };
+  secoes: { ordem: SecaoKey[] };
   rodape: { note: string };
   contato: { whatsapp: string; instagram: string; paymentNote: string };
 }
@@ -113,6 +144,33 @@ export const DEFAULT_CONTENT: SiteContent = {
       { q: "O resultado é garantido?", a: "Nenhum trabalho espiritual sério promete resultado. O que eu garanto é compromisso, tradição e a firmeza feita com respeito." },
     ],
   },
+  abas: {
+    ordem: ["coletivo", "individual", "consulta"],
+    inicial: "coletivo",
+    itens: {
+      coletivo: {
+        label: "Coletivos",
+        hint: "Firmezas em corrente",
+        text: "Pedidos firmados juntos, na mesma gira. A corrente de fé deixa o trabalho acessível.",
+        active: true,
+      },
+      individual: {
+        label: "Individuais",
+        hint: "Atendimento exclusivo",
+        text: "Feitos só para você, com a atenção do Pai Tiago e sigilo total.",
+        active: true,
+      },
+      consulta: {
+        label: "Consultas",
+        hint: "Leituras e orientações",
+        text: "Leituras de cartas, búzios e caminhos para clarear o próximo passo.",
+        active: true,
+      },
+    },
+  },
+  secoes: {
+    ordem: ["trabalhos", "como-funciona", "corrente", "videos", "sobre", "galeria", "duvidas"],
+  },
   rodape: { note: "Tradição, sigilo e axé em cada firmeza." },
   contato: {
     whatsapp: "5511999999999",
@@ -127,6 +185,62 @@ function texto(valor: unknown, padrao: string) {
 
 function lista<T>(valor: unknown, padrao: T[]): T[] {
   return Array.isArray(valor) && valor.length > 0 ? (valor as T[]) : padrao;
+}
+
+function mergeAbas(salvo: Record<string, unknown>, base: SiteContent["abas"]): SiteContent["abas"] {
+  const itens = { ...base.itens } as SiteContent["abas"]["itens"];
+  const brutos =
+    salvo.itens && typeof salvo.itens === "object"
+      ? (salvo.itens as Record<string, Record<string, unknown>>)
+      : {};
+
+  FRENTES.forEach((frente) => {
+    const atual = brutos[frente] ?? {};
+    const padrao = base.itens[frente];
+    itens[frente] = {
+      label: texto(atual.label, padrao.label),
+      hint: texto(atual.hint, padrao.hint),
+      text: texto(atual.text, padrao.text),
+      active: typeof atual.active === "boolean" ? atual.active : padrao.active,
+    };
+  });
+
+  const ordem: FrenteKey[] = [];
+  if (Array.isArray(salvo.ordem)) {
+    (salvo.ordem as string[]).forEach((chave) => {
+      if (FRENTES.includes(chave as FrenteKey) && !ordem.includes(chave as FrenteKey)) {
+        ordem.push(chave as FrenteKey);
+      }
+    });
+  }
+  FRENTES.forEach((frente) => {
+    if (!ordem.includes(frente)) ordem.push(frente);
+  });
+
+  const inicial = FRENTES.includes(salvo.inicial as FrenteKey)
+    ? (salvo.inicial as FrenteKey)
+    : base.inicial;
+
+  return { ordem, inicial, itens };
+}
+
+function mergeSecoes(salvo: unknown, base: SecaoKey[]): SecaoKey[] {
+  const conhecidas = Object.keys(SECOES_META) as SecaoKey[];
+  const ordem: SecaoKey[] = [];
+
+  if (Array.isArray(salvo)) {
+    (salvo as string[]).forEach((chave) => {
+      if (conhecidas.includes(chave as SecaoKey) && !ordem.includes(chave as SecaoKey)) {
+        ordem.push(chave as SecaoKey);
+      }
+    });
+  }
+
+  conhecidas.forEach((chave) => {
+    if (!ordem.includes(chave)) ordem.push(chave);
+  });
+
+  return ordem.length ? ordem : base;
 }
 
 /** Junta o conteúdo salvo com os padrões, sem perder campos novos. */
@@ -146,6 +260,8 @@ export function mergeContent(raw: unknown): SiteContent {
   const galeria = bloco("galeria");
   const videos = bloco("videos");
   const faq = bloco("faq");
+  const abas = bloco("abas");
+  const secoes = bloco("secoes");
   const rodape = bloco("rodape");
   const contato = bloco("contato");
 
@@ -204,6 +320,8 @@ export function mergeContent(raw: unknown): SiteContent {
       intro: texto(faq.intro, base.faq.intro),
       items: lista<FaqItem>(faq.items, base.faq.items),
     },
+    abas: mergeAbas(abas, base.abas),
+    secoes: { ordem: mergeSecoes(secoes.ordem, base.secoes.ordem) },
     rodape: { note: texto(rodape.note, base.rodape.note) },
     contato: {
       whatsapp: texto(contato.whatsapp, base.contato.whatsapp),
