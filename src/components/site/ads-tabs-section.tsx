@@ -11,8 +11,6 @@ import {
 } from "@/lib/ads";
 import type { SiteContent } from "@/lib/site-content";
 
-const CATEGORY_ORDER: AdCategory[] = ["coletivo", "individual", "consulta"];
-
 export function AdsTabsSection({
   ads,
   settings,
@@ -24,15 +22,23 @@ export function AdsTabsSection({
   content: SiteContent;
   loading: boolean;
 }) {
-  const [tab, setTab] = useState<string>("todos");
+  const [tab, setTab] = useState<AdCategory>("coletivo");
 
-  const counts = useMemo(() => {
-    const result: Record<string, number> = { todos: ads.length };
-    CATEGORY_ORDER.forEach((category) => {
-      result[category] = ads.filter((ad) => ad.category === category).length;
+  const porAba = useMemo(() => {
+    const grupos = {
+      coletivo: [] as Ad[],
+      individual: [] as Ad[],
+      consulta: [] as Ad[],
+    };
+
+    ads.forEach((ad) => {
+      grupos[ad.category].push(ad);
     });
-    return result;
+
+    return grupos;
   }, [ads]);
+
+  const listaDaAba = porAba[tab] ?? [];
 
   return (
     <section id="trabalhos" className="relative scroll-mt-24 pb-16 pt-8 sm:pb-24 sm:pt-10">
@@ -54,18 +60,22 @@ export function AdsTabsSection({
           </div>
         </div>
 
-        <Tabs value={tab} onValueChange={setTab} className="mt-8">
+        <Tabs
+          value={tab}
+          onValueChange={(valor) => setTab(valor as AdCategory)}
+          className="mt-8"
+        >
           <div className="overflow-x-auto pb-1 scrollbar-none">
             <TabsList className="inline-flex h-auto min-w-full gap-1 rounded-none border border-border/70 bg-card/40 p-1 sm:min-w-0">
               {AD_TABS.map((item) => (
                 <TabsTrigger
                   key={item.value}
                   value={item.value}
-                  className="group flex items-center gap-2 rounded-sm px-2.5 py-2.5 font-sans text-[9px] font-medium uppercase tracking-[0.1em] text-muted-foreground transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow sm:px-4 sm:text-[11px] sm:tracking-[0.14em]"
+                  className="group flex items-center gap-2 rounded-sm px-3 py-2.5 font-sans text-[9px] font-medium uppercase tracking-[0.1em] text-muted-foreground transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow sm:px-5 sm:text-[11px] sm:tracking-[0.14em]"
                 >
                   {item.label}
                   <span className="hidden rounded-sm border border-border/70 px-1.5 py-0.5 text-[9px] leading-none text-muted-foreground group-data-[state=active]:border-primary-foreground/30 group-data-[state=active]:text-primary-foreground/80 sm:inline">
-                    {counts[item.value] ?? 0}
+                    {porAba[item.value].length}
                   </span>
                 </TabsTrigger>
               ))}
@@ -73,18 +83,13 @@ export function AdsTabsSection({
           </div>
 
           {AD_TABS.map((item) => {
-            const list =
-              item.value === "todos"
-                ? ads
-                : ads.filter((ad) => ad.category === item.value);
+            const lista = porAba[item.value];
 
             return (
               <TabsContent key={item.value} value={item.value} className="mt-8">
                 <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
                   <p className="max-w-xl text-[13px] leading-relaxed text-muted-foreground">
-                    {item.value === "todos"
-                      ? "Todas as frentes da casa reunidas: coletivos, individuais e consultas."
-                      : CATEGORY_META[item.value as AdCategory].description}
+                    {CATEGORY_META[item.value].description}
                   </p>
                   <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">
                     {item.hint}
@@ -108,7 +113,7 @@ export function AdsTabsSection({
                       </div>
                     ))}
                   </div>
-                ) : list.length === 0 ? (
+                ) : lista.length === 0 ? (
                   <div className="rounded-sm border border-dashed border-border/70 px-6 py-16 text-center">
                     <p className="font-display text-2xl text-foreground">
                       Nenhum anúncio nesta aba por enquanto
@@ -120,7 +125,7 @@ export function AdsTabsSection({
                   </div>
                 ) : (
                   <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {list.map((ad) => (
+                    {lista.map((ad) => (
                       <AdCard key={ad.id} ad={ad} settings={settings} />
                     ))}
                   </div>
@@ -132,6 +137,10 @@ export function AdsTabsSection({
 
         <p className="mt-8 text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">
           {content.contato.paymentNote}
+        </p>
+
+        <p className="sr-only" aria-live="polite">
+          {listaDaAba.length} anúncios nesta aba
         </p>
       </div>
     </section>

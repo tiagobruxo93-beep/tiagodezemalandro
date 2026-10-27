@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { onlyDigits, safeUrl } from "@/lib/security";
 
 export type AdCategory = "coletivo" | "individual" | "consulta";
-export type AdTab = "todos" | AdCategory;
+export type AdTab = AdCategory;
 
 export interface Ad {
   id: string;
@@ -111,7 +111,6 @@ export const CATEGORY_META: Record<
 };
 
 export const AD_TABS: { value: AdTab; label: string; hint: string }[] = [
-  { value: "todos", label: "Todos", hint: "Todas as frentes da casa" },
   { value: "coletivo", label: "Coletivos", hint: "Firmezas em corrente" },
   { value: "individual", label: "Individuais", hint: "Atendimento exclusivo" },
   { value: "consulta", label: "Consultas", hint: "Leituras e orientações" },
