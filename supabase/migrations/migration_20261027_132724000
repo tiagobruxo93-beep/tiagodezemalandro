@@ -1,0 +1,1 @@
+update public.spiritual_ads set video_url = '' where slug = 'caixao-dos-inimigos' and video_url like '%mdn.mozilla.net%';

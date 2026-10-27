@@ -20,6 +20,7 @@ import {
   type SiteSettings,
 } from "@/lib/ads";
 import { AdCard } from "@/components/site/ad-card";
+import { isDirectVideo, videoEmbedUrl } from "@/lib/site-content";
 
 export function AdDetail({
   ad,
@@ -89,6 +90,40 @@ export function AdDetail({
                     alt={ad.title}
                     className="aspect-[4/5] w-full object-contain"
                   />
+                </div>
+              </div>
+            )}
+
+            {ad.videoUrl && (
+              <div className="mb-12">
+                <p className="eyebrow mb-3">Assista ao trabalho</p>
+                <div className="border border-secondary/30 bg-black p-2 shadow-elegant">
+                  {isDirectVideo(ad.videoUrl) ? (
+                    <video
+                      src={safeUrl(ad.videoUrl)}
+                      controls
+                      preload="metadata"
+                      playsInline
+                      className="w-full"
+                    />
+                  ) : videoEmbedUrl(ad.videoUrl) ? (
+                    <iframe
+                      src={safeUrl(videoEmbedUrl(ad.videoUrl))}
+                      title={ad.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="aspect-video w-full border-0"
+                    />
+                  ) : (
+                    <a
+                      href={safeUrl(ad.videoUrl, "#")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex aspect-video w-full items-center justify-center text-[11px] uppercase tracking-[0.18em] text-secondary"
+                    >
+                      Abrir o vídeo
+                    </a>
+                  )}
                 </div>
               </div>
             )}

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowUpRight, Flame, MoonStar, Sparkles } from "lucide-react";
+import { ArrowUpRight, Film, Flame, MoonStar, Sparkles } from "lucide-react";
 import { safeUrl } from "@/lib/security";
 import { Button } from "@/components/ui/button";
 import {
@@ -74,6 +74,13 @@ export function AdCard({
         <span className="absolute right-4 top-3 rounded-sm border border-secondary/30 bg-background/70 px-2.5 py-1 text-[9px] uppercase tracking-[0.18em] text-secondary backdrop-blur-sm">
           {meta.label}
         </span>
+
+        {ad.videoUrl && (
+          <span className="absolute bottom-3 left-4 inline-flex items-center gap-1.5 rounded-sm border border-secondary/40 bg-background/75 px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] text-secondary backdrop-blur-sm">
+            <Film className="h-3 w-3" />
+            Vídeo
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-5">

@@ -1,0 +1,1 @@
+alter table public.spiritual_ads add column if not exists video_url text not null default '';

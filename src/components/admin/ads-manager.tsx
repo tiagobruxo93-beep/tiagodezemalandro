@@ -149,10 +149,11 @@ export function AdsManager({ ads, clickCounts, onEdit, onChanged }: Props) {
       </div>
 
       <div className="mt-3 hidden overflow-hidden border border-border/70 bg-card/30 md:block">
-        <div className="grid grid-cols-[minmax(0,1fr)_120px_120px_80px_80px_48px] items-center gap-3 border-b border-border/70 bg-card/60 px-4 py-3 text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+        <div className="grid grid-cols-[minmax(0,1fr)_110px_110px_70px_80px_80px_48px] items-center gap-3 border-b border-border/70 bg-card/60 px-4 py-3 text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
           <span>Anúncio</span>
           <span>Aba</span>
           <span>Valor</span>
+          <span>Vídeo</span>
           <span>Cliques</span>
           <span>Status</span>
           <span className="text-right">Ações</span>
@@ -175,7 +176,7 @@ export function AdsManager({ ads, clickCounts, onEdit, onChanged }: Props) {
           return (
             <div
               key={ad.id}
-              className="grid grid-cols-[minmax(0,1fr)_120px_120px_80px_80px_48px] items-center gap-3 border-b border-border/50 px-4 py-3 transition-colors last:border-0 hover:bg-card/50"
+              className="grid grid-cols-[minmax(0,1fr)_110px_110px_70px_80px_80px_48px] items-center gap-3 border-b border-border/50 px-4 py-3 transition-colors last:border-0 hover:bg-card/50"
             >
               <div className="flex min-w-0 items-center gap-3">
                 <div className="h-11 w-11 shrink-0 overflow-hidden border border-border/60 bg-background">
@@ -200,6 +201,7 @@ export function AdsManager({ ads, clickCounts, onEdit, onChanged }: Props) {
                 {meta.label}
               </span>
               <span className="font-display text-base text-secondary">{ad.priceLabel}</span>
+              <span className="text-xs text-muted-foreground">{ad.videoUrl ? "Sim" : "—"}</span>
               <span className="text-xs text-muted-foreground">
                 {clickCounts[ad.id] ?? 0}
               </span>

@@ -3426,6 +3426,7 @@ export type Database = {
           summary: string
           title: string
           updated_at: string
+          video_url: string
         }
         Insert: {
           active?: boolean
@@ -3446,6 +3447,7 @@ export type Database = {
           summary?: string
           title: string
           updated_at?: string
+          video_url?: string
         }
         Update: {
           active?: boolean
@@ -3466,6 +3468,7 @@ export type Database = {
           summary?: string
           title?: string
           updated_at?: string
+          video_url?: string
         }
         Relationships: []
       }

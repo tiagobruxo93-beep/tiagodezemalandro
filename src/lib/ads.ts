@@ -16,6 +16,7 @@ export interface Ad {
   includes: string[];
   priceLabel: string;
   imageUrl: string | null;
+  videoUrl: string;
   forwardUrl: string;
   forwardLabel: string;
   badge: string | null;
@@ -48,6 +49,7 @@ type AdRow = {
   includes: string[] | null;
   price_label: string;
   image_url: string | null;
+  video_url: string;
   forward_url: string;
   forward_label: string;
   badge: string | null;
@@ -156,6 +158,7 @@ function mapAd(row: AdRow): Ad {
     includes: row.includes ?? [],
     priceLabel: row.price_label ?? "Sob consulta",
     imageUrl: row.image_url || null,
+    videoUrl: row.video_url ?? "",
     forwardUrl: row.forward_url ?? "",
     forwardLabel: row.forward_label || CATEGORY_META[category].cta,
     badge: row.badge,

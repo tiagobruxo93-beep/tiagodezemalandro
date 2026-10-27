@@ -1,0 +1,1 @@
+update public.spiritual_ads set video_url = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4' where slug = 'caixao-dos-inimigos';

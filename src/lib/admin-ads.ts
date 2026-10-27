@@ -11,6 +11,7 @@ export type AdDraft = {
   includes: string[];
   price_label: string;
   image_url: string | null;
+  video_url: string;
   forward_url: string;
   forward_label: string;
   badge: string | null;
@@ -30,6 +31,7 @@ export function adToDraft(ad: Ad): AdDraft {
     includes: ad.includes,
     price_label: ad.priceLabel,
     image_url: ad.imageUrl,
+    video_url: ad.videoUrl,
     forward_url: ad.forwardUrl,
     forward_label: ad.forwardLabel,
     badge: ad.badge,
@@ -50,6 +52,7 @@ export function emptyDraft(sortOrder: number): AdDraft {
     includes: [],
     price_label: "",
     image_url: null,
+    video_url: "",
     forward_url: "",
     forward_label: "Quero participar",
     badge: null,
@@ -72,6 +75,7 @@ function clean(draft: AdDraft) {
     forward_label: draft.forward_label.trim() || "Quero participar",
     badge: draft.badge?.trim() ? draft.badge.trim() : null,
     image_url: draft.image_url?.trim() ? draft.image_url.trim() : null,
+    video_url: draft.video_url.trim(),
   };
 }
 

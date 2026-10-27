@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { IMAGE_LIBRARY, slugify, type Ad } from "@/lib/ads";
 import { adToDraft, emptyDraft, type AdDraft } from "@/lib/admin-ads";
+import { VideoField } from "@/components/admin/fields";
 
 const fieldLabel = "text-[10px] uppercase tracking-[0.16em] text-muted-foreground";
 const fieldClass = "rounded-sm border-border bg-background/70 text-sm focus-visible:ring-secondary/50";
@@ -297,6 +298,15 @@ export function AdFormDialog({
                   </Select>
                 </div>
               </div>
+            </div>
+
+            <div className="space-y-2 sm:col-span-2">
+              <VideoField
+                rotulo="Vídeo do trabalho (opcional)"
+                valor={draft.video_url}
+                onChange={(valor) => update("video_url", valor)}
+                ajuda="Envie um vídeo do computador/celular (MP4, WEBM ou MOV) ou cole um link do YouTube/Vimeo. Ele aparece na ficha do anúncio e um selo “Vídeo” aparece no card."
+              />
             </div>
 
             <div className="space-y-2">
