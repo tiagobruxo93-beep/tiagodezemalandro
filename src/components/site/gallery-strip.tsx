@@ -1,6 +1,21 @@
 import { safeUrl } from "@/lib/security";
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/site-content";
 
+function GalleryItem({ foto }: { foto: { url: string; alt: string } }) {
+  return (
+    <div className="group relative overflow-hidden border border-border/60 bg-card/40 p-2">
+      <div className="flex aspect-[4/5] items-center justify-center">
+        <img
+          src={foto.url}
+          alt={foto.alt}
+          loading="lazy"
+          className="max-h-full w-full object-contain opacity-90 transition-opacity duration-700 group-hover:opacity-100"
+        />
+      </div>
+    </div>
+  );
+}
+
 export function GalleryStrip({ content }: { content: SiteContent }) {
   const galeria = content.galeria;
   const padrao = DEFAULT_CONTENT.galeria.photos;
@@ -41,17 +56,7 @@ export function GalleryStrip({ content }: { content: SiteContent }) {
 
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {fotos.map((foto, indice) => (
-            <div
-              key={`${foto.url}-${indice}`}
-              className="group relative overflow-hidden border border-border/60 bg-card/40 p-2"
-            >
-              <img
-                src={foto.url}
-                alt={foto.alt}
-                loading="lazy"
-                className="aspect-square w-full object-contain opacity-90 transition-opacity duration-700 group-hover:opacity-100"
-              />
-            </div>
+            <GalleryItem key={`${foto.url}-${indice}`} foto={foto} />
           ))}
         </div>
       </div>

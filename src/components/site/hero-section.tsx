@@ -9,6 +9,7 @@ import {
   type SiteSettings,
 } from "@/lib/ads";
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/site-content";
+import { AdaptiveFrame } from "@/components/site/adaptive-frame";
 import { Link } from "react-router-dom";
 
 export function HeroSection({
@@ -26,7 +27,7 @@ export function HeroSection({
       <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-background to-transparent" />
 
       <div className="section-shell relative flex min-h-[88svh] flex-col justify-center pb-16 pt-32 sm:pt-36">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+        <div className="grid items-center gap-12 lg:grid-cols-[0.86fr_1.14fr] lg:gap-12">
           <div className="max-w-2xl animate-fade-up">
             <p className="eyebrow">{content.hero.eyebrow}</p>
 
@@ -71,16 +72,14 @@ export function HeroSection({
             </div>
           </div>
 
-          <div className="relative animate-fade-up [animation-delay:180ms]">
-            <div className="absolute -inset-3 -z-10 border border-secondary/20" />
-            <div className="relative border border-secondary/30 bg-card/40 p-2 shadow-elegant">
-              <img
-                src={safeUrl(content.hero.image) || DEFAULT_CONTENT.hero.image}
-                alt="Altar do terreiro sob a lua vermelha"
-                className="aspect-video w-full object-contain"
-              />
-              <div className="hairline-gold absolute inset-x-2 top-2 h-px" />
-            </div>
+          <div className="relative w-full animate-fade-up [animation-delay:180ms]">
+            <div className="pointer-events-none absolute -inset-3 -z-10 border border-secondary/20" />
+            <AdaptiveFrame
+              src={safeUrl(content.hero.image) || DEFAULT_CONTENT.hero.image}
+              alt="Altar do terreiro sob a lua vermelha"
+              priority
+              className="w-full lg:p-3"
+            />
           </div>
         </div>
 
