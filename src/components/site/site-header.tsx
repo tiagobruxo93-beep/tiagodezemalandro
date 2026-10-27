@@ -24,13 +24,8 @@ export function SiteHeader({
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const temVideos =
-    content.videos.enabled &&
-    content.videos.items.some(
-      (item) => item.url.trim() !== "" || item.title.trim() !== "",
-    );
-
-  const links = temVideos
+  // O espaço de vídeos fica sempre visível no menu, mesmo antes do primeiro envio.
+  const links = content.videos.enabled
     ? [
         { href: "/#trabalhos", label: "Trabalhos" },
         { href: "/videos", label: "Vídeos" },

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Play } from "lucide-react";
 import { VideoCard } from "@/components/site/video-card";
 import type { SiteContent } from "@/lib/site-content";
 
@@ -10,9 +10,10 @@ export function VideosSection({ videos }: { videos: SiteContent["videos"] }) {
     (item) => item.url.trim() !== "" || item.title.trim() !== "",
   );
 
-  if (!videos.enabled || itens.length === 0) return null;
+  if (!videos.enabled) return null;
 
   const mostrados = itens.slice(0, LIMITE_NA_HOME);
+  const vagas = Math.max(0, LIMITE_NA_HOME - mostrados.length);
 
   return (
     <section id="videos" className="scroll-mt-24 py-20 sm:py-24">
@@ -31,7 +32,39 @@ export function VideosSection({ videos }: { videos: SiteContent["videos"] }) {
           {mostrados.map((item, indice) => (
             <VideoCard key={`${item.title}-${indice}`} item={item} />
           ))}
+
+          {itens.length === 0 &&
+            Array.from({ length: LIMITE_NA_HOME }).map((_, indice) => (
+              <article
+                key={`vazio-${indice}`}
+                className="overflow-hidden rounded-sm border border-dashed border-border/70 bg-card/30"
+              >
+                <div className="relative flex aspect-video items-center justify-center border-b border-border/50 bg-[hsl(24_18%_4%)]">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full border border-secondary/40 bg-background/60">
+                    <Play className="h-5 w-5 text-secondary/70" />
+                  </span>
+                  <span className="absolute bottom-3 left-3 border border-secondary/40 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-secondary">
+                    Em breve
+                  </span>
+                </div>
+                <div className="p-5">
+                  <h3 className="font-display text-[22px] leading-tight text-muted-foreground">
+                    Vídeo do trabalho
+                  </h3>
+                  <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground/80">
+                    Os vídeos das firmezas e das oferendas são publicados aqui.
+                  </p>
+                </div>
+              </article>
+            ))}
         </div>
+
+        {itens.length === 0 && (
+          <p className="mt-6 text-center text-[12px] leading-relaxed text-muted-foreground">
+            Os primeiros vídeos já vão aparecer neste espaço. Quer receber o vídeo do
+            seu trabalho? Fale com o Pai Tiago no WhatsApp.
+          </p>
+        )}
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link
