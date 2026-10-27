@@ -450,13 +450,46 @@ export function conferirArquivo(file: File, maxMB: number) {
   return extensao || "bin";
 }
 
+/** Converte fotos do iPhone (HEIC/HEIF) para JPG, que abre em qualquer navegador. */
+async function converterHeic(file: File): Promise<File> {
+  const extensao = (file.name.split(".").pop() || "").toLowerCase();
+  const ehHeic =
+    extensao === "heic" ||
+    extensao === "heif" ||
+    file.type === "image/heic" ||
+    file.type === "image/heif";
+
+  if (!ehHeic) return file;
+
+  try {
+    const modulo = await import("heic2any");
+    const converter = (modulo.default ?? modulo) as unknown as (opcoes: {
+      blob: Blob;
+      toType: string;
+      quality?: number;
+    }) => Promise<Blob | Blob[]>;
+
+    const resultado = await converter({ blob: file, toType: "image/jpeg", quality: 0.86 });
+    const blob = Array.isArray(resultado) ? resultado[0] : resultado;
+
+    return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", {
+      type: "image/jpeg",
+    });
+  } catch {
+    throw new Error(
+      "Não consegui converter a foto do iPhone (HEIC). Em Ajustes → Câmera → Formatos, escolha \"Mais compatível\" e envie de novo — ou exporte a foto como JPG.",
+    );
+  }
+}
+
 /** Envia imagem ou arquivo (qualquer formato) e devolve o endereço público. */
 export async function uploadSiteImage(file: File): Promise<string> {
-  const extensao = conferirArquivo(file, 50);
+  const arquivo = await converterHeic(file);
+  const extensao = conferirArquivo(arquivo, 50);
   const caminho = `conteudo/${crypto.randomUUID()}.${extensao}`;
 
-  const { error } = await supabase.storage.from(BUCKET).upload(caminho, file, {
-    contentType: file.type || "application/octet-stream",
+  const { error } = await supabase.storage.from(BUCKET).upload(caminho, arquivo, {
+    contentType: arquivo.type || "application/octet-stream",
     upsert: false,
   });
 

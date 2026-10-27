@@ -1,0 +1,4 @@
+update public.spiritual_site_settings
+set hero_image_url = '/images/hero-pai-tiago-mago.jpg',
+    content = jsonb_set(coalesce(content, '{}'::jsonb), '{hero,image}', '"/images/hero-pai-tiago-mago.jpg"'::jsonb, true)
+where id = 1;
