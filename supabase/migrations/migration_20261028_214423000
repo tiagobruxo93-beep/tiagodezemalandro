@@ -1,0 +1,3 @@
+update public.spiritual_ads
+set forward_label = 'Quero entrar no ritual'
+where category in ('individual', 'consulta');

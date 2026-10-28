@@ -103,14 +103,14 @@ export const CATEGORY_META: Record<
     plural: "Trabalhos individuais",
     description:
       "Feitos só para você, com a atenção do Pai Tiago e sigilo total.",
-    cta: "Falar no WhatsApp",
+    cta: "Quero entrar no ritual",
   },
   consulta: {
     label: "Consulta",
     plural: "Consultas",
     description:
       "Leituras de cartas, búzios e caminhos para clarear o próximo passo.",
-    cta: "Agendar consulta",
+    cta: "Quero entrar no ritual",
   },
 };
 
