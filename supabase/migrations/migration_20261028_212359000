@@ -1,0 +1,5 @@
+update public.spiritual_ads set image_url = '/images/arte-abertura-caminhos.jpg' where slug = 'abertura-de-caminhos';
+update public.spiritual_ads set image_url = '/images/arte-quebra-demanda.jpg' where slug = 'quebra-de-demanda';
+update public.spiritual_ads set image_url = '/images/arte-prosperidade-individual.jpg' where slug = 'prosperidade-individual';
+update public.spiritual_ads set image_url = '/images/arte-consulta-de-amor.jpg' where slug = 'consulta-de-amor';
+update public.spiritual_ads set image_url = '/images/arte-consulta-financeira.jpg' where slug = 'consulta-financeira';
