@@ -13,10 +13,8 @@ export function VideoCard({ item }: { item: VideoItem }) {
       <VideoStage item={item} />
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="font-display text-[22px] leading-tight text-foreground">{item.title}</h3>
-
         {item.text && (
-          <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{item.text}</p>
+          <p className="text-[13px] leading-relaxed text-muted-foreground">{item.text}</p>
         )}
 
         {link && (
@@ -55,11 +53,8 @@ export function VideoSpotlight({ item }: { item: VideoItem }) {
 
       <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-2xl">
-          <h3 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
-            {item.title}
-          </h3>
           {item.text && (
-            <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+            <p className="text-[13px] leading-relaxed text-muted-foreground">
               {item.text}
             </p>
           )}
