@@ -9,6 +9,8 @@ export type AdminState = {
   loading: boolean;
   checking: boolean;
   bloqueado: boolean;
+  recuperacao: boolean;
+  concluirRecuperacao: () => void;
 };
 
 export function useAdminSession() {
@@ -17,12 +19,20 @@ export function useAdminSession() {
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
   const [bloqueado, setBloqueado] = useState(false);
+  const [recuperacao, setRecuperacao] = useState(false);
 
   useEffect(() => {
     let mounted = true;
 
+    if (window.location.hash.includes("type=recovery")) {
+      setRecuperacao(true);
+    }
+
     const { data: subscription } = supabase.auth.onAuthStateChange(
-      (_event, nextSession) => {
+      (event, nextSession) => {
+        if (event === "PASSWORD_RECOVERY") {
+          setRecuperacao(true);
+        }
         setSession(nextSession);
         setLoading(false);
       },
@@ -43,6 +53,10 @@ export function useAdminSession() {
   useEffect(() => {
     if (!session) {
       setIsAdmin(false);
+      return;
+    }
+
+    if (recuperacao) {
       return;
     }
     let active = true;
@@ -69,7 +83,7 @@ export function useAdminSession() {
     return () => {
       active = false;
     };
-  }, [session]);
+  }, [session, recuperacao]);
 
   // Desconecta sozinho depois de 60 minutos sem uso (proteção em computador compartilhado).
   useEffect(() => {
@@ -96,12 +110,28 @@ export function useAdminSession() {
       eventos.forEach((evento) => window.removeEventListener(evento, tocar));
       window.clearInterval(relogio);
     };
-  }, [session]);
+  }, [session, recuperacao]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
   };
 
-  return { session, isAdmin, loading, checking, bloqueado, signOut };
+  const concluirRecuperacao = () => {
+    setRecuperacao(false);
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  };
+
+  return {
+    session,
+    isAdmin,
+    loading,
+    checking,
+    bloqueado,
+    recuperacao,
+    concluirRecuperacao,
+    signOut,
+  };
 }

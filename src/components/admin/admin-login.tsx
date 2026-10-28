@@ -14,6 +14,8 @@ export function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [recuperando, setRecuperando] = useState(false);
+  const [enviado, setEnviado] = useState(false);
   const [tentativas, setTentativas] = useState(0);
   const [bloqueadoAte, setBloqueadoAte] = useState(0);
   const [agora, setAgora] = useState(Date.now());
@@ -25,8 +27,41 @@ export function AdminLogin() {
 
   const espera = Math.max(0, Math.ceil((bloqueadoAte - agora) / 1000));
 
+  const ehRecuperacao = recuperando && !enviado;
+
+  const enviarRecuperacao = async () => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const { error: erroEnvio } = await supabase.auth.resetPasswordForEmail(
+        email.trim(),
+        {
+          redirectTo: `${window.location.origin}${window.location.pathname}`,
+        },
+      );
+
+      if (erroEnvio) throw new Error(erroEnvio.message);
+
+      setEnviado(true);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Não foi possível enviar o link de recuperação.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (ehRecuperacao) {
+      await enviarRecuperacao();
+      return;
+    }
 
     if (espera > 0) return;
 
@@ -146,6 +181,12 @@ export function AdminLogin() {
               />
             </div>
 
+            {ehRecuperacao ? (
+              <p className="border-l-2 border-secondary/60 bg-secondary/10 px-3 py-2 text-[12px] leading-relaxed text-foreground">
+                Informe o e-mail cadastrado e enviaremos um link para você definir
+                uma nova senha. Confira também a caixa de spam.
+              </p>
+            ) : (
             <div className="space-y-2">
               <Label
                 htmlFor="password"
@@ -176,6 +217,7 @@ export function AdminLogin() {
                 </button>
               </div>
             </div>
+            )}
 
             {error && (
               <p
@@ -194,9 +236,47 @@ export function AdminLogin() {
               disabled={loading || espera > 0}
             >
               {loading ? <Loader2 className="animate-spin" /> : <ArrowRight />}
-              {espera > 0 ? `Aguarde ${espera}s` : "Entrar no painel"}
+              {enviado
+                ? "Link enviado"
+                : ehRecuperacao
+                  ? "Enviar link de recuperação"
+                  : espera > 0
+                    ? `Aguarde ${espera}s`
+                    : "Entrar no painel"}
             </Button>
           </form>
+
+          {enviado ? (
+            <div className="mt-4 space-y-2 border-l-2 border-secondary bg-secondary/10 px-3 py-2">
+              <p className="text-[12px] leading-relaxed text-foreground">
+                Se esse e-mail estiver cadastrado, o link chegou na caixa de
+                entrada. Abra o link e defina a nova senha.
+              </p>
+              <button
+                type="button"
+                className="text-[11px] uppercase tracking-[0.14em] text-secondary underline-offset-4 hover:underline"
+                onClick={() => {
+                  setEnviado(false);
+                  setRecuperando(false);
+                }}
+              >
+                Voltar para o login
+              </button>
+            </div>
+          ) : (
+            <div className="mt-4 flex justify-between gap-3 text-[11px]">
+              <button
+                type="button"
+                className="uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-secondary"
+                onClick={() => {
+                  setRecuperando((valor) => !valor);
+                  setError(null);
+                }}
+              >
+                {recuperando ? "Voltar para o login" : "Esqueci minha senha"}
+              </button>
+            </div>
+          )}
 
           <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
             Painel de conta única: só esta conta entra, e o cadastro de novas

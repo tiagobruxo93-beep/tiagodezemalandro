@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 import { Loader2, Lock, LogOut } from "lucide-react";
 import { AdminLogin } from "@/components/admin/admin-login";
 import { AdminDashboard } from "@/components/admin/admin-dashboard";
+import { ResetPassword } from "@/components/admin/reset-password";
 import { Button } from "@/components/ui/button";
 import { useAdminSession } from "@/hooks/use-admin-session";
 
 const Admin = () => {
-  const { session, isAdmin, loading, checking, bloqueado, signOut } = useAdminSession();
+  const { session, isAdmin, loading, checking, bloqueado, recuperacao, concluirRecuperacao, signOut } =
+    useAdminSession();
 
   useEffect(() => {
     document.title = "Painel — Pai Tiago de Zé Malandro";
@@ -29,6 +31,10 @@ const Admin = () => {
         </p>
       </div>
     );
+  }
+
+  if (recuperacao) {
+    return <ResetPassword onDone={concluirRecuperacao} />;
   }
 
   if (bloqueado) {
