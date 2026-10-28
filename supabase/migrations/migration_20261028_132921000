@@ -1,0 +1,82 @@
+create table if not exists public.spiritual_page_views (
+  id bigserial primary key,
+  path text not null default '/',
+  session_id text not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists spiritual_page_views_data_idx on public.spiritual_page_views (created_at desc);
+create index if not exists spiritual_page_views_sessao_idx on public.spiritual_page_views (session_id);
+
+alter table public.spiritual_page_views enable row level security;
+
+create policy "views public insert" on public.spiritual_page_views
+  for insert with check (length(session_id) between 8 and 64 and length(path) <= 120);
+
+create policy "views admin read" on public.spiritual_page_views
+  for select to authenticated using (public.spiritual_is_admin());
+
+create or replace function public.spiritual_validar_visita()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  recentes integer;
+begin
+  new.path := left(coalesce(new.path, '/'), 120);
+  new.session_id := left(new.session_id, 64);
+
+  select count(*) into recentes
+  from public.spiritual_page_views v
+  where v.session_id = new.session_id
+    and v.created_at > now() - interval '1 minute';
+
+  if recentes > 30 then
+    raise exception 'limite de registros por minuto';
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger spiritual_visitas_validar
+before insert on public.spiritual_page_views
+for each row execute function public.spiritual_validar_visita();
+
+create or replace function public.spiritual_resumo_acessos()
+returns jsonb
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select case when public.spiritual_is_admin() then
+    jsonb_build_object(
+      'total', (select count(*) from public.spiritual_page_views),
+      'hoje', (select count(*) from public.spiritual_page_views where created_at >= current_date),
+      'semana', (select count(*) from public.spiritual_page_views where created_at >= now() - interval '7 days'),
+      'unicos', (select count(distinct session_id) from public.spiritual_page_views),
+      'dias', (
+        select coalesce(
+          jsonb_agg(jsonb_build_object('dia', dia, 'total', total) order by ordem),
+          '[]'::jsonb
+        )
+        from (
+          select
+            to_char(d, 'DD/MM') as dia,
+            count(v.id) as total,
+            d as ordem
+          from generate_series(current_date - interval '6 days', current_date, interval '1 day') d
+          left join public.spiritual_page_views v
+            on v.created_at >= d and v.created_at < d + interval '1 day'
+          group by d
+        ) t
+      )
+    )
+  else '{}'::jsonb end;
+$$;
+
+revoke all on function public.spiritual_resumo_acessos() from public, anon;
+grant execute on function public.spiritual_resumo_acessos() to authenticated;

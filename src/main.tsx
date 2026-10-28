@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import "./setup";
 import { bootstrapGeneratedSiteAnalytics } from "./analytics.ts";
+import { registrarVisita } from "./lib/visits.ts";
 import App from "./App.tsx";
 import { ErrorBoundary } from "react-error-boundary";
 import { ErrorFallback } from "./components/error-boundary/error-fallback";
@@ -14,6 +15,7 @@ if (!container) {
 }
 
 bootstrapGeneratedSiteAnalytics();
+void registrarVisita();
 
 createRoot(container, { onCaughtError: reportCaughtError }).render(
   <ErrorBoundary FallbackComponent={ErrorFallback}>

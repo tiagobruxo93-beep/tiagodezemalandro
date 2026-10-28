@@ -20,6 +20,7 @@ import { AdsManager } from "@/components/admin/ads-manager";
 import { AdFormDialog } from "@/components/admin/ad-form-dialog";
 import { ContentEditor } from "@/components/admin/content-editor";
 import { SecurityPanel } from "@/components/admin/security-panel";
+import { VisitsPanel } from "@/components/admin/visits-panel";
 import { TridentMark } from "@/components/brand/trident-mark";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
 import { createAd, fetchClickCounts, updateAd, type AdDraft } from "@/lib/admin-ads";
@@ -306,6 +307,10 @@ export function AdminDashboard({
                       </p>
                     </div>
                   ))}
+                </div>
+
+                <div className="mt-8">
+                  <VisitsPanel />
                 </div>
 
                 <div className="mt-8">

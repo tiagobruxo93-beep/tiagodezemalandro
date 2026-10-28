@@ -3496,6 +3496,27 @@ export type Database = {
         }
         Relationships: []
       }
+      spiritual_page_views: {
+        Row: {
+          created_at: string
+          id: number
+          path: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          path?: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          path?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
       spiritual_site_settings: {
         Row: {
           about_text: string
@@ -3556,6 +3577,10 @@ export type Database = {
       spiritual_is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      spiritual_resumo_acessos: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
     }
     Enums: {
