@@ -1,7 +1,7 @@
 /**
  * Cópia local leve: mantém o site funcionando mesmo se o backend demorar ou cair.
  */
-const PREFIXO = "paitiago:v1:";
+const PREFIXO = "paitiago:v2:";
 
 export function lerCache<T>(chave: string): T | null {
   try {

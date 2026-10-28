@@ -7,7 +7,12 @@ import {
   type Ad,
   type SiteSettings,
 } from "@/lib/ads";
-import { DEFAULT_CONTENT, fetchSiteContent, type SiteContent } from "@/lib/site-content";
+import {
+  DEFAULT_CONTENT,
+  fetchSiteContent,
+  mergeContent,
+  type SiteContent,
+} from "@/lib/site-content";
 import { gravarCache, lerCache } from "@/lib/cache";
 
 const CACHE_ANUNCIOS = "anuncios";
@@ -49,7 +54,8 @@ export function useSiteSettings() {
   });
   const [content, setContent] = useState<SiteContent>(() => {
     const reserva = lerCache<{ settings: SiteSettings; content: SiteContent }>(CACHE_CONTEUDO);
-    return reserva ? reserva.content : DEFAULT_CONTENT;
+    // Mesmo com cache antigo, completa os campos novos com os padrões.
+    return reserva ? mergeContent(reserva.content) : DEFAULT_CONTENT;
   });
   const [loading, setLoading] = useState(true);
 
@@ -62,7 +68,7 @@ export function useSiteSettings() {
     } catch {
       const reserva = lerCache<{ settings: SiteSettings; content: SiteContent }>(CACHE_CONTEUDO);
       setSettings(reserva ? reserva.settings : DEFAULT_SETTINGS);
-      setContent(reserva ? reserva.content : DEFAULT_CONTENT);
+      setContent(reserva ? mergeContent(reserva.content) : DEFAULT_CONTENT);
     } finally {
       setLoading(false);
     }

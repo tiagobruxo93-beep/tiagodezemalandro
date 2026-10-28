@@ -24,16 +24,18 @@ export function HeroSection({
   featuredAd?: Ad;
 }) {
   const videoFundo = useMemo(() => {
-    if (!content.videos.enabled) return undefined;
+    const videos = content.videos;
+    if (!videos?.enabled) return undefined;
 
-    const urlDoTopo = content.videos.heroUrl.trim();
+    const urlDoTopo = (videos.heroUrl ?? "").trim();
 
     if (urlDoTopo && isDirectVideo(urlDoTopo)) {
       return { url: urlDoTopo, cover: "", title: "", text: "", link: "" };
     }
 
-    return content.videos.items.find((item) => isDirectVideo(item.url));
-  }, [content.videos.enabled, content.videos.heroUrl, content.videos.items]);
+    const itens = Array.isArray(videos.items) ? videos.items : [];
+    return itens.find((item) => isDirectVideo(item?.url ?? ""));
+  }, [content.videos]);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [mudo, setMudo] = useState(true);

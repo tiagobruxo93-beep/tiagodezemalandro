@@ -2,34 +2,60 @@ import { getErrorMessage, type FallbackProps } from "react-error-boundary";
 
 import { Button } from "@/components/ui/button";
 
-/** Full-page fallback shown when a render error escapes a page or the app shell. */
+/** Tela de erro do site: explica e oferece recuperação (inclusive limpando cache antigo). */
 export const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
-  // Error details help while building; published builds keep them out of the UI.
-  const details = import.meta.env.DEV ? getErrorMessage(error) : undefined;
+  // Detalhes só no ambiente de desenvolvimento.
+  const detalhes = import.meta.env.DEV ? getErrorMessage(error) : undefined;
+
+  const limparERecarregar = () => {
+    try {
+      Object.keys(window.localStorage)
+        .filter((chave) => chave.startsWith("paitiago:"))
+        .forEach((chave) => window.localStorage.removeItem(chave));
+    } catch {
+      // Se o navegador bloquear o armazenamento, seguimos só recarregando.
+    }
+
+    window.location.reload();
+  };
 
   return (
     <div
       role="alert"
-      className="flex min-h-screen items-center justify-center bg-background p-6"
+      className="flex min-h-screen items-center justify-center bg-background px-5 py-14"
     >
       <div className="w-full max-w-md text-center">
-        <h1 className="mb-2 text-2xl font-semibold text-foreground">
-          Something went wrong
+        <p className="eyebrow">Um instante</p>
+        <h1 className="mt-3 font-display text-4xl leading-tight text-foreground">
+          Algo deu errado
         </h1>
-        <p className="mb-6 text-muted-foreground">
-          An unexpected error occurred. Please try again.
+        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+          Não foi possível mostrar esta página agora. Tente recarregar — se
+          continuar, use o botão abaixo para limpar os dados antigos guardados no
+          navegador.
         </p>
-        {details && (
-          <pre className="mb-6 whitespace-pre-wrap break-words rounded-md bg-muted p-3 text-left text-sm text-muted-foreground">
-            {details}
+
+        {detalhes && (
+          <pre className="mt-6 whitespace-pre-wrap break-words rounded-sm border border-border/70 bg-muted p-3 text-left text-[11px] text-muted-foreground">
+            {detalhes}
           </pre>
         )}
-        <div className="flex justify-center gap-3">
-          <Button onClick={resetErrorBoundary}>Try again</Button>
-          <Button variant="outline" asChild>
-            <a href="/">Back to home</a>
+
+        <div className="mt-8 flex flex-col justify-center gap-2 sm:flex-row">
+          <Button variant="forward" size="lg" onClick={resetErrorBoundary}>
+            Tentar novamente
+          </Button>
+          <Button variant="hairline" size="lg" onClick={limparERecarregar}>
+            Limpar dados e recarregar
           </Button>
         </div>
+
+        <a
+          href="/"
+          className="mt-6 inline-block text-[10px] uppercase tracking-[0.18em] text-secondary transition-colors hover:text-foreground"
+        >
+          Voltar ao início
+        </a>
       </div>
     </div>
   );
