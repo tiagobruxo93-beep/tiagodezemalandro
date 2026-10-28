@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowUpRight, CalendarDays, ShieldCheck, Volume2, VolumeX } from "lucide-react";
 import { safeUrl } from "@/lib/security";
 import { Button } from "@/components/ui/button";
@@ -23,9 +23,17 @@ export function HeroSection({
   content: SiteContent;
   featuredAd?: Ad;
 }) {
-  const videoFundo = content.videos.enabled
-    ? content.videos.items.find((item) => isDirectVideo(item.url))
-    : undefined;
+  const videoFundo = useMemo(() => {
+    if (!content.videos.enabled) return undefined;
+
+    const urlDoTopo = content.videos.heroUrl.trim();
+
+    if (urlDoTopo && isDirectVideo(urlDoTopo)) {
+      return { url: urlDoTopo, cover: "", title: "", text: "", link: "" };
+    }
+
+    return content.videos.items.find((item) => isDirectVideo(item.url));
+  }, [content.videos.enabled, content.videos.heroUrl, content.videos.items]);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [mudo, setMudo] = useState(true);
@@ -53,14 +61,43 @@ export function HeroSection({
 
   const fundo = usarVideo ? videoFundo : undefined;
 
-  // Respeita quem prefere menos animação (acessibilidade).
+  // Acessibilidade + economia de bateria: pausa fora da tela, aba oculta ou menos animação.
   useEffect(() => {
-    if (!videoFundo) return;
-    const semAnimacao = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (semAnimacao) {
-      videoRef.current?.pause();
+    const video = videoRef.current;
+    if (!video || !fundo) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      video.pause();
+      return;
     }
-  }, [videoFundo]);
+
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        entradas.forEach((entrada) => {
+          if (entrada.isIntersecting) {
+            void video.play().catch(() => undefined);
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.15 },
+    );
+
+    observador.observe(video);
+
+    const aoTrocarAba = () => {
+      if (document.hidden) video.pause();
+      else void video.play().catch(() => undefined);
+    };
+
+    document.addEventListener("visibilitychange", aoTrocarAba);
+
+    return () => {
+      observador.disconnect();
+      document.removeEventListener("visibilitychange", aoTrocarAba);
+    };
+  }, [fundo]);
 
   return (
     <section className="relative isolate overflow-hidden">
@@ -74,8 +111,12 @@ export function HeroSection({
             muted={mudo}
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
+            disablePictureInPicture
+            disableRemotePlayback
+            controls={false}
             onCanPlay={() => setVideoPronto(true)}
+            onError={() => setUsarVideo(false)}
             className={`absolute inset-0 -z-20 h-full w-full object-cover transition-opacity duration-1000 ${
               videoPronto ? "opacity-100" : "opacity-0"
             }`}

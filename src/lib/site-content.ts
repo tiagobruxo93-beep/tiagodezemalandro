@@ -67,7 +67,14 @@ export interface SiteContent {
     stats: StatItem[];
   };
   galeria: { title: string; text: string; photos: PhotoItem[] };
-  videos: { enabled: boolean; eyebrow: string; title: string; text: string; items: VideoItem[] };
+  videos: {
+    enabled: boolean;
+    eyebrow: string;
+    title: string;
+    text: string;
+    heroUrl: string;
+    items: VideoItem[];
+  };
   faq: { eyebrow: string; title: string; highlight: string; intro: string; items: FaqItem[] };
   abas: { ordem: FrenteKey[]; inicial: FrenteKey; itens: Record<FrenteKey, AbaConfig> };
   secoes: { ordem: SecaoKey[] };
@@ -137,6 +144,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     eyebrow: "Explicações",
     title: "Assista e entenda cada trabalho",
     text: "Vídeos explicando como os trabalhos são preparados e realizados no terreiro.",
+    heroUrl: "",
     items: [],
   },
   faq: {
@@ -324,6 +332,7 @@ export function mergeContent(raw: unknown): SiteContent {
       eyebrow: texto(videos.eyebrow, base.videos.eyebrow),
       title: texto(videos.title, base.videos.title),
       text: texto(videos.text, base.videos.text),
+      heroUrl: typeof videos.heroUrl === "string" ? videos.heroUrl : base.videos.heroUrl,
       items: Array.isArray(videos.items)
         ? (videos.items as VideoItem[]).map((item) => ({
             title: typeof item?.title === "string" ? item.title : "",

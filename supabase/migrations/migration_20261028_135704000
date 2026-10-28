@@ -1,0 +1,3 @@
+update public.spiritual_site_settings
+set content = jsonb_set(coalesce(content, '{}'::jsonb), '{videos,heroUrl}', '"/videos/hero-loop.mp4"'::jsonb, true)
+where id = 1;
