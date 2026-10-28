@@ -1,4 +1,5 @@
-import { ArrowDown, ArrowUpRight, CalendarDays, ShieldCheck } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowDown, ArrowUpRight, CalendarDays, ShieldCheck, Volume2, VolumeX } from "lucide-react";
 import { safeUrl } from "@/lib/security";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +11,7 @@ import {
 } from "@/lib/ads";
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/site-content";
 import { AdaptiveFrame } from "@/components/site/adaptive-frame";
+import { isDirectVideo } from "@/lib/site-content";
 import { Link } from "react-router-dom";
 
 export function HeroSection({
@@ -21,13 +23,81 @@ export function HeroSection({
   content: SiteContent;
   featuredAd?: Ad;
 }) {
+  const videoFundo = content.videos.enabled
+    ? content.videos.items.find((item) => isDirectVideo(item.url))
+    : undefined;
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [mudo, setMudo] = useState(true);
+  const [videoPronto, setVideoPronto] = useState(false);
+  const [usarVideo, setUsarVideo] = useState(true);
+
+  // Em conexão econômica/lenta, mantém a imagem em vez de baixar o vídeo.
+  useEffect(() => {
+    if (!videoFundo) {
+      setUsarVideo(false);
+      return;
+    }
+
+    const conexao = (
+      navigator as unknown as {
+        connection?: { saveData?: boolean; effectiveType?: string };
+      }
+    ).connection;
+
+    const lenta =
+      Boolean(conexao?.saveData) || /(^|-)2g$|(^|-)3g$/.test(conexao?.effectiveType ?? "");
+
+    setUsarVideo(!lenta);
+  }, [videoFundo]);
+
+  const fundo = usarVideo ? videoFundo : undefined;
+
+  // Respeita quem prefere menos animação (acessibilidade).
+  useEffect(() => {
+    if (!videoFundo) return;
+    const semAnimacao = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (semAnimacao) {
+      videoRef.current?.pause();
+    }
+  }, [videoFundo]);
+
   return (
     <section className="relative isolate overflow-hidden">
-      <div className="absolute inset-0 -z-10 bg-candle animate-candle-flicker" />
-      <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-background to-transparent" />
+      {fundo ? (
+        <>
+          <video
+            ref={videoRef}
+            src={safeUrl(fundo.url)}
+            poster={safeUrl(fundo.cover, content.hero.image)}
+            autoPlay
+            muted={mudo}
+            loop
+            playsInline
+            preload="metadata"
+            onCanPlay={() => setVideoPronto(true)}
+            className={`absolute inset-0 -z-20 h-full w-full object-cover transition-opacity duration-1000 ${
+              videoPronto ? "opacity-100" : "opacity-0"
+            }`}
+          />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/85 to-background/25" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-background via-transparent to-background/40" />
+        </>
+      ) : (
+        <>
+          <div className="absolute inset-0 -z-10 bg-candle animate-candle-flicker" />
+          <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-background to-transparent" />
+        </>
+      )}
 
       <div className="section-shell relative flex min-h-[88svh] flex-col justify-center pb-16 pt-32 sm:pt-36">
-        <div className="grid items-center gap-12 lg:grid-cols-[0.86fr_1.14fr] lg:gap-12">
+        <div
+          className={
+            fundo
+              ? "grid items-center gap-12 lg:grid-cols-1"
+              : "grid items-center gap-12 lg:grid-cols-[0.86fr_1.14fr] lg:gap-12"
+          }
+        >
           <div className="max-w-2xl animate-fade-up">
             <p className="eyebrow">{content.hero.eyebrow}</p>
 
@@ -72,19 +142,33 @@ export function HeroSection({
             </div>
           </div>
 
-          <div className="relative w-full animate-fade-up [animation-delay:180ms]">
-            <div className="pointer-events-none absolute -inset-3 -z-10 border border-secondary/20" />
-            <AdaptiveFrame
-              src={safeUrl(content.hero.image) || DEFAULT_CONTENT.hero.image}
-              alt="Altar do terreiro sob a lua vermelha"
-              priority
-              className="w-full lg:p-3"
-            />
-          </div>
+          {!fundo && (
+            <div className="relative w-full animate-fade-up [animation-delay:180ms]">
+              <div className="pointer-events-none absolute -inset-3 -z-10 border border-secondary/20" />
+              <AdaptiveFrame
+                src={safeUrl(content.hero.image) || DEFAULT_CONTENT.hero.image}
+                alt="Altar do terreiro sob a lua vermelha"
+                priority
+                className="w-full lg:p-3"
+              />
+            </div>
+          )}
         </div>
 
+        {fundo && (
+          <button
+            type="button"
+            onClick={() => setMudo((valor) => !valor)}
+            aria-label={mudo ? "Ativar o som do vídeo" : "Silenciar o vídeo"}
+            className="mt-8 inline-flex w-fit items-center gap-2 border border-secondary/40 bg-background/50 px-3 py-2 text-[10px] uppercase tracking-[0.16em] text-secondary backdrop-blur-sm transition-colors hover:border-secondary hover:text-foreground"
+          >
+            {mudo ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+            {mudo ? "Ativar som" : "Silenciar"}
+          </button>
+        )}
+
         {featuredAd && (
-          <div className="mt-14 flex flex-col gap-5 border-y border-border/60 py-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="mt-10 flex flex-col gap-5 border-y border-border/60 py-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
               {featuredAd.imageUrl && (
                 <div className="hidden h-20 w-16 shrink-0 border border-secondary/25 bg-card/40 p-1 sm:block">
