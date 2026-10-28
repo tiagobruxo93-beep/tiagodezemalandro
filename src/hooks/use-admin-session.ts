@@ -9,6 +9,8 @@ export type AdminState = {
   loading: boolean;
   checking: boolean;
   bloqueado: boolean;
+  falhaVerificacao: boolean;
+  tentarNovamente: () => void;
   recuperacao: boolean;
   concluirRecuperacao: () => void;
 };
@@ -19,6 +21,8 @@ export function useAdminSession() {
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
   const [bloqueado, setBloqueado] = useState(false);
+const [falhaVerificacao, setFalhaVerificacao] = useState(false);
+const [tentativa, setTentativa] = useState(0);
   const [recuperacao, setRecuperacao] = useState(false);
 
   useEffect(() => {
@@ -61,29 +65,47 @@ export function useAdminSession() {
     }
     let active = true;
     setChecking(true);
+    setFalhaVerificacao(false);
 
-    checkAdminAccess()
-      .then((value) => {
-        if (!active) return;
+    const verificar = async (rodada = 0): Promise<void> => {
+      const resultado = await checkAdminAccess();
 
-        if (!value) {
-          // Conta sem permissão: encerra a sessão na hora.
-          setBloqueado(true);
-          setIsAdmin(false);
-          void supabase.auth.signOut();
-          return;
-        }
+      if (!active) return;
 
+      if (resultado === "erro" && rodada < 2) {
+        // Duas tentativas extras: evita deslogar por oscilação de rede.
+        await new Promise((resolve) => setTimeout(resolve, 800 * (rodada + 1)));
+        if (active) await verificar(rodada + 1);
+        return;
+      }
+
+      if (resultado === "admin") {
         setIsAdmin(true);
-      })
-      .finally(() => {
-        if (active) setChecking(false);
-      });
+        setBloqueado(false);
+        setChecking(false);
+        return;
+      }
+
+      if (resultado === "negado") {
+        setBloqueado(true);
+        setIsAdmin(false);
+        setChecking(false);
+        void supabase.auth.signOut();
+        return;
+      }
+
+      // Não foi possível confirmar: mantém a sessão e mostra "tentar novamente".
+      setFalhaVerificacao(true);
+      setIsAdmin(false);
+      setChecking(false);
+    };
+
+    void verificar();
 
     return () => {
       active = false;
     };
-  }, [session, recuperacao]);
+  }, [session, recuperacao, tentativa]);
 
   // Desconecta sozinho depois de 60 minutos sem uso (proteção em computador compartilhado).
   useEffect(() => {
@@ -110,7 +132,7 @@ export function useAdminSession() {
       eventos.forEach((evento) => window.removeEventListener(evento, tocar));
       window.clearInterval(relogio);
     };
-  }, [session, recuperacao]);
+  }, [session, recuperacao, tentativa]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -124,12 +146,16 @@ export function useAdminSession() {
     }
   };
 
+  const tentarNovamente = () => setTentativa((valor) => valor + 1);
+
   return {
     session,
     isAdmin,
     loading,
     checking,
     bloqueado,
+    falhaVerificacao,
+    tentarNovamente,
     recuperacao,
     concluirRecuperacao,
     signOut,

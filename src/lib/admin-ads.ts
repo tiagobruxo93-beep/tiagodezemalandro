@@ -202,8 +202,13 @@ export async function saveSettings(settings: SiteSettings) {
   if (error) throw new Error(error.message);
 }
 
-export async function checkAdminAccess(): Promise<boolean> {
+export type ResultadoAcesso = "admin" | "negado" | "erro";
+
+export async function checkAdminAccess(): Promise<ResultadoAcesso> {
   const { data, error } = await supabase.rpc("spiritual_claim_admin");
-  if (error) return false;
-  return Boolean(data);
+
+  // Falha de rede/permissão momentânea NÃO significa "sem acesso".
+  if (error) return "erro";
+
+  return data === true ? "admin" : "negado";
 }

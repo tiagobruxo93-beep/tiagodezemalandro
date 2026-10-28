@@ -110,6 +110,14 @@ export function ResetPassword({ onDone }: { onDone: () => void }) {
           Depois de salvar, o painel desconecta e você entra novamente com a senha
           nova.
         </p>
+
+        <button
+          type="button"
+          onClick={onDone}
+          className="mt-3 text-[10px] uppercase tracking-[0.16em] text-secondary underline-offset-4 hover:underline"
+        >
+          Já defini / voltar para o login
+        </button>
       </div>
     </div>
   );

@@ -8,8 +8,18 @@ import { Button } from "@/components/ui/button";
 import { useAdminSession } from "@/hooks/use-admin-session";
 
 const Admin = () => {
-  const { session, isAdmin, loading, checking, bloqueado, recuperacao, concluirRecuperacao, signOut } =
-    useAdminSession();
+  const {
+    session,
+    isAdmin,
+    loading,
+    checking,
+    bloqueado,
+    falhaVerificacao,
+    tentarNovamente,
+    recuperacao,
+    concluirRecuperacao,
+    signOut,
+  } = useAdminSession();
 
   useEffect(() => {
     document.title = "Painel — Pai Tiago de Zé Malandro";
@@ -35,6 +45,29 @@ const Admin = () => {
 
   if (recuperacao) {
     return <ResetPassword onDone={concluirRecuperacao} />;
+  }
+
+  if (session && falhaVerificacao) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-5 text-center">
+        <span className="flex h-12 w-12 items-center justify-center border border-secondary/40 text-secondary">
+          <Loader2 className="h-5 w-5" />
+        </span>
+        <h1 className="mt-6 font-display text-4xl text-foreground">Quase lá</h1>
+        <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
+          Sua sessão está ativa, mas não consegui confirmar a permissão agora
+          (conexão instável). Tente novamente — você continua conectado.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+          <Button variant="forward" size="lg" onClick={tentarNovamente}>
+            Tentar novamente
+          </Button>
+          <Button variant="hairline" size="lg" onClick={() => void signOut()}>
+            Sair
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   if (bloqueado) {
