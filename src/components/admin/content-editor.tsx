@@ -589,11 +589,11 @@ export function ContentEditor({
         <TabsContent value="contato" className="mt-6 space-y-5">
           <Grupo titulo="Contato e pagamento">
             <TextField
-              rotulo="WhatsApp (só números, com DDI e DDD)"
+              rotulo="WhatsApp (link ou número)"
               valor={draft.contato.whatsapp}
               onChange={(valor) => set("contato", { ...draft.contato, whatsapp: valor })}
-              placeholder="5511999999999"
-              ajuda="Usado por todos os anúncios que não têm link próprio."
+              placeholder="https://wa.me/551899694756"
+              ajuda="Cole o link do WhatsApp (wa.me/…, link curto ou convite de grupo) ou apenas o número com DDI e DDD. O link é usado exatamente como colado; o número gera a mensagem automática."
             />
             <TextField
               rotulo="Link do Instagram"

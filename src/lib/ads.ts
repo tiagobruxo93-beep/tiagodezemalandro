@@ -214,12 +214,34 @@ export async function fetchSiteSettings(): Promise<SiteSettings> {
   return mapSettings((data as SettingsRow | null) ?? null);
 }
 
+/**
+ * Monta o link do WhatsApp.
+ * Aceita o número (551899694756) ou um link pronto (https://wa.me/... , link curto
+ * ou convite de grupo). Quando é link, ele é usado exatamente como foi colado.
+ */
 export function buildWhatsAppLink(
-  number: string,
+  valor: string,
   message = "Olá, Pai Tiago! Vim pelo site e quero saber mais sobre os trabalhos.",
 ) {
-  const digits = onlyDigits(number);
+  const entrada = (valor || "").trim();
+
+  if (!entrada) return "#contato";
+
+  if (/^https?:\/\//i.test(entrada)) {
+    const link = safeUrl(entrada, "#contato");
+
+    // Em links wa.me/api.whatsapp.com sem parâmetros, já vai a mensagem pronta.
+    const ehWhatsApp = /^https?:\/\/(wa\.me|api\.whatsapp\.com)\//i.test(link);
+    if (ehWhatsApp && !link.includes("?") && message) {
+      return `${link}?text=${encodeURIComponent(message)}`;
+    }
+
+    return link;
+  }
+
+  const digits = onlyDigits(entrada);
   if (!digits) return "#contato";
+
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
 
