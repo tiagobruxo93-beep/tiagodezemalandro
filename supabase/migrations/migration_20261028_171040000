@@ -1,0 +1,9 @@
+update public.spiritual_site_settings
+set content = jsonb_set(
+  coalesce(content, '{}'::jsonb),
+  '{corrente,image}',
+  coalesce(content->'hero'->'image', 'null'::jsonb),
+  true
+)
+where id = 1
+  and content->'hero'->'image' is not null;

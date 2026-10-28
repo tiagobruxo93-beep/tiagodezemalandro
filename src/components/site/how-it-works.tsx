@@ -74,8 +74,12 @@ export function CorrenteBanner({
         <div className="relative">
           <div className="pointer-events-none absolute -inset-3 -z-10 border border-secondary/20" />
           <AdaptiveFrame
-            src={safeUrl(content.corrente.image) || DEFAULT_CONTENT.corrente.image}
-            alt="Nomes sendo escritos para a firmeza da corrente"
+            src={
+              safeUrl(content.corrente.image) ||
+              safeUrl(content.hero.image) ||
+              DEFAULT_CONTENT.corrente.image
+            }
+            alt="Firmeza da corrente de fé no terreiro"
           />
         </div>
       </div>
