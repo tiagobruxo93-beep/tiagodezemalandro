@@ -21,6 +21,7 @@ import {
 } from "@/lib/ads";
 import { AdCard } from "@/components/site/ad-card";
 import { isDirectVideo, videoEmbedUrl } from "@/lib/site-content";
+import { VideoPlayer } from "@/components/site/video-player";
 
 export function AdDetail({
   ad,
@@ -99,12 +100,11 @@ export function AdDetail({
                 <p className="eyebrow mb-3">Assista ao trabalho</p>
                 <div className="border border-secondary/30 bg-black p-2 shadow-elegant">
                   {isDirectVideo(ad.videoUrl) ? (
-                    <video
-                      src={safeUrl(ad.videoUrl)}
-                      controls
-                      preload="metadata"
-                      playsInline
-                      className="w-full"
+                    <VideoPlayer
+                      src={ad.videoUrl}
+                      poster={ad.imageUrl ?? undefined}
+                      titulo={ad.title}
+                      className="aspect-video"
                     />
                   ) : videoEmbedUrl(ad.videoUrl) ? (
                     <iframe

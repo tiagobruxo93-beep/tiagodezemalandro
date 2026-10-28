@@ -5,7 +5,7 @@ import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { ManutencaoScreen } from "@/components/site/manutencao-screen";
 import { WhatsAppFab } from "@/components/site/whatsapp-fab";
-import { VideoCard } from "@/components/site/video-card";
+import { VideoCard, VideoSpotlight } from "@/components/site/video-card";
 import { useSiteSettings } from "@/hooks/use-site-data";
 
 const VideosPage = () => {
@@ -74,11 +74,17 @@ const VideosPage = () => {
                 </Link>
               </div>
             ) : (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {itens.map((item, indice) => (
-                  <VideoCard key={`${item.title}-${indice}`} item={item} />
-                ))}
-              </div>
+              <>
+                <VideoSpotlight item={itens[0]} />
+
+                {itens.length > 1 && (
+                  <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    {itens.slice(1).map((item, indice) => (
+                      <VideoCard key={`${item.title}-${indice}`} item={item} />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </section>

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Play } from "lucide-react";
-import { VideoCard } from "@/components/site/video-card";
+import { VideoCard, VideoSpotlight } from "@/components/site/video-card";
 import type { SiteContent } from "@/lib/site-content";
 
 const LIMITE_NA_HOME = 3;
@@ -13,7 +13,7 @@ export function VideosSection({ videos }: { videos: SiteContent["videos"] }) {
   if (!videos.enabled) return null;
 
   const mostrados = itens.slice(0, LIMITE_NA_HOME);
-  const vagas = Math.max(0, LIMITE_NA_HOME - mostrados.length);
+  const [destaque, ...outros] = mostrados;
 
   return (
     <section id="videos" className="scroll-mt-24 py-20 sm:py-24">
@@ -28,8 +28,14 @@ export function VideosSection({ videos }: { videos: SiteContent["videos"] }) {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {mostrados.map((item, indice) => (
+        {destaque && (
+          <div className="mt-12">
+            <VideoSpotlight item={destaque} />
+          </div>
+        )}
+
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {outros.map((item, indice) => (
             <VideoCard key={`${item.title}-${indice}`} item={item} />
           ))}
 
