@@ -10,6 +10,7 @@ import { VideosSection } from "@/components/site/videos-section";
 import { SiteFooter } from "@/components/site/site-footer";
 import { ManutencaoScreen } from "@/components/site/manutencao-screen";
 import { WhatsAppFab } from "@/components/site/whatsapp-fab";
+import { CookieNotice } from "@/components/site/cookie-notice";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
 import type { SecaoKey } from "@/lib/site-content";
 
@@ -72,6 +73,7 @@ const Index = () => {
       </main>
       <SiteFooter settings={settings} content={content} />
       <WhatsAppFab settings={settings} />
+      <CookieNotice />
     </div>
   );
 };

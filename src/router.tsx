@@ -1,6 +1,7 @@
 import Index from "./pages/Index";
 import AdPage from "./pages/AdPage";
 import VideosPage from "./pages/VideosPage";
+import PrivacyPage from "./pages/PrivacyPage";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,11 @@ export const routers = [
     path: "/videos",
     name: "videos",
     element: <VideosPage />,
+  },
+  {
+    path: "/privacidade",
+    name: "privacidade",
+    element: <PrivacyPage />,
   },
   /* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */
   {

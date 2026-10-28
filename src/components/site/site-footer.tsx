@@ -92,7 +92,13 @@ export function SiteFooter({
 
         <div className="mt-12 flex flex-col gap-3 border-t border-border/60 pt-6 text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Pai Tiago de Zé Malandro</p>
-          <p>Umbanda · Fé · Tradição</p>
+          <p>
+            <a href="/privacidade" className="transition-colors hover:text-secondary">
+              Privacidade e cookies
+            </a>
+            <span className="mx-2">·</span>
+            Umbanda · Fé · Tradição
+          </p>
         </div>
       </div>
     </footer>

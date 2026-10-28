@@ -17,6 +17,13 @@ if (!container) {
 bootstrapGeneratedSiteAnalytics();
 void registrarVisita();
 
+// Cache de imagens, fontes e vídeos (nunca HTML/JS) — só na versão publicada.
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+  });
+}
+
 createRoot(container, { onCaughtError: reportCaughtError }).render(
   <ErrorBoundary FallbackComponent={ErrorFallback}>
     <App />
