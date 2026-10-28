@@ -132,6 +132,7 @@ export const IMAGE_LIBRARY = [
   { label: "Arte — Abertura de Caminhos (individual)", value: "/images/arte-abertura-caminhos.jpg" },
   { label: "Arte — Quebra de Demanda (individual)", value: "/images/arte-quebra-demanda.jpg" },
   { label: "Arte — Prosperidade Individual", value: "/images/arte-prosperidade-individual.jpg" },
+  { label: "Arte — Chora aos Meus Pés (amarração)", value: "/images/arte-chora-aos-meus-pes.jpg" },
   { label: "Arte — Consulta de Amor", value: "/images/arte-consulta-de-amor.jpg" },
   { label: "Arte — Consulta Financeira", value: "/images/arte-consulta-financeira.jpg" },
   { label: "Altar sob a lua vermelha", value: "/images/hero-altar-art.jpg" },
