@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowUpRight, CalendarDays, ShieldCheck, Volume2, VolumeX } from "lucide-react";
+import { ArrowDown, ArrowUpRight, CalendarDays, ShieldCheck } from "lucide-react";
 import { safeUrl } from "@/lib/security";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,7 +38,6 @@ export function HeroSection({
   }, [content.videos]);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [mudo, setMudo] = useState(true);
   const [videoPronto, setVideoPronto] = useState(false);
   const [usarVideo, setUsarVideo] = useState(true);
 
@@ -110,7 +109,7 @@ export function HeroSection({
             src={safeUrl(fundo.url)}
             poster={safeUrl(fundo.cover, content.hero.image)}
             autoPlay
-            muted={mudo}
+            muted
             loop
             playsInline
             preload="auto"
@@ -198,17 +197,6 @@ export function HeroSection({
           )}
         </div>
 
-        {fundo && (
-          <button
-            type="button"
-            onClick={() => setMudo((valor) => !valor)}
-            aria-label={mudo ? "Ativar o som do vídeo" : "Silenciar o vídeo"}
-            className="mt-8 inline-flex w-fit items-center gap-2 border border-secondary/40 bg-background/50 px-3 py-2 text-[10px] uppercase tracking-[0.16em] text-secondary backdrop-blur-sm transition-colors hover:border-secondary hover:text-foreground"
-          >
-            {mudo ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
-            {mudo ? "Ativar som" : "Silenciar"}
-          </button>
-        )}
 
         {featuredAd && (
           <div className="mt-10 flex flex-col gap-5 border-y border-border/60 py-6 lg:flex-row lg:items-center lg:justify-between">
