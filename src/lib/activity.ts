@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 
 export interface Atividade {
   id: number;
@@ -32,7 +33,7 @@ export async function registrarAtividade(
   try {
     await supabase.from("spiritual_activity_log").insert({
       acao,
-      detalhes,
+      detalhes: (detalhes ?? {}) as unknown as Json,
       quem: quem || null,
     });
   } catch {

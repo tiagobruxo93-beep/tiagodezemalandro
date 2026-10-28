@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import type { SiteContent } from "@/lib/site-content";
+import { SectionBackdrop } from "@/components/site/section-backdrop";
 
 export function FaqSection({ content }: { content: SiteContent }) {
   const faq = content.faq;
@@ -12,7 +13,11 @@ export function FaqSection({ content }: { content: SiteContent }) {
   if (faq.items.length === 0) return null;
 
   return (
-    <section id="duvidas" className="relative scroll-mt-24 py-20 sm:py-24">
+    <section
+      id="duvidas"
+      className="relative isolate scroll-mt-24 overflow-hidden py-20 sm:py-24"
+    >
+      <SectionBackdrop src={content.fundos?.duvidas} />
       <div className="section-shell grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
         <div>
           <p className="eyebrow">{faq.eyebrow}</p>

@@ -280,6 +280,33 @@ export function ContentEditor({
             />
           </Grupo>
 
+          <Grupo
+            titulo="Fundos das seções"
+            descricao="Fotos que aparecem como fundo suave nas áreas escuras do site. Deixe vazio para usar o fundo liso. Servem também para os anúncios que ainda não têm arte."
+          >
+            <ImageField
+              rotulo="Fundo — Meus trabalhos"
+              valor={draft.fundos.trabalhos}
+              onChange={(valor) => set("fundos", { ...draft.fundos, trabalhos: valor })}
+            />
+            <ImageField
+              rotulo="Fundo — Vídeos"
+              valor={draft.fundos.videos}
+              onChange={(valor) => set("fundos", { ...draft.fundos, videos: valor })}
+            />
+            <ImageField
+              rotulo="Fundo — Dúvidas"
+              valor={draft.fundos.duvidas}
+              onChange={(valor) => set("fundos", { ...draft.fundos, duvidas: valor })}
+            />
+            <ImageField
+              rotulo="Foto padrão dos anúncios sem arte"
+              valor={draft.fundos.cards}
+              onChange={(valor) => set("fundos", { ...draft.fundos, cards: valor })}
+              ajuda="Aparece nos cards de trabalhos que ainda não têm imagem própria."
+            />
+          </Grupo>
+
           <Grupo titulo="Galeria de fotos">
             <TextField
               rotulo="Título da galeria"

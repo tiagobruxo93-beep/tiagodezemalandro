@@ -21,11 +21,32 @@ const FALLBACK_ICON = {
 function ImageFallback({
   title,
   category,
+  image,
 }: {
   title: string;
   category: AdCategory;
+  image?: string;
 }) {
   const Icon = FALLBACK_ICON[category];
+  const foto = safeUrl(image);
+
+  if (foto) {
+    return (
+      <div className="relative h-full w-full overflow-hidden">
+        <img src={foto} alt="" loading="lazy" className="h-full w-full object-cover opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-transparent" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full border border-secondary/40 bg-background/50 backdrop-blur-sm">
+            <Icon className="h-6 w-6 text-secondary/90" />
+          </span>
+        </div>
+        <span className="absolute bottom-4 left-0 right-0 text-center font-display text-[13px] uppercase tracking-[0.22em] text-secondary/70">
+          {title}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-6">
       <div className="absolute h-40 w-40 rounded-full border border-secondary/15" />
@@ -43,9 +64,11 @@ function ImageFallback({
 export function AdCard({
   ad,
   settings,
+  capaPadrao,
 }: {
   ad: Ad;
   settings: SiteSettings;
+  capaPadrao?: string;
 }) {
   const external = isExternalForward(ad);
   const meta = CATEGORY_META[ad.category];
@@ -62,7 +85,7 @@ export function AdCard({
           />
         ) : (
           <div className="relative flex aspect-[4/5] w-full items-center justify-center">
-            <ImageFallback title={ad.title} category={ad.category} />
+            <ImageFallback title={ad.title} category={ad.category} image={capaPadrao} />
           </div>
         )}
 

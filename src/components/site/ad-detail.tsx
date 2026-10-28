@@ -20,16 +20,19 @@ import {
   type SiteSettings,
 } from "@/lib/ads";
 import { AdCard } from "@/components/site/ad-card";
+import type { SiteContent } from "@/lib/site-content";
 import { isDirectVideo, videoEmbedUrl } from "@/lib/site-content";
 import { VideoPlayer } from "@/components/site/video-player";
 
 export function AdDetail({
   ad,
   settings,
+  content,
   related,
 }: {
   ad: Ad;
   settings: SiteSettings;
+  content: SiteContent;
   related: Ad[];
 }) {
   const meta = CATEGORY_META[ad.category];
@@ -258,7 +261,7 @@ export function AdDetail({
 
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((item) => (
-                <AdCard key={item.id} ad={item} settings={settings} />
+                <AdCard key={item.id} ad={item} settings={settings} capaPadrao={content.fundos?.cards} />
               ))}
             </div>
           </div>

@@ -69,7 +69,7 @@ const AdPage = () => {
           </Button>
         </div>
       ) : (
-        <AdDetail ad={ad} settings={settings} related={related} />
+        <AdDetail ad={ad} settings={settings} content={content} related={related} />
       )}
 
       <SiteFooter settings={settings} content={content} />

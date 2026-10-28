@@ -1,6 +1,7 @@
 import { SUPABASE_URL, supabase } from "@/integrations/supabase/client";
 import * as tus from "tus-js-client";
 import { IMAGE_LIBRARY } from "@/lib/ads";
+import type { Json } from "@/integrations/supabase/types";
 
 export const CONTENT_IMAGES = IMAGE_LIBRARY;
 
@@ -78,6 +79,12 @@ export interface SiteContent {
   faq: { eyebrow: string; title: string; highlight: string; intro: string; items: FaqItem[] };
   abas: { ordem: FrenteKey[]; inicial: FrenteKey; itens: Record<FrenteKey, AbaConfig> };
   secoes: { ordem: SecaoKey[] };
+  fundos: {
+    trabalhos: string;
+    videos: string;
+    duvidas: string;
+    cards: string;
+  };
   juridico: {
     responsavel: string;
     documento: string;
@@ -195,6 +202,12 @@ export const DEFAULT_CONTENT: SiteContent = {
   secoes: {
     ordem: ["trabalhos", "como-funciona", "corrente", "videos", "sobre", "galeria", "duvidas"],
   },
+  fundos: {
+    trabalhos: "/images/galeria-terreiro.jpg",
+    videos: "/images/galeria-nomes.jpg",
+    duvidas: "/images/hero-altar-art.jpg",
+    cards: "/images/hero-altar-art.jpg",
+  },
   juridico: {
     responsavel: "Pai Tiago de Zé Malandro",
     documento: "",
@@ -298,6 +311,7 @@ export function mergeContent(raw: unknown): SiteContent {
   const faq = bloco("faq");
   const abas = bloco("abas");
   const secoes = bloco("secoes");
+  const fundos = bloco("fundos");
   const juridico = bloco("juridico");
   const manutencao = bloco("manutencao");
   const rodape = bloco("rodape");
@@ -369,6 +383,12 @@ export function mergeContent(raw: unknown): SiteContent {
     },
     abas: mergeAbas(abas, base.abas),
     secoes: { ordem: mergeSecoes(secoes.ordem, base.secoes.ordem) },
+    fundos: {
+      trabalhos: typeof fundos.trabalhos === "string" ? fundos.trabalhos : base.fundos.trabalhos,
+      videos: typeof fundos.videos === "string" ? fundos.videos : base.fundos.videos,
+      duvidas: typeof fundos.duvidas === "string" ? fundos.duvidas : base.fundos.duvidas,
+      cards: typeof fundos.cards === "string" ? fundos.cards : base.fundos.cards,
+    },
     juridico: {
       responsavel: texto(juridico.responsavel, base.juridico.responsavel),
       documento: typeof juridico.documento === "string" ? juridico.documento : base.juridico.documento,
@@ -425,7 +445,7 @@ export async function saveSiteContent(content: SiteContent) {
   const { error } = await supabase
     .from("spiritual_site_settings")
     .update({
-      content: content as unknown as Record<string, unknown>,
+      content: content as unknown as Json,
       hero_eyebrow: content.hero.eyebrow,
       hero_title: content.hero.title,
       hero_highlight: content.hero.highlight,
