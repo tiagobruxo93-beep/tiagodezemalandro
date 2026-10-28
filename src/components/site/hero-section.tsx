@@ -39,6 +39,7 @@ export function HeroSection({
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoPronto, setVideoPronto] = useState(false);
+  const [mudo, setMudo] = useState(true);
   const [usarVideo, setUsarVideo] = useState(true);
 
   // Em conexão econômica/lenta, mantém a imagem em vez de baixar o vídeo.
@@ -61,6 +62,34 @@ export function HeroSection({
   }, [videoFundo]);
 
   const fundo = usarVideo ? videoFundo : undefined;
+
+  // O navegador só permite áudio depois de uma interação: liberamos no primeiro toque/clique.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !fundo) return;
+
+    const liberarSom = () => {
+      const elemento = videoRef.current;
+      if (!elemento) return;
+
+      elemento.muted = false;
+      setMudo(false);
+
+      void elemento.play().catch(() => {
+        elemento.muted = true;
+        setMudo(true);
+      });
+    };
+
+    const eventos: (keyof WindowEventMap)[] = ["pointerdown", "touchstart", "keydown"];
+    eventos.forEach((evento) =>
+      window.addEventListener(evento, liberarSom, { passive: true }),
+    );
+
+    return () => {
+      eventos.forEach((evento) => window.removeEventListener(evento, liberarSom));
+    };
+  }, [fundo]);
 
   // Acessibilidade + economia de bateria: pausa fora da tela, aba oculta ou menos animação.
   useEffect(() => {
@@ -109,7 +138,7 @@ export function HeroSection({
             src={safeUrl(fundo.url)}
             poster={safeUrl(fundo.cover, content.hero.image)}
             autoPlay
-            muted
+            muted={mudo}
             loop
             playsInline
             preload="auto"
