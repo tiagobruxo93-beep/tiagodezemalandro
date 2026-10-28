@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { onlyDigits, safeUrl } from "@/lib/security";
+import { idDoVisitante } from "@/lib/visits";
 
 export type AdCategory = "coletivo" | "individual" | "consulta";
 export type AdTab = AdCategory;
@@ -285,9 +286,24 @@ export async function trackForward(adId: string, channel = "forward") {
   CLICKS_REGISTRADOS.add(chave);
 
   try {
-    await supabase
-      .from("spiritual_ad_clicks")
-      .insert({ ad_id: adId, channel: channel.slice(0, 20) });
+    const { error } = await supabase.functions.invoke("track", {
+      body: {
+        tipo: "clique",
+        ad_id: adId,
+        canal: channel.slice(0, 20),
+        session_id: idDoVisitante(),
+      },
+    });
+
+    if (error) {
+      const status = (error as { context?: { status?: number } }).context?.status;
+
+      if (status === 429) return;
+
+      await supabase
+        .from("spiritual_ad_clicks")
+        .insert({ ad_id: adId, channel: channel.slice(0, 20) });
+    }
   } catch {
     // O registro nunca deve bloquear o encaminhamento.
   }

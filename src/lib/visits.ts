@@ -38,10 +38,22 @@ export async function registrarVisita() {
   jaEnviado = true;
 
   try {
-    await supabase.from("spiritual_page_views").insert({
-      path: caminho.slice(0, 120),
-      session_id: sessao,
+    const { error } = await supabase.functions.invoke("track", {
+      body: { tipo: "visita", session_id: sessao, path: caminho },
     });
+
+    if (error) {
+      const status = (error as { context?: { status?: number } }).context?.status;
+
+      // 429 é limite atingido: respeitamos e não gravamos.
+      if (status === 429) return;
+
+      // Serviço de limite fora do ar: grava direto (o banco ainda tem suas travas).
+      await supabase.from("spiritual_page_views").insert({
+        path: caminho.slice(0, 120),
+        session_id: sessao,
+      });
+    }
   } catch {
     // Contagem nunca deve atrapalhar o site.
   }

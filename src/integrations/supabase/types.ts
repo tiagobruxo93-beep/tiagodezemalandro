@@ -3517,6 +3517,24 @@ export type Database = {
         }
         Relationships: []
       }
+      spiritual_rate_limits: {
+        Row: {
+          chave: string
+          contagem: number
+          janela: string
+        }
+        Insert: {
+          chave: string
+          contagem?: number
+          janela: string
+        }
+        Update: {
+          chave?: string
+          contagem?: number
+          janela?: string
+        }
+        Relationships: []
+      }
       spiritual_site_settings: {
         Row: {
           about_text: string
@@ -3577,6 +3595,10 @@ export type Database = {
       spiritual_is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
+      }
+      spiritual_rate_hit: {
+        Args: { p_chave: string; p_janela_segundos: number; p_limite: number }
+        Returns: Json
       }
       spiritual_resumo_acessos: {
         Args: Record<PropertyKey, never>
