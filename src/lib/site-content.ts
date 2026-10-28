@@ -78,6 +78,14 @@ export interface SiteContent {
   faq: { eyebrow: string; title: string; highlight: string; intro: string; items: FaqItem[] };
   abas: { ordem: FrenteKey[]; inicial: FrenteKey; itens: Record<FrenteKey, AbaConfig> };
   secoes: { ordem: SecaoKey[] };
+  juridico: {
+    responsavel: string;
+    documento: string;
+    cidade: string;
+    email: string;
+    atualizado: string;
+    reembolsoDias: string;
+  };
   manutencao: { ativo: boolean; mensagem: string };
   rodape: { note: string };
   contato: { whatsapp: string; instagram: string; paymentNote: string };
@@ -187,6 +195,14 @@ export const DEFAULT_CONTENT: SiteContent = {
   secoes: {
     ordem: ["trabalhos", "como-funciona", "corrente", "videos", "sobre", "galeria", "duvidas"],
   },
+  juridico: {
+    responsavel: "Pai Tiago de Zé Malandro",
+    documento: "",
+    cidade: "",
+    email: "",
+    atualizado: "",
+    reembolsoDias: "7",
+  },
   manutencao: {
     ativo: false,
     mensagem: "O site está em manutenção por alguns instantes. Fale comigo no WhatsApp que eu te atendo.",
@@ -282,6 +298,7 @@ export function mergeContent(raw: unknown): SiteContent {
   const faq = bloco("faq");
   const abas = bloco("abas");
   const secoes = bloco("secoes");
+  const juridico = bloco("juridico");
   const manutencao = bloco("manutencao");
   const rodape = bloco("rodape");
   const contato = bloco("contato");
@@ -352,6 +369,15 @@ export function mergeContent(raw: unknown): SiteContent {
     },
     abas: mergeAbas(abas, base.abas),
     secoes: { ordem: mergeSecoes(secoes.ordem, base.secoes.ordem) },
+    juridico: {
+      responsavel: texto(juridico.responsavel, base.juridico.responsavel),
+      documento: typeof juridico.documento === "string" ? juridico.documento : base.juridico.documento,
+      cidade: typeof juridico.cidade === "string" ? juridico.cidade : base.juridico.cidade,
+      email: typeof juridico.email === "string" ? juridico.email : base.juridico.email,
+      atualizado:
+        typeof juridico.atualizado === "string" ? juridico.atualizado : base.juridico.atualizado,
+      reembolsoDias: texto(juridico.reembolsoDias, base.juridico.reembolsoDias),
+    },
     manutencao: {
       ativo: typeof manutencao.ativo === "boolean" ? manutencao.ativo : base.manutencao.ativo,
       mensagem: texto(manutencao.mensagem, base.manutencao.mensagem),

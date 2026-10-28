@@ -2,6 +2,8 @@ import Index from "./pages/Index";
 import AdPage from "./pages/AdPage";
 import VideosPage from "./pages/VideosPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import TermsPage from "./pages/TermsPage";
+import RefundPage from "./pages/RefundPage";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -30,6 +32,16 @@ export const routers = [
     path: "/privacidade",
     name: "privacidade",
     element: <PrivacyPage />,
+  },
+  {
+    path: "/termos",
+    name: "termos",
+    element: <TermsPage />,
+  },
+  {
+    path: "/reembolso",
+    name: "reembolso",
+    element: <RefundPage />,
   },
   /* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */
   {

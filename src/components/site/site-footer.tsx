@@ -92,12 +92,20 @@ export function SiteFooter({
 
         <div className="mt-12 flex flex-col gap-3 border-t border-border/60 pt-6 text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Pai Tiago de Zé Malandro</p>
-          <p>
-            <a href="/privacidade" className="transition-colors hover:text-secondary">
-              Privacidade e cookies
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <a href="/termos" className="transition-colors hover:text-secondary">
+              Termos de uso
             </a>
-            <span className="mx-2">·</span>
-            Umbanda · Fé · Tradição
+            <span className="text-muted-foreground/40">·</span>
+            <a href="/privacidade" className="transition-colors hover:text-secondary">
+              Privacidade
+            </a>
+            <span className="text-muted-foreground/40">·</span>
+            <a href="/reembolso" className="transition-colors hover:text-secondary">
+              Reembolso
+            </a>
+            <span className="text-muted-foreground/40">·</span>
+            <span>Umbanda · Fé · Tradição</span>
           </p>
         </div>
       </div>

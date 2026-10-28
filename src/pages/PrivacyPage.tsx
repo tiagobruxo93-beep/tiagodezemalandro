@@ -1,13 +1,10 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { SiteHeader } from "@/components/site/site-header";
-import { SiteFooter } from "@/components/site/site-footer";
-import { WhatsAppFab } from "@/components/site/whatsapp-fab";
+import { LegalLayout, LegalSection } from "@/components/site/legal-layout";
 import { useSiteSettings } from "@/hooks/use-site-data";
 
 const PrivacyPage = () => {
-  const { settings, content } = useSiteSettings();
+  const { content } = useSiteSettings();
+  const j = content.juridico;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
@@ -15,104 +12,106 @@ const PrivacyPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader settings={settings} content={content} />
+    <LegalLayout
+      eyebrow="Transparência"
+      titulo="Privacidade e cookies"
+      resumo="O que o site guarda no seu navegador, como os acessos são contados e quais são os seus direitos como titular de dados (LGPD)."
+    >
+      <LegalSection titulo="Cookies de rastreamento">
+        <p>
+          O site <strong className="text-foreground">não usa cookies de rastreamento</strong>,
+          pixels de redes sociais ou publicidade. Você não é seguido pela navegação.
+        </p>
+      </LegalSection>
 
-      <main className="pt-[74px]">
-        <section className="border-b border-border/60">
-          <div className="section-shell py-14 sm:py-16">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-secondary"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Voltar ao site
-            </Link>
+      <LegalSection titulo="O que fica no seu navegador">
+        <ul className="list-disc space-y-2 pl-5">
+          <li>
+            <strong className="text-foreground">Preferências:</strong> a marcação de que
+            você já viu o aviso de cookies.
+          </li>
+          <li>
+            <strong className="text-foreground">Código anônimo de visitante:</strong> um
+            número aleatório para contar acessos únicos — sem nome, e-mail, telefone ou
+            endereço IP.
+          </li>
+          <li>
+            <strong className="text-foreground">Cópia do conteúdo:</strong> textos e fotos
+            guardados localmente para o site abrir mais rápido e continuar visível se a
+            conexão oscilar.
+          </li>
+        </ul>
+      </LegalSection>
 
-            <p className="eyebrow mt-6">Transparência</p>
-            <h1 className="mt-4 max-w-3xl font-display text-[40px] leading-[1.02] text-foreground sm:text-[54px]">
-              Privacidade e cookies
-            </h1>
-            <p className="mt-5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Explico aqui, de forma simples, o que o site guarda no seu navegador e
-              o que ele não faz com os seus dados.
-            </p>
-          </div>
-        </section>
+      <LegalSection titulo="Contagem de acessos">
+        <p>
+          Registramos data, hora, página aberta e o código anônimo (armazenado de forma
+          embaralhada). Esses números ficam visíveis apenas para o responsável e servem
+          para entender quantas pessoas visitam o site.
+        </p>
+      </LegalSection>
 
-        <section className="section-shell max-w-3xl py-12">
-          <div className="space-y-10 text-[14px] leading-relaxed text-muted-foreground">
-            <div>
-              <h2 className="mb-2 font-display text-[26px] leading-tight text-foreground">Cookies de rastreamento</h2>
-              <p className="mt-2">
-                O site <strong className="text-foreground">não usa cookies de rastreamento</strong>,
-                nem pixels de redes sociais, nem publicidade. Você não é seguido por
-                aqui.
-              </p>
-            </div>
+      <LegalSection titulo="Compras e mensagens">
+        <p>
+          Ao clicar em “Quero participar”, você é levado ao checkout da Cakto ou ao
+          WhatsApp. Os dados informados ali (nome, pedido, pagamento) são tratados por
+          essas plataformas e pelo atendimento do terreiro, com sigilo. O site não
+          armazena dados de cartão.
+        </p>
+      </LegalSection>
 
-            <div>
-              <h2 className="mb-2 font-display text-[26px] leading-tight text-foreground">O que fica no seu navegador</h2>
-              <ul className="mt-2 list-disc space-y-2 pl-5">
-                <li>
-                  <strong className="text-foreground">Preferências:</strong> a marcação
-                  de que você já viu o aviso de cookies.
-                </li>
-                <li>
-                  <strong className="text-foreground">Código anônimo de visitante:</strong>{" "}
-                  um número aleatório criado no seu navegador para contar acessos
-                  únicos. Ele não contém nome, e-mail, telefone nem endereço IP.
-                </li>
-                <li>
-                  <strong className="text-foreground">Cópia do conteúdo:</strong> textos
-                  e fotos ficam guardados localmente para o site abrir mais rápido e
-                  continuar visível se a conexão oscilar.
-                </li>
-              </ul>
-            </div>
+      <LegalSection titulo="Base legal e finalidade">
+        <p>
+          Tratamos apenas dados necessários para: (i) executar o trabalho contratado,
+          (ii) atender você pelo WhatsApp, (iii) medir acessos de forma anônima e
+          (iv) cumprir obrigações legais. Não vendemos e não cedemos dados pessoais a
+          terceiros para marketing.
+        </p>
+      </LegalSection>
 
-            <div>
-              <h2 className="mb-2 font-display text-[26px] leading-tight text-foreground">Contagem de acessos</h2>
-              <p className="mt-2">
-                Registramos apenas data, hora, página aberta e o código anônimo. Esses
-                números aparecem só para o responsável da casa e servem para entender
-                quantas pessoas visitam o site.
-              </p>
-            </div>
+      <LegalSection titulo="Seus direitos (LGPD)">
+        <p>
+          Nos termos da Lei 13.709/2018, você pode pedir a qualquer momento: confirmação
+          de tratamento, acesso, correção, anonimização, eliminação de dados, informação
+          sobre compartilhamento, portabilidade e revogação do consentimento. Basta falar
+          com o responsável pelo WhatsApp ou pelo e-mail indicado no topo desta página.
+          Respondemos em até 15 dias.
+        </p>
+      </LegalSection>
 
-            <div>
-              <h2 className="mb-2 font-display text-[26px] leading-tight text-foreground">Compras e mensagens</h2>
-              <p className="mt-2">
-                Ao clicar em “Quero participar”, você é levado ao checkout da Cakto ou
-                ao WhatsApp. Os dados informados ali (nome, pagamento, pedido) são
-                tratados por essas plataformas e pelo atendimento do terreiro, com
-                sigilo. O site não armazena dados de cartão.
-              </p>
-            </div>
+      <LegalSection titulo="Segurança e retenção">
+        <p>
+          O site usa conexão criptografada (HTTPS), acesso administrativo restrito a uma
+          única conta e armazenamento com regras de acesso. Dados de pedidos são mantidos
+          pelo prazo necessário ao atendimento e às obrigações fiscais; a contagem anônima
+          de acessos é limpa automaticamente.
+        </p>
+      </LegalSection>
 
-            <div>
-              <h2 className="mb-2 font-display text-[26px] leading-tight text-foreground">Como apagar</h2>
-              <p className="mt-2">
-                Você pode limpar tudo a qualquer momento nas configurações do seu
-                navegador (“limpar dados do site”). Se preferir, use o botão
-                “Limpar dados e recarregar” que aparece na tela de erro do site.
-              </p>
-            </div>
+      <LegalSection titulo="Como apagar">
+        <p>
+          Você pode limpar tudo nas configurações do navegador (“limpar dados do site”)
+          ou usar o botão “Limpar dados e recarregar” da tela de erro do site. Para apagar
+          dados de atendimento, fale com o responsável.
+        </p>
+      </LegalSection>
 
-            <div>
-              <h2 className="mb-2 font-display text-[26px] leading-tight text-foreground">Contato</h2>
-              <p className="mt-2">
-                Dúvidas sobre privacidade? Fale com o Pai Tiago no WhatsApp — o mesmo
-                canal usado para os atendimentos.
-              </p>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <SiteFooter settings={settings} content={content} />
-      <WhatsAppFab settings={settings} />
-    </div>
+      <LegalSection titulo="Responsável pelo tratamento">
+        <p>
+          {j.responsavel}
+          {j.documento ? ` — documento ${j.documento}` : ""}
+          {j.cidade ? ` — ${j.cidade}` : ""}. Canal de contato:{" "}
+          {j.email ? (
+            <a className="text-secondary underline-offset-4 hover:underline" href={`mailto:${j.email}`}>
+              {j.email}
+            </a>
+          ) : (
+            "WhatsApp do terreiro (link no rodapé)"
+          )}
+          .
+        </p>
+      </LegalSection>
+    </LegalLayout>
   );
 };
 

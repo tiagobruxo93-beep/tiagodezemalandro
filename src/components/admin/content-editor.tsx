@@ -44,6 +44,7 @@ const ABAS = [
   { id: "sobre", rotulo: "Sobre" },
   { id: "videos", rotulo: "Vídeos" },
   { id: "duvidas", rotulo: "Dúvidas" },
+  { id: "legal", rotulo: "Legal" },
   { id: "contato", rotulo: "Contato" },
 ];
 
@@ -583,6 +584,56 @@ export function ContentEditor({
               ]}
               botao="Adicionar pergunta"
             />
+          </Grupo>
+        </TabsContent>
+
+        <TabsContent value="legal" className="mt-6 space-y-5">
+          <Grupo
+            titulo="Dados legais da casa"
+            descricao="Aparecem no topo das páginas de Termos, Privacidade e Reembolso. Preencha com os seus dados oficiais (CPF ou CNPJ, cidade/UF e e-mail de contato)."
+          >
+            <TextField
+              rotulo="Responsável (nome ou razão social)"
+              valor={draft.juridico.responsavel}
+              onChange={(valor) => set("juridico", { ...draft.juridico, responsavel: valor })}
+            />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <TextField
+                rotulo="CPF ou CNPJ"
+                valor={draft.juridico.documento}
+                onChange={(valor) => set("juridico", { ...draft.juridico, documento: valor })}
+                placeholder="000.000.000-00"
+              />
+              <TextField
+                rotulo="Cidade / UF"
+                valor={draft.juridico.cidade}
+                onChange={(valor) => set("juridico", { ...draft.juridico, cidade: valor })}
+                placeholder="São Paulo / SP"
+              />
+              <TextField
+                rotulo="E-mail de contato"
+                valor={draft.juridico.email}
+                onChange={(valor) => set("juridico", { ...draft.juridico, email: valor })}
+                placeholder="contato@seudominio.com"
+              />
+              <TextField
+                rotulo="Data de atualização dos termos"
+                valor={draft.juridico.atualizado}
+                onChange={(valor) => set("juridico", { ...draft.juridico, atualizado: valor })}
+                placeholder="28/10/2026"
+              />
+            </div>
+            <TextField
+              rotulo="Prazo de arrependimento (dias)"
+              valor={draft.juridico.reembolsoDias}
+              onChange={(valor) => set("juridico", { ...draft.juridico, reembolsoDias: valor })}
+              ajuda="O Código de Defesa do Consumidor garante 7 dias em compras online. Só aumente se quiser oferecer mais."
+            />
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              Páginas publicadas: <strong className="text-foreground">/termos</strong>,{" "}
+              <strong className="text-foreground">/privacidade</strong> e{" "}
+              <strong className="text-foreground">/reembolso</strong> — com links no rodapé.
+            </p>
           </Grupo>
         </TabsContent>
 
