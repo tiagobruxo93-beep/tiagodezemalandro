@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { QRCodeSVG } from "qrcode.react";
 import {
   Select,
   SelectContent,
@@ -21,7 +22,7 @@ import {
   TextField,
   VideoField,
 } from "@/components/admin/fields";
-import type { Ad } from "@/lib/ads";
+import { buildWhatsAppLink, type Ad } from "@/lib/ads";
 import { registrarAtividade } from "@/lib/activity";
 import {
   FRENTES,
@@ -96,6 +97,13 @@ export function ContentEditor({
 
   const set = <K extends keyof SiteContent>(chave: K, valor: SiteContent[K]) =>
     setDraft((atual) => ({ ...atual, [chave]: valor }));
+
+  const linkDoQr =
+    draft.apoie.link.trim() ||
+    buildWhatsAppLink(
+      draft.contato.whatsapp,
+      "Olá, Pai Tiago! Quero ajudar o terreiro.",
+    );
 
   const setFundo = (chave: FundoChave, parcial: Partial<FundoItem>) =>
     set("fundos", {
@@ -807,6 +815,26 @@ export function ContentEditor({
                   {draft.apoie.tamanhoQr}px
                 </span>
               </div>
+              <div className="flex flex-col items-center gap-2 rounded-sm border border-border/60 bg-background/40 p-4">
+                <p className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
+                  Prévia real — é assim que aparece no site
+                </p>
+                <div className="bg-[hsl(38_45%_94%)] p-3">
+                  <QRCodeSVG
+                    value={linkDoQr}
+                    size={Math.min(340, Math.max(120, draft.apoie.tamanhoQr))}
+                    level="M"
+                    marginSize={2}
+                    bgColor="#f3ece0"
+                    fgColor="#0c0908"
+                    title="Prévia do QR code"
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  {Math.min(340, Math.max(120, draft.apoie.tamanhoQr))} px no site
+                </p>
+              </div>
+
               <Slider
                 min={120}
                 max={340}
