@@ -142,6 +142,10 @@ export const IMAGE_LIBRARY = [
   { label: "Nomes na corrente (foto)", value: "/images/galeria-nomes.jpg" },
   { label: "Gira no terreiro (foto)", value: "/images/galeria-terreiro.jpg" },
   { label: "Pai Tiago (foto)", value: "/images/pai-tiago.jpg" },
+  { label: "Fundo — altar de quimbanda", value: "/images/fundo-trabalhos.jpg" },
+  { label: "Fundo — círculo ritual", value: "/images/fundo-videos.jpg" },
+  { label: "Fundo — portal gótico", value: "/images/fundo-duvidas.jpg" },
+  { label: "Fundo — vertical (cards)", value: "/images/fundo-cards.jpg" },
 ];
 
 export const CATEGORY_VALUES: AdCategory[] = [
