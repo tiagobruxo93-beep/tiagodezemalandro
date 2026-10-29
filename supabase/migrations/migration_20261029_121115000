@@ -1,0 +1,18 @@
+update public.spiritual_site_settings
+set content = jsonb_set(
+  jsonb_set(
+    jsonb_set(
+      jsonb_set(
+        jsonb_set(
+          coalesce(content, '{}'::jsonb),
+          '{fundos,trabalhos}', '"/images/fundo-trabalhos.jpg"'::jsonb, true
+        ),
+        '{fundos,videos}', '"/images/fundo-videos.jpg"'::jsonb, true
+      ),
+      '{fundos,duvidas}', '"/images/fundo-duvidas.jpg"'::jsonb, true
+    ),
+    '{fundos,comoFunciona}', '"/images/fundo-como-funciona.jpg"'::jsonb, true
+  ),
+  '{fundos,cards}', '"/images/fundo-cards.jpg"'::jsonb, true
+)
+where id = 1;

@@ -20,8 +20,8 @@ export function SectionBackdrop({
         style={{ opacity: Math.min(0.9, Math.max(0.05, opacidade / 100)) }}
         className="h-full w-full object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/60 to-background" />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-background/90" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/20 to-background" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-transparent to-background/70" />
     </div>
   );
 }
