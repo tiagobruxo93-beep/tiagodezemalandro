@@ -37,7 +37,7 @@ export function VideosSection({
 
         <div
           className={[
-            "mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3",
+            "mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4",
             itens.length === 1 ? "lg:mx-auto lg:max-w-[440px]" : "",
             itens.length === 2 ? "lg:mx-auto lg:max-w-[880px]" : "",
           ]
