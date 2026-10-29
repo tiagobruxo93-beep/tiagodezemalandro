@@ -1,0 +1,3 @@
+update public.spiritual_ads set featured = false where featured = true;
+update public.spiritual_ads set badge = null where badge = 'Mais procurado';
+update public.spiritual_ads set featured = true, badge = 'Mais procurado' where slug = 'consulta-presencial';

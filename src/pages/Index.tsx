@@ -30,8 +30,9 @@ const Index = () => {
     );
   }
 
+  // O destaque do topo mostra o anúncio marcado em Anúncios (qualquer aba).
   const featuredAd =
-    ads.find((ad) => ad.featured && ad.category === "coletivo") ??
+    ads.find((ad) => ad.featured) ??
     ads.find((ad) => ad.category === "coletivo") ??
     ads[0];
 
