@@ -291,6 +291,11 @@ export function ContentEditor({
               onChange={(valor) => set("fundos", { ...draft.fundos, trabalhos: valor })}
             />
             <ImageField
+              rotulo="Fundo — Como funciona"
+              valor={draft.fundos.comoFunciona}
+              onChange={(valor) => set("fundos", { ...draft.fundos, comoFunciona: valor })}
+            />
+            <ImageField
               rotulo="Fundo — Vídeos"
               valor={draft.fundos.videos}
               onChange={(valor) => set("fundos", { ...draft.fundos, videos: valor })}

@@ -1,0 +1,8 @@
+update public.spiritual_site_settings
+set content = jsonb_set(
+  coalesce(content, '{}'::jsonb),
+  '{fundos,comoFunciona}',
+  '"/images/fundo-como-funciona.jpg"'::jsonb,
+  true
+)
+where id = 1;

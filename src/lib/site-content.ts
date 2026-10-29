@@ -81,6 +81,7 @@ export interface SiteContent {
   secoes: { ordem: SecaoKey[] };
   fundos: {
     trabalhos: string;
+    comoFunciona: string;
     videos: string;
     duvidas: string;
     cards: string;
@@ -205,6 +206,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
   fundos: {
     trabalhos: "/images/galeria-terreiro.jpg",
+    comoFunciona: "/images/fundo-como-funciona.jpg",
     videos: "/images/galeria-nomes.jpg",
     duvidas: "/images/hero-altar-art.jpg",
     cards: "/images/hero-altar-art.jpg",
@@ -387,6 +389,10 @@ export function mergeContent(raw: unknown): SiteContent {
     secoes: { ordem: mergeSecoes(secoes.ordem, base.secoes.ordem) },
     fundos: {
       trabalhos: typeof fundos.trabalhos === "string" ? fundos.trabalhos : base.fundos.trabalhos,
+      comoFunciona:
+        typeof fundos.comoFunciona === "string"
+          ? fundos.comoFunciona
+          : base.fundos.comoFunciona,
       videos: typeof fundos.videos === "string" ? fundos.videos : base.fundos.videos,
       duvidas: typeof fundos.duvidas === "string" ? fundos.duvidas : base.fundos.duvidas,
       cards: typeof fundos.cards === "string" ? fundos.cards : base.fundos.cards,
