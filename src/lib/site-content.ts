@@ -848,6 +848,75 @@ export async function uploadSiteVideo(
   return urlPublicaVideo(caminho);
 }
 
+/**
+ * Extrai um quadro do vídeo e usa como capa (sem precisar subir foto).
+ * Retorna o endereço público da imagem ou "" se não for possível.
+ */
+export async function gerarCapaDoVideo(file: File): Promise<string> {
+  const urlLocal = URL.createObjectURL(file);
+
+  try {
+    const video = document.createElement("video");
+    video.src = urlLocal;
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+
+    await new Promise<void>((resolve, reject) => {
+      const limite = window.setTimeout(() => reject(new Error("tempo")), 8000);
+      video.onloadedmetadata = () => {
+        window.clearTimeout(limite);
+        resolve();
+      };
+      video.onerror = () => {
+        window.clearTimeout(limite);
+        reject(new Error("video"));
+      };
+    });
+
+    const alvo = Number.isFinite(video.duration) && video.duration > 2
+      ? Math.min(2, video.duration * 0.15)
+      : 0;
+
+    if (alvo > 0) {
+      await new Promise<void>((resolve) => {
+        const limite = window.setTimeout(() => resolve(), 5000);
+        video.onseeked = () => {
+          window.clearTimeout(limite);
+          resolve();
+        };
+        video.currentTime = alvo;
+      });
+    }
+
+    const larguraOriginal = video.videoWidth || 720;
+    const alturaOriginal = video.videoHeight || 1280;
+    const largura = Math.min(1280, larguraOriginal);
+    const altura = Math.round(alturaOriginal * (largura / larguraOriginal));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = largura;
+    canvas.height = altura;
+
+    const contexto = canvas.getContext("2d");
+    if (!contexto) throw new Error("canvas");
+    contexto.drawImage(video, 0, 0, largura, altura);
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.85),
+    );
+    if (!blob) throw new Error("blob");
+
+    return await uploadSiteImage(
+      new File([blob], "capa-video.jpg", { type: "image/jpeg" }),
+    );
+  } catch {
+    return "";
+  } finally {
+    URL.revokeObjectURL(urlLocal);
+  }
+}
+
 /** Endereço pronto para incorporar (YouTube/Vimeo) ou vazio. */
 export function videoEmbedUrl(url: string): string {
   const valor = (url || "").trim();

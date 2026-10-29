@@ -588,13 +588,8 @@ export function ContentEditor({
                     rotulo="Vídeo (arquivo do computador ou link)"
                     valor={item.url}
                     onChange={(valor) => atualizarVideo(indice, "url", valor)}
-                  />
-
-                  <ImageField
-                    rotulo="Capa (aparece antes de tocar)"
-                    valor={item.cover}
-                    onChange={(valor) => atualizarVideo(indice, "cover", valor)}
-                    ajuda="Se ficar vazia, aparece um retângulo escuro com o botão de play."
+                    onCapa={(capa) => atualizarVideo(indice, "cover", capa)}
+                    ajuda="A capa é gerada automaticamente a partir do próprio vídeo — não precisa enviar foto."
                   />
 
                   <div className="space-y-2">

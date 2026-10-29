@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import {
   CONTENT_IMAGES,
+  gerarCapaDoVideo,
   pareceVideo,
   uploadSiteImage,
   uploadSiteVideo,
@@ -219,11 +220,13 @@ export function VideoField({
   rotulo,
   valor,
   onChange,
+  onCapa,
   ajuda,
 }: {
   rotulo: string;
   valor: string;
   onChange: (valor: string) => void;
+  onCapa?: (capa: string) => void;
   ajuda?: string;
 }) {
   const [enviando, setEnviando] = useState(false);
@@ -238,6 +241,13 @@ export function VideoField({
     try {
       const url = await uploadSiteVideo(file, setProgresso);
       onChange(url);
+
+      // Capa automática: extrai um quadro do próprio vídeo.
+      if (onCapa) {
+        const capa = await gerarCapaDoVideo(file);
+        if (capa) onCapa(capa);
+      }
+
       toast.success("Vídeo enviado");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Falha no envio do vídeo");
@@ -353,7 +363,14 @@ export function MultiVideoField({
             ),
           ),
         );
-        prontos.push({ title: tituloDoArquivo(arquivo.name), url, text: "", cover: "", link: "" });
+        const capa = await gerarCapaDoVideo(arquivo);
+        prontos.push({
+          title: tituloDoArquivo(arquivo.name),
+          url,
+          text: "",
+          cover: capa,
+          link: "",
+        });
         setFila((atual) =>
           atual.map((item, posicao) =>
             posicao === indice ? { ...item, estado: "ok" } : item,
