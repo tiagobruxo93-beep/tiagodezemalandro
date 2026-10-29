@@ -1,0 +1,6 @@
+update public.spiritual_ads
+set forward_label = 'Quero a consulta presencial',
+    kicker = '100% presencial',
+    summary = 'Consulta 100% presencial com o Pai Tiago, em local reservado, para olhar a sua vida por inteiro.',
+    description = 'A consulta é 100% presencial: você senta à frente do Pai Tiago, em local reservado, com hora marcada. Abrimos as cartas e os búzios, olhamos a sua vida por inteiro e você sai com um plano claro do que fazer depois.\nÉ o atendimento mais completo da casa: tempo para conversar, entender a sua história e receber a orientação com calma. Presença VIP, sigilo absoluto e acompanhamento de 7 dias no WhatsApp.'
+where slug = 'consulta-presencial';
