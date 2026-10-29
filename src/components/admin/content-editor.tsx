@@ -3,6 +3,7 @@ import { ArrowDown, ArrowUp, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -299,6 +300,30 @@ export function ContentEditor({
               valor={draft.fundos.duvidas}
               onChange={(valor) => set("fundos", { ...draft.fundos, duvidas: valor })}
             />
+            <div className="space-y-3 border border-border/60 bg-background/40 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                  Intensidade das fotos de fundo
+                </Label>
+                <span className="font-display text-lg text-secondary">
+                  {draft.fundos.opacidade}%
+                </span>
+              </div>
+              <Slider
+                min={5}
+                max={85}
+                step={1}
+                value={[draft.fundos.opacidade]}
+                onValueChange={([valor]) =>
+                  set("fundos", { ...draft.fundos, opacidade: valor })
+                }
+              />
+              <p className="text-[11px] leading-relaxed text-muted-foreground">
+                Quanto maior, mais visível a foto atrás das seções. Acima de 60% pode
+                atrapalhar a leitura dos textos.
+              </p>
+            </div>
+
             <ImageField
               rotulo="Foto padrão dos anúncios sem arte"
               valor={draft.fundos.cards}

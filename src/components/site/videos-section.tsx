@@ -9,9 +9,11 @@ const LIMITE_NA_HOME = 3;
 export function VideosSection({
   videos,
   fundo,
+  opacidade,
 }: {
   videos: SiteContent["videos"];
   fundo?: string;
+  opacidade?: number;
 }) {
   const itens = videos.items.filter(
     (item) => item.url.trim() !== "" || item.title.trim() !== "",
@@ -24,7 +26,7 @@ export function VideosSection({
 
   return (
     <section id="videos" className="relative isolate scroll-mt-24 overflow-hidden py-20 sm:py-24">
-      <SectionBackdrop src={fundo} />
+      <SectionBackdrop src={fundo} opacidade={opacidade} />
       <div className="section-shell">
         <div className="mx-auto max-w-2xl text-center">
           <p className="eyebrow">{videos.eyebrow}</p>

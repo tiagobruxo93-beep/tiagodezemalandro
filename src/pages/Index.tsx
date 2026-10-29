@@ -57,7 +57,12 @@ const Index = () => {
             case "corrente":
               return <CorrenteBanner key={secao} content={content} />;
             case "videos":
-              return <VideosSection key={secao} videos={content.videos} fundo={content.fundos?.videos} />;
+              return <VideosSection
+                key={secao}
+                videos={content.videos}
+                fundo={content.fundos?.videos}
+                opacidade={content.fundos?.opacidade}
+              />;
             case "sobre":
               return (
                 <AboutSection key={secao} settings={settings} content={content} />

@@ -1,7 +1,13 @@
 import { safeUrl } from "@/lib/security";
 
 /** Foto de fundo suave das seções: evita áreas vazias escuras no site. */
-export function SectionBackdrop({ src }: { src?: string }) {
+export function SectionBackdrop({
+  src,
+  opacidade = 45,
+}: {
+  src?: string;
+  opacidade?: number;
+}) {
   const url = safeUrl(src);
   if (!url) return null;
 
@@ -11,7 +17,8 @@ export function SectionBackdrop({ src }: { src?: string }) {
         src={url}
         alt=""
         loading="lazy"
-        className="h-full w-full object-cover opacity-[0.26]"
+        style={{ opacity: Math.min(0.9, Math.max(0.05, opacidade / 100)) }}
+        className="h-full w-full object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/60 to-background" />
       <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-background/90" />

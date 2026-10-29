@@ -38,7 +38,8 @@ export function AdminDashboard({
   onSignOut: () => void;
 }) {
   const { ads, loading, reload: reloadAds } = useAds();
-  const { settings, content, reload: reloadSettings } = useSiteSettings();
+  const { settings, content, loading: carregandoConteudo, reload: reloadSettings } =
+    useSiteSettings();
   const [view, setView] = useState<View>("anuncios");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Ad | null>(null);
@@ -362,7 +363,18 @@ export function AdminDashboard({
                   </p>
                 </div>
                 <div className="mt-7 max-w-4xl">
-                  <ContentEditor content={content} ads={ads} onSaved={reloadSettings} />
+                  {carregandoConteudo ? (
+                    <div className="space-y-3">
+                      {[0, 1, 2].map((chave) => (
+                        <div
+                          key={chave}
+                          className="h-28 animate-pulse border border-border/60 bg-card/40"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <ContentEditor content={content} ads={ads} onSaved={reloadSettings} />
+                  )}
                 </div>
               </>
             )}

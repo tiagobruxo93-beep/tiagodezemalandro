@@ -17,7 +17,10 @@ export function FaqSection({ content }: { content: SiteContent }) {
       id="duvidas"
       className="relative isolate scroll-mt-24 overflow-hidden py-20 sm:py-24"
     >
-      <SectionBackdrop src={content.fundos?.duvidas} />
+      <SectionBackdrop
+        src={content.fundos?.duvidas}
+        opacidade={content.fundos?.opacidade}
+      />
       <div className="section-shell grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
         <div>
           <p className="eyebrow">{faq.eyebrow}</p>

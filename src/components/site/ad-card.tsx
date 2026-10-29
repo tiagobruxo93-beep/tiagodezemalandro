@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Film, Flame, MoonStar, Sparkles } from "lucide-react";
 import { safeUrl } from "@/lib/security";
@@ -72,6 +73,8 @@ export function AdCard({
 }) {
   const external = isExternalForward(ad);
   const meta = CATEGORY_META[ad.category];
+  const [imagemFalhou, setImagemFalhou] = useState(false);
+  const mostrarImagem = Boolean(ad.imageUrl) && !imagemFalhou;
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-sm border border-border/80 bg-card/60 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-secondary/40 hover:shadow-elegant">

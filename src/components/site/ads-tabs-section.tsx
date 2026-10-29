@@ -58,7 +58,10 @@ export function AdsTabsSection({
       id="trabalhos"
       className="relative isolate scroll-mt-24 overflow-hidden pb-16 pt-8 sm:pb-24 sm:pt-10"
     >
-      <SectionBackdrop src={content.fundos?.trabalhos} />
+      <SectionBackdrop
+        src={content.fundos?.trabalhos}
+        opacidade={content.fundos?.opacidade}
+      />
       <div className="section-shell">
         <div className="flex flex-col gap-8 border-b border-border/60 pb-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl">

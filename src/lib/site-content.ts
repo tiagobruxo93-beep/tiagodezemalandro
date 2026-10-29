@@ -84,6 +84,7 @@ export interface SiteContent {
     videos: string;
     duvidas: string;
     cards: string;
+    opacidade: number;
   };
   juridico: {
     responsavel: string;
@@ -207,6 +208,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     videos: "/images/galeria-nomes.jpg",
     duvidas: "/images/hero-altar-art.jpg",
     cards: "/images/hero-altar-art.jpg",
+    opacidade: 45,
   },
   juridico: {
     responsavel: "Pai Tiago de Zé Malandro",
@@ -388,6 +390,10 @@ export function mergeContent(raw: unknown): SiteContent {
       videos: typeof fundos.videos === "string" ? fundos.videos : base.fundos.videos,
       duvidas: typeof fundos.duvidas === "string" ? fundos.duvidas : base.fundos.duvidas,
       cards: typeof fundos.cards === "string" ? fundos.cards : base.fundos.cards,
+      opacidade:
+        typeof fundos.opacidade === "number"
+          ? Math.min(90, Math.max(5, Math.round(fundos.opacidade)))
+          : base.fundos.opacidade,
     },
     juridico: {
       responsavel: texto(juridico.responsavel, base.juridico.responsavel),
