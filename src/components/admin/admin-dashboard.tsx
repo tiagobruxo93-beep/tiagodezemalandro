@@ -9,6 +9,7 @@ import {
   Megaphone,
   Plus,
   Settings2,
+  ShieldAlert,
   ShieldCheck,
   Star,
   Wallet,
@@ -20,6 +21,7 @@ import { AdsManager } from "@/components/admin/ads-manager";
 import { AdFormDialog } from "@/components/admin/ad-form-dialog";
 import { ContentEditor } from "@/components/admin/content-editor";
 import { SecurityPanel } from "@/components/admin/security-panel";
+import { ToolsPanel } from "@/components/admin/tools-panel";
 import { VisitsPanel } from "@/components/admin/visits-panel";
 import { TridentMark } from "@/components/brand/trident-mark";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
@@ -28,7 +30,7 @@ import { exportarDados } from "@/lib/backup";
 import type { Ad } from "@/lib/ads";
 import { cn } from "@/lib/utils";
 
-type View = "anuncios" | "conteudo" | "seguranca";
+type View = "anuncios" | "conteudo" | "seguranca" | "ferramentas";
 
 export function AdminDashboard({
   email,
@@ -126,6 +128,7 @@ export function AdminDashboard({
     { id: "anuncios", label: "Anúncios", icon: Megaphone },
     { id: "conteudo", label: "Conteúdo do site", icon: Settings2 },
     { id: "seguranca", label: "Segurança", icon: ShieldCheck },
+    { id: "ferramentas", label: "Ferramentas", icon: ShieldAlert },
   ];
 
   return (
@@ -348,6 +351,33 @@ export function AdminDashboard({
                 </div>
                 <div className="mt-7 max-w-3xl">
                   <SecurityPanel email={email} content={content} onSaved={reloadSettings} />
+                </div>
+              </>
+            ) : view === "ferramentas" ? (
+              <>
+                <div>
+                  <p className="eyebrow">Painel de administração</p>
+                  <h1 className="mt-3 font-display text-4xl text-foreground sm:text-5xl">
+                    Ferramentas
+                  </h1>
+                  <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
+                    Proteções do site, tempo de sessão, verificação em duas etapas,
+                    cópia de segurança e registro de acessos.
+                  </p>
+                </div>
+                <div className="mt-7 max-w-3xl">
+                  {carregandoConteudo ? (
+                    <div className="space-y-3">
+                      {[0, 1, 2].map((chave) => (
+                        <div
+                          key={chave}
+                          className="h-28 animate-pulse border border-border/60 bg-card/40"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <ToolsPanel content={content} onSaved={reloadSettings} />
+                  )}
                 </div>
               </>
             ) : (

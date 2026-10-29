@@ -204,7 +204,7 @@ export function SecurityPanel({
 
         <div className="grid gap-2 text-[12px] leading-relaxed text-muted-foreground sm:grid-cols-2">
           <p>• Cadastro de novas contas: fechado</p>
-          <p>• Desconexão automática: 60 min sem uso</p>
+          <p>• Desconexão automática: {content.seguranca.sessaoMinutos} min sem uso</p>
           <p>• Link do painel: fora de menus e do Google</p>
           <p>• Banco: regras de acesso por conta</p>
         </div>

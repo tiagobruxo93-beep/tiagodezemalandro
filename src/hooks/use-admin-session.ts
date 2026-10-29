@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { checkAdminAccess } from "@/lib/admin-ads";
+import { EVENTO_SEGURANCA, lerSeguranca } from "@/lib/site-security";
+import { nivelDeAcesso } from "@/lib/mfa";
 
 export type AdminState = {
   session: Session | null;
@@ -13,6 +15,8 @@ export type AdminState = {
   tentarNovamente: () => void;
   recuperacao: boolean;
   concluirRecuperacao: () => void;
+  mfaPendente: boolean;
+  concluirMfa: () => void;
 };
 
 export function useAdminSession() {
@@ -21,6 +25,8 @@ export function useAdminSession() {
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
   const [bloqueado, setBloqueado] = useState(false);
+  const [mfaPendente, setMfaPendente] = useState(false);
+  const [limiteMinutos, setLimiteMinutos] = useState(() => lerSeguranca().sessaoMinutos);
 const [falhaVerificacao, setFalhaVerificacao] = useState(false);
 const [tentativa, setTentativa] = useState(0);
   const [recuperacao, setRecuperacao] = useState(false);
@@ -80,8 +86,13 @@ const [tentativa, setTentativa] = useState(0);
       }
 
       if (resultado === "admin") {
+        // Verificação em duas etapas: com fator ativo, só entra quem confirmou o código.
+        const { atual, proximo } = await nivelDeAcesso();
+        if (!active) return;
+
         setIsAdmin(true);
         setBloqueado(false);
+        setMfaPendente(proximo === "aal2" && atual !== "aal2");
         setChecking(false);
         return;
       }
@@ -107,11 +118,17 @@ const [tentativa, setTentativa] = useState(0);
     };
   }, [session, recuperacao, tentativa]);
 
-  // Desconecta sozinho depois de 60 minutos sem uso (proteção em computador compartilhado).
+  // Desconecta sozinho depois do tempo configurado no painel, sem uso.
+  useEffect(() => {
+    const atualizar = () => setLimiteMinutos(lerSeguranca().sessaoMinutos);
+    window.addEventListener(EVENTO_SEGURANCA, atualizar);
+    return () => window.removeEventListener(EVENTO_SEGURANCA, atualizar);
+  }, []);
+
   useEffect(() => {
     if (!session) return;
 
-    const LIMITE = 60 * 60 * 1000;
+    const LIMITE = limiteMinutos * 60 * 1000;
     let ultimo = Date.now();
 
     const tocar = () => {
@@ -135,11 +152,17 @@ const [tentativa, setTentativa] = useState(0);
       window.removeEventListener("paitiago:atividade", tocar);
       window.clearInterval(relogio);
     };
-  }, [session, recuperacao, tentativa]);
+  }, [session, recuperacao, tentativa, limiteMinutos]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
+    setMfaPendente(false);
+  };
+
+  const concluirMfa = () => {
+    setMfaPendente(false);
+    setTentativa((valor) => valor + 1);
   };
 
   const concluirRecuperacao = () => {
@@ -161,6 +184,8 @@ const [tentativa, setTentativa] = useState(0);
     tentarNovamente,
     recuperacao,
     concluirRecuperacao,
+    mfaPendente,
+    concluirMfa,
     signOut,
   };
 }

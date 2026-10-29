@@ -22,6 +22,9 @@ export const ACOES: Record<string, string> = {
   manutencao_ativada: "Colocou o site em manutenção",
   manutencao_desativada: "Tirou o site da manutenção",
   backup_baixado: "Baixou uma cópia de segurança",
+  protecao_alterada: "Alterou as proteções do site",
+  dois_fatores_ativado: "Ativou a verificação em duas etapas",
+  dois_fatores_desativado: "Desativou a verificação em duas etapas",
 };
 
 /** Registra uma ação no histórico. Nunca bloqueia a ação principal. */

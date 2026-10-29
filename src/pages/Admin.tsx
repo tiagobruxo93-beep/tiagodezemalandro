@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Loader2, Lock, LogOut } from "lucide-react";
 import { AdminLogin } from "@/components/admin/admin-login";
 import { AdminDashboard } from "@/components/admin/admin-dashboard";
+import { MfaGate } from "@/components/admin/mfa-gate";
 import { ResetPassword } from "@/components/admin/reset-password";
 import { Button } from "@/components/ui/button";
 import { useAdminSession } from "@/hooks/use-admin-session";
@@ -18,6 +19,8 @@ const Admin = () => {
     tentarNovamente,
     recuperacao,
     concluirRecuperacao,
+    mfaPendente,
+    concluirMfa,
     signOut,
   } = useAdminSession();
 
@@ -115,6 +118,10 @@ const Admin = () => {
         </div>
       </div>
     );
+  }
+
+  if (mfaPendente) {
+    return <MfaGate onVerified={concluirMfa} onSair={() => void signOut()} />;
   }
 
   return (

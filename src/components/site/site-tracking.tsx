@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useSiteSettings } from "@/hooks/use-site-data";
 import {
   EVENTO_CONSENTIMENTO,
   eventoGa,
@@ -10,12 +9,8 @@ import {
 } from "@/lib/tracking";
 
 /** Carrega Meta Pixel/GA4 conforme o painel e envia eventos de contato e checkout. */
-export function SiteTracking() {
-  const { content } = useSiteSettings();
+export function SiteTracking({ metaPixel, ga4 }: { metaPixel: string; ga4: string }) {
   const { pathname } = useLocation();
-
-  const metaPixel = content.marketing.metaPixel;
-  const ga4 = content.marketing.ga4;
   const noPainel = pathname.startsWith("/painel");
 
   useEffect(() => {

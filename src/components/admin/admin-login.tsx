@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { registrarAtividade } from "@/lib/activity";
+import { lerSeguranca, EVENTO_SEGURANCA } from "@/lib/site-security";
 import { Button } from "@/components/ui/button";
 import { TridentMark } from "@/components/brand/trident-mark";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,13 @@ export function AdminLogin() {
   const [tentativas, setTentativas] = useState(0);
   const [bloqueadoAte, setBloqueadoAte] = useState(0);
   const [agora, setAgora] = useState(Date.now());
+  const [regras, setRegras] = useState(() => lerSeguranca());
+
+  useEffect(() => {
+    const atualizar = () => setRegras(lerSeguranca());
+    window.addEventListener(EVENTO_SEGURANCA, atualizar);
+    return () => window.removeEventListener(EVENTO_SEGURANCA, atualizar);
+  }, []);
 
   useEffect(() => {
     const relogio = window.setInterval(() => setAgora(Date.now()), 1000);
@@ -77,11 +85,14 @@ export function AdminLogin() {
       if (authError) throw new Error(authError.message);
 
       setTentativas(0);
-      void registrarAtividade("login", { email }, email);
+      void registrarAtividade("login", {
+        email,
+        dispositivo: `${navigator.platform || "desconhecido"} · ${navigator.userAgent.slice(0, 90)}`,
+      }, email);
     } catch (err) {
       const total = tentativas + 1;
 
-      if (total >= 5) {
+      if (total >= regras.tentativasLogin) {
         setTentativas(0);
         setBloqueadoAte(Date.now() + 60_000);
         setError("Muitas tentativas. Aguarde 60 segundos antes de tentar de novo.");
@@ -98,7 +109,7 @@ export function AdminLogin() {
       } else if (mensagem.toLowerCase().includes("rate") || mensagem.includes("too many")) {
         setError("Muitas tentativas. Aguarde alguns minutos e tente de novo.");
       } else {
-        setError(`${mensagem} (tentativa ${total} de 5)`);
+        setError(`${mensagem} (tentativa ${total} de ${regras.tentativasLogin})`);
       }
     } finally {
       setLoading(false);
@@ -280,7 +291,8 @@ export function AdminLogin() {
 
           <p className="mt-6 text-[11px] leading-relaxed text-muted-foreground">
             Painel de conta única: só esta conta entra, e o cadastro de novas
-            contas está fechado. Depois de 60 minutos sem uso, o painel desconecta
+            contas está fechado. Depois de {regras.sessaoMinutos} minutos sem uso, o
+            painel desconecta
             sozinho.
           </p>
         </div>

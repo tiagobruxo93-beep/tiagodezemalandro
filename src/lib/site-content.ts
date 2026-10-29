@@ -168,6 +168,13 @@ export interface SiteContent {
     paymentNote: string;
   };
   marketing: { metaPixel: string; ga4: string };
+  protecao: {
+    bloquearBotaoDireito: boolean;
+    bloquearCopia: boolean;
+    bloquearArrastarImagem: boolean;
+    noindex: boolean;
+  };
+  seguranca: { sessaoMinutos: number; tentativasLogin: number };
 }
 
 export const DEFAULT_CONTENT: SiteContent = {
@@ -364,10 +371,23 @@ export const DEFAULT_CONTENT: SiteContent = {
     paymentNote: "Pagamento processado com segurança pela Cakto",
   },
   marketing: { metaPixel: "", ga4: "" },
+  protecao: {
+    bloquearBotaoDireito: false,
+    bloquearCopia: false,
+    bloquearArrastarImagem: true,
+    noindex: false,
+  },
+  seguranca: { sessaoMinutos: 60, tentativasLogin: 5 },
 };
 
 function texto(valor: unknown, padrao: string) {
   return typeof valor === "string" && valor.trim() !== "" ? valor : padrao;
+}
+
+function numero(valor: unknown, padrao: number, minimo: number, maximo: number) {
+  const convertido = typeof valor === "number" ? valor : Number(valor);
+  if (!Number.isFinite(convertido)) return padrao;
+  return Math.min(maximo, Math.max(minimo, Math.round(convertido)));
 }
 
 function lista<T>(valor: unknown, padrao: T[]): T[] {
@@ -500,6 +520,8 @@ export function mergeContent(raw: unknown): SiteContent {
   const rodape = bloco("rodape");
   const contato = bloco("contato");
   const marketing = bloco("marketing");
+  const protecao = bloco("protecao");
+  const seguranca = bloco("seguranca");
 
   return {
     hero: {
@@ -633,6 +655,26 @@ export function mergeContent(raw: unknown): SiteContent {
       metaPixel:
         typeof marketing.metaPixel === "string" ? marketing.metaPixel : base.marketing.metaPixel,
       ga4: typeof marketing.ga4 === "string" ? marketing.ga4 : base.marketing.ga4,
+    },
+    protecao: {
+      bloquearBotaoDireito:
+        typeof protecao.bloquearBotaoDireito === "boolean"
+          ? protecao.bloquearBotaoDireito
+          : base.protecao.bloquearBotaoDireito,
+      bloquearCopia:
+        typeof protecao.bloquearCopia === "boolean"
+          ? protecao.bloquearCopia
+          : base.protecao.bloquearCopia,
+      bloquearArrastarImagem:
+        typeof protecao.bloquearArrastarImagem === "boolean"
+          ? protecao.bloquearArrastarImagem
+          : base.protecao.bloquearArrastarImagem,
+      noindex:
+        typeof protecao.noindex === "boolean" ? protecao.noindex : base.protecao.noindex,
+    },
+    seguranca: {
+      sessaoMinutos: numero(seguranca.sessaoMinutos, base.seguranca.sessaoMinutos, 5, 480),
+      tentativasLogin: numero(seguranca.tentativasLogin, base.seguranca.tentativasLogin, 3, 10),
     },
   };
 }
