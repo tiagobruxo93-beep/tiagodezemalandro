@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { safeUrl } from "@/lib/security";
@@ -7,10 +8,17 @@ import { VideoStage } from "@/components/site/video-stage";
 /** Card de vídeo na grade. */
 export function VideoCard({ item, altura }: { item: VideoItem; altura?: number }) {
   const link = item.link.trim();
+  const [razao, setRazao] = useState<number | null>(null);
+  const base = altura ?? 460;
+  const vertical = razao !== null && razao < 0.95;
+  const larguraDoCard = vertical ? Math.round(base * 0.8 * razao + 40) : undefined;
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-sm border border-border/70 bg-card/50">
-      <VideoStage item={item} altura={altura} />
+    <article
+      className="mx-auto flex w-full flex-col overflow-hidden rounded-sm border border-border/70 bg-card/50"
+      style={larguraDoCard ? { maxWidth: larguraDoCard } : undefined}
+    >
+      <VideoStage item={item} altura={altura} onRazao={setRazao} />
 
       <div className="flex flex-1 flex-col p-5">
         {item.text && (

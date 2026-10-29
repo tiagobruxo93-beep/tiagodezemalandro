@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Play } from "lucide-react";
-import { VideoCard, VideoSpotlight } from "@/components/site/video-card";
+import { VideoCard } from "@/components/site/video-card";
 import type { FundoItem, SiteContent } from "@/lib/site-content";
 import { SectionBackdrop } from "@/components/site/section-backdrop";
 
-const LIMITE_NA_HOME = 3;
+const LIMITE_NA_HOME = 6;
 
 export function VideosSection({
   videos,
@@ -20,7 +20,6 @@ export function VideosSection({
   if (!videos.enabled) return null;
 
   const mostrados = itens.slice(0, LIMITE_NA_HOME);
-  const [destaque, ...outros] = mostrados;
 
   return (
     <section id="videos" className="relative isolate scroll-mt-24 overflow-hidden py-20 sm:py-24">
@@ -36,14 +35,16 @@ export function VideosSection({
           </p>
         </div>
 
-        {destaque && (
-          <div className="mt-12">
-            <VideoSpotlight item={destaque} altura={videos.alturaPlayer} />
-          </div>
-        )}
-
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {outros.map((item, indice) => (
+        <div
+          className={[
+            "mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3",
+            itens.length === 1 ? "lg:mx-auto lg:max-w-[440px]" : "",
+            itens.length === 2 ? "lg:mx-auto lg:max-w-[880px]" : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {mostrados.map((item, indice) => (
             <VideoCard key={`${item.title}-${indice}`} item={item} altura={videos.alturaPlayer} />
           ))}
 

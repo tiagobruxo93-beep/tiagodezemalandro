@@ -13,10 +13,12 @@ export function VideoStage({
   item,
   altura = 480,
   destaque = false,
+  onRazao,
 }: {
   item: VideoItem;
   altura?: number;
   destaque?: boolean;
+  onRazao?: (razao: number) => void;
 }) {
   const [razao, setRazao] = useState<number | null>(null);
 
@@ -36,7 +38,9 @@ export function VideoStage({
     sonda.src = safeUrl(embed);
     sonda.onloadedmetadata = () => {
       if (sonda.videoWidth && sonda.videoHeight) {
-        setRazao(sonda.videoWidth / sonda.videoHeight);
+        const medida = sonda.videoWidth / sonda.videoHeight;
+        setRazao(medida);
+        onRazao?.(medida);
       }
     };
 
@@ -44,7 +48,7 @@ export function VideoStage({
       sonda.onloadedmetadata = null;
       sonda.removeAttribute("src");
     };
-  }, [embed, direto]);
+  }, [embed, direto, onRazao]);
 
   const conteudo = embed ? (
     direto ? (
@@ -99,7 +103,7 @@ export function VideoStage({
 
   // Vertical: quadro em pé, centralizado, sem sobras pretas nas laterais.
   return (
-    <div className="flex w-full justify-center bg-card/30 px-4 py-5">
+    <div className="flex w-full justify-center py-4">
       <div
         className={cn("relative overflow-hidden rounded-sm bg-black shadow-elegant")}
         style={{ height: alturaDoQuadro, aspectRatio: String(proporcao) }}
