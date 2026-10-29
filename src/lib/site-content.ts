@@ -1,5 +1,4 @@
 import { SUPABASE_URL, supabase } from "@/integrations/supabase/client";
-import * as tus from "tus-js-client";
 import { IMAGE_LIBRARY } from "@/lib/ads";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -771,8 +770,7 @@ export async function uploadSiteImage(file: File): Promise<string> {
 }
 
 const BUCKET_VIDEO = "videos";
-const VIDEO_MAX_MB = 5120;
-const LIMITE_BLOCOS_MB = 45;
+export const VIDEO_MAX_MB = 2048;
 
 function urlPublicaVideo(caminho: string) {
   const { data } = supabase.storage.from(BUCKET_VIDEO).getPublicUrl(caminho);
@@ -780,52 +778,15 @@ function urlPublicaVideo(caminho: string) {
   return data.publicUrl;
 }
 
-/** Sobe o arquivo em blocos, permitindo retomar e arquivos de vários GB. */
-async function enviarVideoEmBlocos(
-  file: File,
-  caminho: string,
-  aoProgredir?: (porcentagem: number) => void,
-) {
-  const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
-
-  if (!token) {
-    throw new Error("Entre no painel para enviar vídeos grandes.");
-  }
-
-  await new Promise<void>((resolve, reject) => {
-    const envio = new tus.Upload(file, {
-      endpoint: `${SUPABASE_URL}/storage/v1/upload/resumable`,
-      retryDelays: [0, 3000, 6000, 12000, 20000, 30000],
-      chunkSize: 6 * 1024 * 1024,
-      uploadDataDuringCreation: true,
-      removeFingerprintOnSuccess: true,
-      headers: {
-        authorization: `Bearer ${token}`,
-        "x-upsert": "false",
-      },
-      metadata: {
-        bucketName: BUCKET_VIDEO,
-        objectName: caminho,
-        contentType: file.type || "video/mp4",
-        cacheControl: "3600",
-      },
-      onError: (erro) => reject(new Error(erro.message)),
-      onProgress: (enviado, total) => {
-        if (aoProgredir && total > 0) {
-          aoProgredir(Math.min(100, Math.round((enviado / total) * 100)));
-        }
-      },
-      onSuccess: () => resolve(),
-    });
-
-    envio.start();
-  });
+/** Avisa o painel de que existe atividade (evita deslogar no meio de um envio longo). */
+function sinalizarAtividade() {
+  window.dispatchEvent(new Event("paitiago:atividade"));
 }
 
 /**
  * Envia um vídeo do computador para o armazenamento e devolve o endereço público.
- * Arquivos grandes sobem em blocos (com retomada automática).
+ * Usa envio direto com progresso real — o modo "em blocos" do servidor recusa
+ * arquivos acima de 50 MB, então ele não é usado.
  */
 export async function uploadSiteVideo(
   file: File,
@@ -833,24 +794,76 @@ export async function uploadSiteVideo(
 ): Promise<string> {
   const extensao = conferirArquivo(file, VIDEO_MAX_MB);
   const caminho = `conteudo/${crypto.randomUUID()}.${extensao}`;
-  const grande = file.size > LIMITE_BLOCOS_MB * 1024 * 1024;
 
-  if (grande) {
-    try {
-      await enviarVideoEmBlocos(file, caminho, aoProgredir);
-      return urlPublicaVideo(caminho);
-    } catch {
-      // Se o envio em blocos não for aceito pelo servidor, tenta o envio direto.
-    }
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+
+  if (!token) {
+    throw new Error("Sessão expirada. Entre novamente no painel e envie o vídeo.");
   }
 
-  const { error } = await supabase.storage.from(BUCKET_VIDEO).upload(caminho, file, {
-    contentType: file.type || "video/mp4",
-    upsert: false,
+  let ultimoSinal = 0;
+
+  await new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${SUPABASE_URL}/storage/v1/object/${BUCKET_VIDEO}/${caminho}`, true);
+    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.setRequestHeader("x-upsert", "false");
+    xhr.setRequestHeader("cache-control", "max-age=3600");
+    xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+
+    xhr.upload.onprogress = (evento) => {
+      if (aoProgredir && evento.lengthComputable && evento.total > 0) {
+        aoProgredir(Math.min(99, Math.round((evento.loaded / evento.total) * 100)));
+      }
+
+      const agora = Date.now();
+      if (agora - ultimoSinal > 5000) {
+        ultimoSinal = agora;
+        sinalizarAtividade();
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve();
+        return;
+      }
+
+      let mensagem = "";
+      try {
+        const corpo = JSON.parse(xhr.responseText) as { message?: string; error?: string };
+        mensagem = corpo.message || corpo.error || "";
+      } catch {
+        mensagem = "";
+      }
+
+      if (xhr.status === 413) {
+        mensagem =
+          "O servidor recusou o tamanho do arquivo. Envie um vídeo menor ou use um link do YouTube.";
+      } else if (xhr.status === 401 || xhr.status === 403 || /row-level security/i.test(mensagem)) {
+        mensagem =
+          "Sessão expirada ou sem permissão de administrador. Entre novamente no painel e tente de novo.";
+      } else if (xhr.status === 0) {
+        mensagem = "A conexão foi interrompida durante o envio. Verifique a internet e tente de novo.";
+      }
+
+      reject(new Error(mensagem || `Falha no envio do vídeo (código ${xhr.status}).`));
+    };
+
+    xhr.onerror = () =>
+      reject(
+        new Error(
+          "A conexão caiu durante o envio do vídeo. Verifique a internet e tente novamente.",
+        ),
+      );
+    xhr.ontimeout = () =>
+      reject(new Error("O envio demorou demais e foi interrompido. Tente novamente."));
+
+    xhr.send(file);
   });
 
-  if (error) throw new Error(error.message);
-
+  aoProgredir?.(100);
   return urlPublicaVideo(caminho);
 }
 

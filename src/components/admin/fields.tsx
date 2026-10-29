@@ -310,8 +310,8 @@ export function VideoField({
           {enviando ? `Enviando vídeo... ${progresso}%` : "Enviar vídeo do computador"}
         </Button>
         <span className="text-[11px] text-muted-foreground">
-          Qualquer formato, até 5 GB. Acima de 45 MB o envio é feito em blocos, com
-          retomada automática se a conexão oscilar.
+          Qualquer formato, até 2 GB. O progresso aparece no botão — não feche o
+          painel até o envio terminar.
         </span>
       </div>
 
@@ -425,13 +425,13 @@ export function MultiVideoField({
 
         <div className="max-w-md space-y-1 text-[11px] leading-relaxed text-muted-foreground">
           <p>
-            Escolha quantos arquivos quiser de uma vez (qualquer formato, até 5 GB
+            Escolha quantos arquivos quiser de uma vez (qualquer formato, até 2 GB
             cada). Cada arquivo vira um card, com o nome do arquivo como título —
             depois é só ajustar o texto e a capa.
           </p>
           <p>
-            Arquivos acima de 45 MB sobem em blocos, com retomada automática. Para
-            vídeos muito longos (mais de 1 GB), o caminho mais leve é subir no
+            O envio mostra o progresso de cada arquivo e não pode ser fechado no meio.
+            Para vídeos muito longos (mais de 2 GB), o caminho mais leve é subir no
             YouTube como “não listado” e colar o link — não consome o seu
             armazenamento.
           </p>
@@ -473,8 +473,8 @@ export function MultiVideoField({
 
       {!enviando && falhas > 0 && (
         <p className="text-[11px] text-destructive">
-          {falhas} arquivo(s) não subiram. Confira o formato e o tamanho (limite de
-          100 MB por vídeo).
+          {falhas} arquivo(s) não subiram. Confira o tamanho (limite de 2 GB por
+          vídeo) e a internet, e tente de novo.
         </p>
       )}
     </div>

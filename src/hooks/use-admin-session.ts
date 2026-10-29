@@ -120,6 +120,8 @@ const [tentativa, setTentativa] = useState(0);
 
     const eventos: (keyof WindowEventMap)[] = ["click", "keydown", "scroll", "touchstart"];
     eventos.forEach((evento) => window.addEventListener(evento, tocar, { passive: true }));
+    // Envios longos (vídeos) avisam que o painel continua em uso.
+    window.addEventListener("paitiago:atividade", tocar);
 
     const relogio = window.setInterval(() => {
       if (Date.now() - ultimo > LIMITE) {
@@ -130,6 +132,7 @@ const [tentativa, setTentativa] = useState(0);
 
     return () => {
       eventos.forEach((evento) => window.removeEventListener(evento, tocar));
+      window.removeEventListener("paitiago:atividade", tocar);
       window.clearInterval(relogio);
     };
   }, [session, recuperacao, tentativa]);

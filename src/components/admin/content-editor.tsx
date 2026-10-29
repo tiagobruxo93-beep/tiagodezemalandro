@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, Loader2, Save } from "lucide-react";
+import { AlertCircle, ArrowDown, ArrowUp, CheckCircle2, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -98,6 +98,12 @@ export function ContentEditor({
   const set = <K extends keyof SiteContent>(chave: K, valor: SiteContent[K]) =>
     setDraft((atual) => ({ ...atual, [chave]: valor }));
 
+  // Atualizações de vídeo usam o estado mais recente: um envio longo pode
+  // terminar depois de o usuário editar outro campo da seção.
+  const setVideos = (
+    atualizar: (atual: SiteContent["videos"]) => SiteContent["videos"],
+  ) => setDraft((atual) => ({ ...atual, videos: atualizar(atual.videos) }));
+
   const linkDoQr =
     draft.apoie.link.trim() ||
     buildWhatsAppLink(
@@ -114,9 +120,11 @@ export function ContentEditor({
     });
 
   const atualizarVideo = (indice: number, campo: keyof VideoItem, valor: string) => {
-    const itens = [...draft.videos.items];
-    itens[indice] = { ...itens[indice], [campo]: valor };
-    set("videos", { ...draft.videos, items: itens });
+    setVideos((atual) => {
+      const itens = [...atual.items];
+      itens[indice] = { ...itens[indice], [campo]: valor };
+      return { ...atual, items: itens };
+    });
   };
 
   const moverAba = (indice: number, direcao: -1 | 1) => {
@@ -138,6 +146,8 @@ export function ContentEditor({
     [ordem[indice], ordem[alvo]] = [ordem[alvo], ordem[indice]];
     set("secoes", { ordem });
   };
+
+  const alterado = JSON.stringify(draft) !== JSON.stringify(content);
 
   const salvar = async () => {
     setSalvando(true);
@@ -510,10 +520,10 @@ export function ContentEditor({
             <div className="space-y-3">
               <MultiVideoField
                 onEnviados={(novos) =>
-                  set("videos", {
-                    ...draft.videos,
-                    items: [...draft.videos.items, ...(novos as VideoItem[])],
-                  })
+                  setVideos((atual) => ({
+                    ...atual,
+                    items: [...atual.items, ...(novos as VideoItem[])],
+                  }))
                 }
               />
 
@@ -524,7 +534,7 @@ export function ContentEditor({
                   </Label>
                   <p className="mt-1 max-w-lg text-[11px] leading-relaxed text-muted-foreground">
                     Envie o arquivo direto do computador ou celular (qualquer
-                    formato, até 5 GB) ou cole um link do YouTube/Vimeo. Cada vídeo
+                    formato, até 2 GB) ou cole um link do YouTube/Vimeo. Cada vídeo
                     vira um card na seção "Assista e entenda".
                   </p>
                 </div>
@@ -552,10 +562,10 @@ export function ContentEditor({
                       size="sm"
                       className="text-destructive hover:bg-destructive/10"
                       onClick={() =>
-                        set("videos", {
-                          ...draft.videos,
-                          items: draft.videos.items.filter((_, posicao) => posicao !== indice),
-                        })
+                        setVideos((atual) => ({
+                          ...atual,
+                          items: atual.items.filter((_, posicao) => posicao !== indice),
+                        }))
                       }
                     >
                       Remover
@@ -1123,7 +1133,24 @@ export function ContentEditor({
 
       </Tabs>
 
-      <div className="sticky bottom-0 z-20 -mx-4 flex justify-end border-t border-border/70 bg-background/95 px-4 py-3 backdrop-blur sm:-mx-0 sm:rounded-sm sm:border">
+      <div className="sticky bottom-0 z-20 -mx-4 flex flex-wrap items-center justify-end gap-3 border-t border-border/70 bg-background/95 px-4 py-3 backdrop-blur sm:-mx-0 sm:rounded-sm sm:border">
+        <p
+          className={`mr-auto flex items-center gap-2 text-[11px] ${
+            alterado ? "text-secondary" : "text-muted-foreground"
+          }`}
+        >
+          {alterado ? (
+            <>
+              <AlertCircle className="h-3.5 w-3.5" />
+              Alterações não salvas
+            </>
+          ) : (
+            <>
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              Tudo salvo
+            </>
+          )}
+        </p>
         <Button variant="forward" size="lg" onClick={() => void salvar()} disabled={salvando}>
           {salvando ? <Loader2 className="animate-spin" /> : <Save />}
           Salvar conteúdo
