@@ -148,6 +148,7 @@ export const IMAGE_LIBRARY = [
   { label: "Fundo — escolha o seu trabalho", value: "/images/fundo-escolha-trabalho.jpg" },
   { label: "Fundo — fotos do terreiro", value: "/images/fundo-galeria.jpg" },
   { label: "Fundo — evento VIP", value: "/images/fundo-evento.jpg" },
+  { label: "Fundo — ajude o terreiro", value: "/images/fundo-ajude.jpg" },
   { label: "Fundo — círculo ritual", value: "/images/fundo-videos.jpg" },
   { label: "Fundo — portal gótico", value: "/images/fundo-duvidas.jpg" },
   { label: "Fundo — vertical (cards)", value: "/images/fundo-cards.jpg" },

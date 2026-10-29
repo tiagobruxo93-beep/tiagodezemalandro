@@ -14,6 +14,7 @@ export type SecaoKey =
   | "sobre"
   | "galeria"
   | "eventos"
+  | "apoie"
   | "duvidas";
 
 export type ModoFoto = "sobreposicao" | "normal";
@@ -25,6 +26,19 @@ export type FundoItem = {
 };
 
 export type BeneficioEvento = { titulo: string; texto: string };
+
+export type ApoieSecao = {
+  ativo: boolean;
+  eyebrow: string;
+  titulo: string;
+  destaque: string;
+  frase: string;
+  texto: string;
+  botao: string;
+  link: string;
+  imagem: string;
+  opacidade: number;
+};
 
 export type EventosSecao = {
   ativo: boolean;
@@ -82,6 +96,7 @@ export const SECOES_META: Record<SecaoKey, { label: string; descricao: string }>
   sobre: { label: "Sobre mim", descricao: "Apresentação, foto e números" },
   galeria: { label: "Galeria", descricao: "Fotos do terreiro" },
   eventos: { label: "Eventos (VIP)", descricao: "Contato profissional e presença em eventos" },
+  apoie: { label: "Apoie o terreiro", descricao: "QR code e convite para colaborar" },
   duvidas: { label: "Dúvidas", descricao: "Perguntas frequentes" },
 };
 
@@ -128,6 +143,7 @@ export interface SiteContent {
     items: VideoItem[];
   };
   eventos: EventosSecao;
+  apoie: ApoieSecao;
   faq: { eyebrow: string; title: string; highlight: string; intro: string; items: FaqItem[] };
   abas: { ordem: FrenteKey[]; inicial: FrenteKey; itens: Record<FrenteKey, AbaConfig> };
   secoes: { ordem: SecaoKey[] };
@@ -237,6 +253,20 @@ export const DEFAULT_CONTENT: SiteContent = {
     imagem: "/images/fundo-evento.jpg",
     opacidade: 70,
   },
+  apoie: {
+    ativo: true,
+    eyebrow: "Ajude o terreiro",
+    titulo: "Cada gesto",
+    destaque: "acende uma vela a mais.",
+    frase:
+      "A sua contribuição mantém as velas acesas, a corrente firme e a porta aberta para quem chega precisando.",
+    texto:
+      "Não é sobre quanto, é sobre junto. Com qualquer valor você ajuda a manter as oferendas, as giras e os trabalhos coletivos acontecendo — e recebe de volta em axé.",
+    botao: "Quero ajudar o terreiro",
+    link: "",
+    imagem: "/images/fundo-ajude.jpg",
+    opacidade: 65,
+  },
   faq: {
     eyebrow: "Dúvidas",
     title: "Perguntas",
@@ -283,6 +313,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       "sobre",
       "galeria",
       "eventos",
+      "apoie",
       "duvidas",
     ],
   },
@@ -448,6 +479,7 @@ export function mergeContent(raw: unknown): SiteContent {
   const galeria = bloco("galeria");
   const videos = bloco("videos");
   const eventos = bloco("eventos");
+  const apoie = bloco("apoie");
   const faq = bloco("faq");
   const abas = bloco("abas");
   const secoes = bloco("secoes");
@@ -528,6 +560,21 @@ export function mergeContent(raw: unknown): SiteContent {
         typeof eventos.opacidade === "number"
           ? Math.min(100, Math.max(10, Math.round(eventos.opacidade)))
           : base.eventos.opacidade,
+    },
+    apoie: {
+      ativo: typeof apoie.ativo === "boolean" ? apoie.ativo : base.apoie.ativo,
+      eyebrow: texto(apoie.eyebrow, base.apoie.eyebrow),
+      titulo: texto(apoie.titulo, base.apoie.titulo),
+      destaque: texto(apoie.destaque, base.apoie.destaque),
+      frase: texto(apoie.frase, base.apoie.frase),
+      texto: texto(apoie.texto, base.apoie.texto),
+      botao: texto(apoie.botao, base.apoie.botao),
+      link: typeof apoie.link === "string" ? apoie.link : base.apoie.link,
+      imagem: texto(apoie.imagem, base.apoie.imagem),
+      opacidade:
+        typeof apoie.opacidade === "number"
+          ? Math.min(100, Math.max(10, Math.round(apoie.opacidade)))
+          : base.apoie.opacidade,
     },
     faq: {
       eyebrow: texto(faq.eyebrow, base.faq.eyebrow),

@@ -50,6 +50,7 @@ const ABAS = [
   { id: "sobre", rotulo: "Sobre" },
   { id: "videos", rotulo: "Vídeos" },
   { id: "eventos", rotulo: "Eventos VIP" },
+  { id: "apoie", rotulo: "Apoie" },
   { id: "duvidas", rotulo: "Dúvidas" },
   { id: "legal", rotulo: "Legal" },
   { id: "contato", rotulo: "Contato" },
@@ -710,6 +711,89 @@ export function ContentEditor({
                 value={[draft.eventos.opacidade]}
                 onValueChange={([valor]) =>
                   set("eventos", { ...draft.eventos, opacidade: valor })
+                }
+              />
+            </div>
+          </Grupo>
+        </TabsContent>
+
+        <TabsContent value="apoie" className="mt-6 space-y-5">
+          <Grupo
+            titulo="Apoie o terreiro (QR code)"
+            descricao="Seção com QR code para colaborações. Cole aqui o link que o QR deve abrir (Pix, página de doação, vaquinha) — se ficar vazio, o QR abre o seu WhatsApp com a mensagem de apoio."
+          >
+            <SwitchField
+              rotulo="Mostrar a seção no site"
+              valor={draft.apoie.ativo}
+              onChange={(valor) => set("apoie", { ...draft.apoie, ativo: valor })}
+            />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <TextField
+                rotulo="Linha de apoio"
+                valor={draft.apoie.eyebrow}
+                onChange={(valor) => set("apoie", { ...draft.apoie, eyebrow: valor })}
+              />
+              <TextField
+                rotulo="Texto do botão"
+                valor={draft.apoie.botao}
+                onChange={(valor) => set("apoie", { ...draft.apoie, botao: valor })}
+              />
+              <TextField
+                rotulo="Título"
+                valor={draft.apoie.titulo}
+                onChange={(valor) => set("apoie", { ...draft.apoie, titulo: valor })}
+              />
+              <TextField
+                rotulo="Destaque em vermelho"
+                valor={draft.apoie.destaque}
+                onChange={(valor) => set("apoie", { ...draft.apoie, destaque: valor })}
+              />
+            </div>
+
+            <TextField
+              rotulo="Link do QR code"
+              valor={draft.apoie.link}
+              onChange={(valor) => set("apoie", { ...draft.apoie, link: valor })}
+              placeholder="https://..."
+              ajuda="Vazio = abre o WhatsApp. A mudança vale na hora, o QR é gerado no próprio site."
+            />
+
+            <TextAreaField
+              rotulo="Frase cativante"
+              valor={draft.apoie.frase}
+              onChange={(valor) => set("apoie", { ...draft.apoie, frase: valor })}
+              rows={3}
+            />
+
+            <TextAreaField
+              rotulo="Texto de apoio"
+              valor={draft.apoie.texto}
+              onChange={(valor) => set("apoie", { ...draft.apoie, texto: valor })}
+            />
+
+            <ImageField
+              rotulo="Foto de sobreposição"
+              valor={draft.apoie.imagem}
+              onChange={(valor) => set("apoie", { ...draft.apoie, imagem: valor })}
+            />
+
+            <div className="space-y-3 rounded-sm border border-border/60 bg-background/40 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                  Opacidade da foto
+                </Label>
+                <span className="font-display text-lg text-secondary">
+                  {draft.apoie.opacidade}%
+                </span>
+              </div>
+              <Slider
+                min={10}
+                max={100}
+                step={1}
+                value={[draft.apoie.opacidade]}
+                onValueChange={([valor]) =>
+                  set("apoie", { ...draft.apoie, opacidade: valor })
                 }
               />
             </div>
