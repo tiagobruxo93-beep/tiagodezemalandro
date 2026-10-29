@@ -1,0 +1,8 @@
+update public.spiritual_site_settings
+set content = jsonb_set(
+  coalesce(content, '{}'::jsonb),
+  '{fundos}',
+  '{"itens":{"trabalhos":{"src":"/images/fundo-trabalhos.jpg","opacidade":65,"modo":"sobreposicao"},"comoFunciona":{"src":"/images/fundo-como-funciona.jpg","opacidade":65,"modo":"sobreposicao"},"videos":{"src":"/images/fundo-videos.jpg","opacidade":65,"modo":"sobreposicao"},"duvidas":{"src":"/images/fundo-duvidas.jpg","opacidade":65,"modo":"sobreposicao"},"cards":{"src":"/images/fundo-cards.jpg","opacidade":70,"modo":"normal"}}}'::jsonb,
+  true
+)
+where id = 1;

@@ -25,6 +25,8 @@ import type { Ad } from "@/lib/ads";
 import { registrarAtividade } from "@/lib/activity";
 import {
   FRENTES,
+  FUNDO_CHAVES,
+  FUNDO_ROTULOS,
   SECOES_META,
   saveSiteContent,
   type FaqItem,
@@ -34,6 +36,9 @@ import {
   type StepItem,
   type VideoItem,
   type FrenteKey,
+  type FundoChave,
+  type FundoItem,
+  type ModoFoto,
   type SecaoKey,
 } from "@/lib/site-content";
 
@@ -89,6 +94,14 @@ export function ContentEditor({
 
   const set = <K extends keyof SiteContent>(chave: K, valor: SiteContent[K]) =>
     setDraft((atual) => ({ ...atual, [chave]: valor }));
+
+  const setFundo = (chave: FundoChave, parcial: Partial<FundoItem>) =>
+    set("fundos", {
+      itens: {
+        ...draft.fundos.itens,
+        [chave]: { ...draft.fundos.itens[chave], ...parcial },
+      },
+    });
 
   const atualizarVideo = (indice: number, campo: keyof VideoItem, valor: string) => {
     const itens = [...draft.videos.items];
@@ -283,58 +296,66 @@ export function ContentEditor({
 
           <Grupo
             titulo="Fundos das seções"
-            descricao="Fotos que aparecem como fundo suave nas áreas escuras do site. Deixe vazio para usar o fundo liso. Servem também para os anúncios que ainda não têm arte."
+            descricao="Cada seção tem a própria foto, com controle de intensidade e do modo de exibição. Deixe vazio para usar o fundo liso."
           >
-            <ImageField
-              rotulo="Fundo — Meus trabalhos"
-              valor={draft.fundos.trabalhos}
-              onChange={(valor) => set("fundos", { ...draft.fundos, trabalhos: valor })}
-            />
-            <ImageField
-              rotulo="Fundo — Como funciona"
-              valor={draft.fundos.comoFunciona}
-              onChange={(valor) => set("fundos", { ...draft.fundos, comoFunciona: valor })}
-            />
-            <ImageField
-              rotulo="Fundo — Vídeos"
-              valor={draft.fundos.videos}
-              onChange={(valor) => set("fundos", { ...draft.fundos, videos: valor })}
-            />
-            <ImageField
-              rotulo="Fundo — Dúvidas"
-              valor={draft.fundos.duvidas}
-              onChange={(valor) => set("fundos", { ...draft.fundos, duvidas: valor })}
-            />
-            <div className="space-y-3 border border-border/60 bg-background/40 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                  Intensidade das fotos de fundo
-                </Label>
-                <span className="font-display text-lg text-secondary">
-                  {draft.fundos.opacidade}%
-                </span>
-              </div>
-              <Slider
-                min={5}
-                max={85}
-                step={1}
-                value={[draft.fundos.opacidade]}
-                onValueChange={([valor]) =>
-                  set("fundos", { ...draft.fundos, opacidade: valor })
-                }
-              />
-              <p className="text-[11px] leading-relaxed text-muted-foreground">
-                Quanto maior, mais visível a foto atrás das seções. Acima de 60% pode
-                atrapalhar a leitura dos textos.
-              </p>
-            </div>
+            {FUNDO_CHAVES.map((chave) => {
+              const item = draft.fundos.itens[chave];
 
-            <ImageField
-              rotulo="Foto padrão dos anúncios sem arte"
-              valor={draft.fundos.cards}
-              onChange={(valor) => set("fundos", { ...draft.fundos, cards: valor })}
-              ajuda="Aparece nos cards de trabalhos que ainda não têm imagem própria."
-            />
+              return (
+                <div
+                  key={chave}
+                  className="space-y-3 rounded-sm border border-border/60 bg-background/40 p-4"
+                >
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-secondary">
+                    Fundo — {FUNDO_ROTULOS[chave]}
+                  </p>
+
+                  <ImageField
+                    rotulo="Foto"
+                    valor={item.src}
+                    onChange={(valor) => setFundo(chave, { src: valor })}
+                  />
+
+                  <div className="flex items-center justify-between gap-3">
+                    <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                      Opacidade / alpha
+                    </Label>
+                    <span className="font-display text-lg text-secondary">
+                      {item.opacidade}%
+                    </span>
+                  </div>
+                  <Slider
+                    min={5}
+                    max={100}
+                    step={1}
+                    value={[item.opacidade]}
+                    onValueChange={([valor]) => setFundo(chave, { opacidade: valor })}
+                  />
+
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                      Como exibir
+                    </Label>
+                    <Select
+                      value={item.modo}
+                      onValueChange={(valor) =>
+                        setFundo(chave, { modo: valor as ModoFoto })
+                      }
+                    >
+                      <SelectTrigger className="h-9 w-[230px] rounded-sm border-border bg-background/70 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sobreposicao">
+                          Sobreposição (fundo suave)
+                        </SelectItem>
+                        <SelectItem value="normal">Normal (foto visível)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              );
+            })}
           </Grupo>
 
           <Grupo titulo="Galeria de fotos">

@@ -15,6 +15,32 @@ export type SecaoKey =
   | "galeria"
   | "duvidas";
 
+export type ModoFoto = "sobreposicao" | "normal";
+
+export type FundoItem = {
+  src: string;
+  opacidade: number;
+  modo: ModoFoto;
+};
+
+export type FundoChave = "trabalhos" | "comoFunciona" | "videos" | "duvidas" | "cards";
+
+export const FUNDO_CHAVES: FundoChave[] = [
+  "trabalhos",
+  "comoFunciona",
+  "videos",
+  "duvidas",
+  "cards",
+];
+
+export const FUNDO_ROTULOS: Record<FundoChave, string> = {
+  trabalhos: "Meus trabalhos",
+  comoFunciona: "Como funciona",
+  videos: "Vídeos",
+  duvidas: "Dúvidas",
+  cards: "Cards sem arte",
+};
+
 export type AbaConfig = {
   label: string;
   hint: string;
@@ -80,12 +106,7 @@ export interface SiteContent {
   abas: { ordem: FrenteKey[]; inicial: FrenteKey; itens: Record<FrenteKey, AbaConfig> };
   secoes: { ordem: SecaoKey[] };
   fundos: {
-    trabalhos: string;
-    comoFunciona: string;
-    videos: string;
-    duvidas: string;
-    cards: string;
-    opacidade: number;
+    itens: Record<FundoChave, FundoItem>;
   };
   juridico: {
     responsavel: string;
@@ -205,12 +226,17 @@ export const DEFAULT_CONTENT: SiteContent = {
     ordem: ["trabalhos", "como-funciona", "corrente", "videos", "sobre", "galeria", "duvidas"],
   },
   fundos: {
-    trabalhos: "/images/galeria-terreiro.jpg",
-    comoFunciona: "/images/fundo-como-funciona.jpg",
-    videos: "/images/galeria-nomes.jpg",
-    duvidas: "/images/hero-altar-art.jpg",
-    cards: "/images/hero-altar-art.jpg",
-    opacidade: 45,
+    itens: {
+      trabalhos: { src: "/images/fundo-trabalhos.jpg", opacidade: 65, modo: "sobreposicao" },
+      comoFunciona: {
+        src: "/images/fundo-como-funciona.jpg",
+        opacidade: 65,
+        modo: "sobreposicao",
+      },
+      videos: { src: "/images/fundo-videos.jpg", opacidade: 65, modo: "sobreposicao" },
+      duvidas: { src: "/images/fundo-duvidas.jpg", opacidade: 65, modo: "sobreposicao" },
+      cards: { src: "/images/fundo-cards.jpg", opacidade: 70, modo: "normal" },
+    },
   },
   juridico: {
     responsavel: "Pai Tiago de Zé Malandro",
@@ -275,6 +301,49 @@ function mergeAbas(salvo: Record<string, unknown>, base: SiteContent["abas"]): S
     : base.inicial;
 
   return { ordem, inicial, itens };
+}
+
+function mergeFundos(
+  salvo: Record<string, unknown>,
+  base: SiteContent["fundos"],
+): SiteContent["fundos"] {
+  const brutos =
+    salvo.itens && typeof salvo.itens === "object"
+      ? (salvo.itens as Record<string, unknown>)
+      : {};
+  const global =
+    typeof salvo.opacidade === "number"
+      ? Math.min(100, Math.max(5, Math.round(salvo.opacidade)))
+      : 65;
+
+  const itens = { ...base.itens };
+
+  FUNDO_CHAVES.forEach((chave) => {
+    const padrao = base.itens[chave];
+    const atual = (brutos[chave] ?? {}) as Record<string, unknown>;
+    const legado = salvo[chave];
+
+    const src =
+      typeof atual.src === "string" && atual.src.trim() !== ""
+        ? atual.src
+        : typeof legado === "string" && legado.trim() !== ""
+          ? legado
+          : padrao.src;
+
+    const opacidade =
+      typeof atual.opacidade === "number"
+        ? Math.min(100, Math.max(5, Math.round(atual.opacidade)))
+        : global;
+
+    const modo =
+      atual.modo === "normal" || atual.modo === "sobreposicao"
+        ? (atual.modo as ModoFoto)
+        : padrao.modo;
+
+    itens[chave] = { src, opacidade, modo };
+  });
+
+  return { itens };
 }
 
 function mergeSecoes(salvo: unknown, base: SecaoKey[]): SecaoKey[] {
@@ -387,20 +456,7 @@ export function mergeContent(raw: unknown): SiteContent {
     },
     abas: mergeAbas(abas, base.abas),
     secoes: { ordem: mergeSecoes(secoes.ordem, base.secoes.ordem) },
-    fundos: {
-      trabalhos: typeof fundos.trabalhos === "string" ? fundos.trabalhos : base.fundos.trabalhos,
-      comoFunciona:
-        typeof fundos.comoFunciona === "string"
-          ? fundos.comoFunciona
-          : base.fundos.comoFunciona,
-      videos: typeof fundos.videos === "string" ? fundos.videos : base.fundos.videos,
-      duvidas: typeof fundos.duvidas === "string" ? fundos.duvidas : base.fundos.duvidas,
-      cards: typeof fundos.cards === "string" ? fundos.cards : base.fundos.cards,
-      opacidade:
-        typeof fundos.opacidade === "number"
-          ? Math.min(90, Math.max(5, Math.round(fundos.opacidade)))
-          : base.fundos.opacidade,
-    },
+    fundos: mergeFundos(fundos, base.fundos),
     juridico: {
       responsavel: texto(juridico.responsavel, base.juridico.responsavel),
       documento: typeof juridico.documento === "string" ? juridico.documento : base.juridico.documento,
@@ -421,6 +477,11 @@ export function mergeContent(raw: unknown): SiteContent {
       paymentNote: texto(contato.paymentNote, base.contato.paymentNote),
     },
   };
+}
+
+/** Fundo configurado de uma seção (sempre retorna algo válido). */
+export function fundoDe(content: SiteContent, chave: FundoChave): FundoItem {
+  return content.fundos?.itens?.[chave] ?? DEFAULT_CONTENT.fundos.itens[chave];
 }
 
 /** Lê o conteúdo salvo no backend (compatível com os campos antigos). */

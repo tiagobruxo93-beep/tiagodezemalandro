@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AdCard } from "@/components/site/ad-card";
 import type { Ad, FrenteKey, SiteSettings } from "@/lib/ads";
-import type { SiteContent } from "@/lib/site-content";
+import { fundoDe, type SiteContent } from "@/lib/site-content";
 import { SectionBackdrop } from "@/components/site/section-backdrop";
 
 export function AdsTabsSection({
@@ -58,10 +58,7 @@ export function AdsTabsSection({
       id="trabalhos"
       className="relative isolate scroll-mt-24 overflow-hidden pb-16 pt-8 sm:pb-24 sm:pt-10"
     >
-      <SectionBackdrop
-        src={content.fundos?.trabalhos}
-        opacidade={content.fundos?.opacidade}
-      />
+      <SectionBackdrop fundo={fundoDe(content, "trabalhos")} />
       <div className="section-shell">
         <div className="flex flex-col gap-8 border-b border-border/60 pb-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl">
@@ -156,7 +153,7 @@ export function AdsTabsSection({
                   ) : (
                     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                       {lista.map((ad) => (
-                        <AdCard key={ad.id} ad={ad} settings={settings} capaPadrao={content.fundos?.cards} />
+                        <AdCard key={ad.id} ad={ad} settings={settings} capaPadrao={fundoDe(content, "cards").src} />
                       ))}
                     </div>
                   )}

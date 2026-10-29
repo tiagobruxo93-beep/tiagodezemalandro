@@ -12,7 +12,7 @@ import { ManutencaoScreen } from "@/components/site/manutencao-screen";
 import { WhatsAppFab } from "@/components/site/whatsapp-fab";
 import { CookieNotice } from "@/components/site/cookie-notice";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
-import type { SecaoKey } from "@/lib/site-content";
+import { fundoDe, type SecaoKey } from "@/lib/site-content";
 
 const Index = () => {
   const { ads, loading } = useAds();
@@ -60,8 +60,7 @@ const Index = () => {
               return <VideosSection
                 key={secao}
                 videos={content.videos}
-                fundo={content.fundos?.videos}
-                opacidade={content.fundos?.opacidade}
+                fundo={fundoDe(content, "videos")}
               />;
             case "sobre":
               return (

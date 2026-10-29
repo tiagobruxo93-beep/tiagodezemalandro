@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Play } from "lucide-react";
 import { VideoCard, VideoSpotlight } from "@/components/site/video-card";
-import type { SiteContent } from "@/lib/site-content";
+import type { FundoItem, SiteContent } from "@/lib/site-content";
 import { SectionBackdrop } from "@/components/site/section-backdrop";
 
 const LIMITE_NA_HOME = 3;
@@ -9,11 +9,9 @@ const LIMITE_NA_HOME = 3;
 export function VideosSection({
   videos,
   fundo,
-  opacidade,
 }: {
   videos: SiteContent["videos"];
-  fundo?: string;
-  opacidade?: number;
+  fundo?: FundoItem;
 }) {
   const itens = videos.items.filter(
     (item) => item.url.trim() !== "" || item.title.trim() !== "",
@@ -26,7 +24,7 @@ export function VideosSection({
 
   return (
     <section id="videos" className="relative isolate scroll-mt-24 overflow-hidden py-20 sm:py-24">
-      <SectionBackdrop src={fundo} opacidade={opacidade} />
+      <SectionBackdrop fundo={fundo} />
       <div className="section-shell">
         <div className="mx-auto max-w-2xl text-center">
           <p className="eyebrow">{videos.eyebrow}</p>

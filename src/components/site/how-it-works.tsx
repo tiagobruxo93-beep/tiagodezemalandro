@@ -1,6 +1,6 @@
 import { safeUrl } from "@/lib/security";
 import { SectionBackdrop } from "@/components/site/section-backdrop";
-import { DEFAULT_CONTENT, type SiteContent } from "@/lib/site-content";
+import { DEFAULT_CONTENT, fundoDe, type SiteContent } from "@/lib/site-content";
 
 export function HowItWorks({ content }: { content: SiteContent }) {
   const bloco = content.steps;
@@ -9,10 +9,7 @@ export function HowItWorks({ content }: { content: SiteContent }) {
       id="como-funciona"
       className="relative isolate overflow-hidden py-20 sm:py-28"
     >
-      <SectionBackdrop
-        src={content.fundos?.comoFunciona}
-        opacidade={content.fundos?.opacidade}
-      />
+      <SectionBackdrop fundo={fundoDe(content, "comoFunciona")} />
       <div className="section-shell">
         <div className="mx-auto max-w-2xl text-center">
           <p className="eyebrow">{bloco.eyebrow}</p>
