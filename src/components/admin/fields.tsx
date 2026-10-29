@@ -420,7 +420,7 @@ export function MultiVideoField({
           onClick={() => arquivoRef.current?.click()}
         >
           {enviando ? <Loader2 className="animate-spin" /> : <Upload />}
-          {enviando ? "Enviando vídeos..." : "Subir vários vídeos"}
+          {enviando ? "Enviando vídeos..." : "Adicionar vídeos"}
         </Button>
 
         <div className="max-w-md space-y-1 text-[11px] leading-relaxed text-muted-foreground">

@@ -528,28 +528,12 @@ export function ContentEditor({
                     vira um card na seção "Assista e entenda".
                   </p>
                 </div>
-                <Button
-                  type="button"
-                  variant="hairline"
-                  size="sm"
-                  onClick={() =>
-                    set("videos", {
-                      ...draft.videos,
-                      items: [
-                        ...draft.videos.items,
-                        { title: "", text: "", url: "", cover: "" } as VideoItem,
-                      ],
-                    })
-                  }
-                >
-                  Adicionar vídeo
-                </Button>
               </div>
 
               {draft.videos.items.length === 0 && (
                 <p className="rounded-sm border border-dashed border-border/70 px-4 py-8 text-center text-[12px] text-muted-foreground">
-                  Nenhum vídeo ainda. Clique em "Adicionar vídeo" e envie o arquivo
-                  do seu computador.
+                  Nenhum vídeo ainda. Use o botão “Adicionar vídeos” acima: ele abre
+                  direto a pasta de arquivos do seu computador.
                 </p>
               )}
 
