@@ -75,12 +75,12 @@ const VideosPage = () => {
               </div>
             ) : (
               <>
-                <VideoSpotlight item={itens[0]} />
+                <VideoSpotlight item={itens[0]} altura={content.videos.alturaPlayer} />
 
                 {itens.length > 1 && (
                   <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {itens.slice(1).map((item, indice) => (
-                      <VideoCard key={`${item.title}-${indice}`} item={item} />
+                      <VideoCard key={`${item.title}-${indice}`} item={item} altura={content.videos.alturaPlayer} />
                     ))}
                   </div>
                 )}

@@ -141,6 +141,7 @@ export interface SiteContent {
     title: string;
     text: string;
     heroUrl: string;
+    alturaPlayer: number;
     items: VideoItem[];
   };
   eventos: EventosSecao;
@@ -226,6 +227,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     title: "Assista e entenda cada trabalho",
     text: "Vídeos explicando como os trabalhos são preparados e realizados no terreiro.",
     heroUrl: "",
+    alturaPlayer: 460,
     items: [],
   },
   eventos: {
@@ -538,6 +540,10 @@ export function mergeContent(raw: unknown): SiteContent {
       title: texto(videos.title, base.videos.title),
       text: texto(videos.text, base.videos.text),
       heroUrl: typeof videos.heroUrl === "string" ? videos.heroUrl : base.videos.heroUrl,
+      alturaPlayer:
+        typeof videos.alturaPlayer === "number"
+          ? Math.min(760, Math.max(260, Math.round(videos.alturaPlayer)))
+          : base.videos.alturaPlayer,
       items: Array.isArray(videos.items)
         ? (videos.items as VideoItem[]).map((item) => ({
             title: typeof item?.title === "string" ? item.title : "",

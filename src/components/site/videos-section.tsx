@@ -38,13 +38,13 @@ export function VideosSection({
 
         {destaque && (
           <div className="mt-12">
-            <VideoSpotlight item={destaque} />
+            <VideoSpotlight item={destaque} altura={videos.alturaPlayer} />
           </div>
         )}
 
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {outros.map((item, indice) => (
-            <VideoCard key={`${item.title}-${indice}`} item={item} />
+            <VideoCard key={`${item.title}-${indice}`} item={item} altura={videos.alturaPlayer} />
           ))}
 
           {itens.length === 0 &&

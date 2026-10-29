@@ -5,12 +5,12 @@ import type { VideoItem } from "@/lib/site-content";
 import { VideoStage } from "@/components/site/video-stage";
 
 /** Card de vídeo na grade. */
-export function VideoCard({ item }: { item: VideoItem }) {
+export function VideoCard({ item, altura }: { item: VideoItem; altura?: number }) {
   const link = item.link.trim();
 
   return (
     <article className="flex flex-col overflow-hidden rounded-sm border border-border/70 bg-card/50">
-      <VideoStage item={item} />
+      <VideoStage item={item} altura={altura} />
 
       <div className="flex flex-1 flex-col p-5">
         {item.text && (
@@ -44,12 +44,12 @@ export function VideoCard({ item }: { item: VideoItem }) {
 }
 
 /** Vídeo em destaque: ocupa a largura toda, no tamanho de um anúncio. */
-export function VideoSpotlight({ item }: { item: VideoItem }) {
+export function VideoSpotlight({ item, altura }: { item: VideoItem; altura?: number }) {
   const link = item.link.trim();
 
   return (
     <article className="overflow-hidden rounded-sm border border-border/70 bg-card/50">
-      <VideoStage item={item} destaque />
+      <VideoStage item={item} altura={altura} destaque />
 
       <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-2xl">
