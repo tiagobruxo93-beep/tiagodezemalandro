@@ -221,7 +221,7 @@ export async function fetchAdBySlug(slug: string): Promise<Ad | null> {
   return data ? mapAd(data as AdRow) : null;
 }
 
-export async function fetchSiteSettings(): Promise<SiteSettings> {
+async function carregarSiteSettings(): Promise<SiteSettings> {
   const { data, error } = await supabase
     .from("spiritual_site_settings")
     .select("*")
@@ -229,6 +229,18 @@ export async function fetchSiteSettings(): Promise<SiteSettings> {
     .maybeSingle();
   if (error) throw new Error(error.message);
   return mapSettings((data as SettingsRow | null) ?? null);
+}
+
+// Várias partes do site pedem a mesma linha: uma chamada só, compartilhada.
+let emVooSettings: Promise<SiteSettings> | null = null;
+
+export function fetchSiteSettings(): Promise<SiteSettings> {
+  if (!emVooSettings) {
+    emVooSettings = carregarSiteSettings().finally(() => {
+      emVooSettings = null;
+    });
+  }
+  return emVooSettings;
 }
 
 /**

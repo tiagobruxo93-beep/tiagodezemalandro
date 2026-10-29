@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { safeUrl } from "@/lib/security";
@@ -29,38 +29,20 @@ export function VideoStage({
 
   const alturaDoQuadro = destaque ? altura : Math.round(altura * 0.8);
 
-  // Sonda o arquivo para reservar o espaço já no formato certo.
-  useEffect(() => {
-    if (!embed || !direto) return;
-
-    const sonda = document.createElement("video");
-    sonda.preload = "metadata";
-    sonda.src = safeUrl(embed);
-    sonda.onloadedmetadata = () => {
-      if (sonda.videoWidth && sonda.videoHeight) {
-        const medida = sonda.videoWidth / sonda.videoHeight;
-        setRazao(medida);
-        onRazao?.(medida);
-      }
-    };
-
-    return () => {
-      sonda.onloadedmetadata = null;
-      sonda.removeAttribute("src");
-    };
-  }, [embed, direto, onRazao]);
-
   const conteudo = embed ? (
     direto ? (
       <video
         src={`${safeUrl(embed)}#t=0.6`}
+        poster={item.cover ? safeUrl(item.cover) : undefined}
         controls
         playsInline
         preload="metadata"
         onLoadedMetadata={(evento) => {
           const video = evento.currentTarget;
           if (video.videoWidth && video.videoHeight) {
-            setRazao(video.videoWidth / video.videoHeight);
+            const medida = video.videoWidth / video.videoHeight;
+            setRazao(medida);
+            onRazao?.(medida);
           }
         }}
         className="h-full w-full bg-black object-contain"

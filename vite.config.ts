@@ -5,7 +5,9 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const plugins = [
-    ...enterProdPlugin(),
+    // O index.html já declara só as duas fontes usadas; sem isso o build injeta
+    // ~20 famílias do Google, que travam a primeira pintura no celular.
+    ...enterProdPlugin({ injectGoogleFonts: false }),
   ];
   if (mode === 'development') {
     plugins.push(...enterDevPlugin());
@@ -24,6 +26,19 @@ export default defineConfig(({ mode }) => {
     base: '/',
     build: {
       outDir: 'dist',
+      manifest: true,
+      target: 'es2020',
+      cssCodeSplit: true,
+      rollupOptions: {
+        output: {
+          // Bibliotecas que quase nunca mudam ficam em arquivos próprios:
+          // o visitante que volta só baixa o que realmente mudou.
+          manualChunks: {
+            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+            'vendor-supabase': ['@supabase/supabase-js'],
+          },
+        },
+      },
     }
   };
 });

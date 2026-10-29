@@ -685,7 +685,7 @@ export function fundoDe(content: SiteContent, chave: FundoChave): FundoItem {
 }
 
 /** Lê o conteúdo salvo no backend (compatível com os campos antigos). */
-export async function fetchSiteContent(): Promise<SiteContent> {
+async function carregarSiteContent(): Promise<SiteContent> {
   const { data, error } = await supabase
     .from("spiritual_site_settings")
     .select("*")
@@ -711,6 +711,18 @@ export async function fetchSiteContent(): Promise<SiteContent> {
   content.contato.paymentNote = legado(String(row.payment_note ?? ""), content.contato.paymentNote);
 
   return content;
+}
+
+// Casca, cabeçalho e rastreamento pedem o mesmo conteúdo: uma chamada só.
+let emVooConteudo: Promise<SiteContent> | null = null;
+
+export function fetchSiteContent(): Promise<SiteContent> {
+  if (!emVooConteudo) {
+    emVooConteudo = carregarSiteContent().finally(() => {
+      emVooConteudo = null;
+    });
+  }
+  return emVooConteudo;
 }
 
 /** Salva o conteúdo (e mantém os campos antigos em sincronia). */

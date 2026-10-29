@@ -1,0 +1,341 @@
+{
+  "base": "/",
+  "budgets": {
+    "initialJsBrotli": 256000,
+    "initialJsRaw": 1000000
+  },
+  "routes": [
+    {
+      "url": "/",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "public",
+      "initialDynamicImports": [],
+      "deferredDynamicImports": [
+        {
+          "key": "src/pages/AdPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página de anúncio individual, aberta por link"
+        },
+        {
+          "key": "src/pages/VideosPage.tsx",
+          "trigger": "navigation",
+          "reason": "Lista completa de vídeos"
+        },
+        {
+          "key": "src/pages/Admin.tsx",
+          "trigger": "navigation",
+          "reason": "Painel administrativo em rota secreta"
+        },
+        {
+          "key": "src/pages/PrivacyPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/TermsPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/RefundPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/NotFound.tsx",
+          "trigger": "navigation",
+          "reason": "Fallback de endereço inexistente"
+        },
+        {
+          "key": "_heic2any-C3hLhVBt.js",
+          "trigger": "interaction",
+          "reason": "Conversor de foto HEIC/HEIF, usado só quando o painel envia foto de iPhone"
+        }
+      ],
+      "initialFonts": []
+    },
+    {
+      "url": "/anuncio/consulta-presencial",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "public",
+      "initialDynamicImports": [
+        "src/pages/AdPage.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "src/pages/VideosPage.tsx",
+          "trigger": "navigation",
+          "reason": "Lista completa de vídeos"
+        },
+        {
+          "key": "src/pages/Admin.tsx",
+          "trigger": "navigation",
+          "reason": "Painel administrativo em rota secreta"
+        },
+        {
+          "key": "src/pages/PrivacyPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/TermsPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/RefundPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/NotFound.tsx",
+          "trigger": "navigation",
+          "reason": "Fallback de endereço inexistente"
+        },
+        {
+          "key": "_heic2any-C3hLhVBt.js",
+          "trigger": "interaction",
+          "reason": "Conversor de foto HEIC/HEIF, usado só quando o painel envia foto de iPhone"
+        }
+      ],
+      "initialFonts": []
+    },
+    {
+      "url": "/videos",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "public",
+      "initialDynamicImports": [
+        "src/pages/VideosPage.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "src/pages/AdPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página de anúncio individual, aberta por link"
+        },
+        {
+          "key": "src/pages/Admin.tsx",
+          "trigger": "navigation",
+          "reason": "Painel administrativo em rota secreta"
+        },
+        {
+          "key": "src/pages/PrivacyPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/TermsPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/RefundPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/NotFound.tsx",
+          "trigger": "navigation",
+          "reason": "Fallback de endereço inexistente"
+        },
+        {
+          "key": "_heic2any-C3hLhVBt.js",
+          "trigger": "interaction",
+          "reason": "Conversor de foto HEIC/HEIF, usado só quando o painel envia foto de iPhone"
+        }
+      ],
+      "initialFonts": []
+    },
+    {
+      "url": "/privacidade",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "public",
+      "initialDynamicImports": [
+        "src/pages/PrivacyPage.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "src/pages/AdPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página de anúncio individual, aberta por link"
+        },
+        {
+          "key": "src/pages/VideosPage.tsx",
+          "trigger": "navigation",
+          "reason": "Lista completa de vídeos"
+        },
+        {
+          "key": "src/pages/Admin.tsx",
+          "trigger": "navigation",
+          "reason": "Painel administrativo em rota secreta"
+        },
+        {
+          "key": "src/pages/TermsPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/RefundPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/NotFound.tsx",
+          "trigger": "navigation",
+          "reason": "Fallback de endereço inexistente"
+        },
+        {
+          "key": "_heic2any-C3hLhVBt.js",
+          "trigger": "interaction",
+          "reason": "Conversor de foto HEIC/HEIF, usado só quando o painel envia foto de iPhone"
+        }
+      ],
+      "initialFonts": []
+    },
+    {
+      "url": "/termos",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "public",
+      "initialDynamicImports": [
+        "src/pages/TermsPage.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "src/pages/AdPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página de anúncio individual, aberta por link"
+        },
+        {
+          "key": "src/pages/VideosPage.tsx",
+          "trigger": "navigation",
+          "reason": "Lista completa de vídeos"
+        },
+        {
+          "key": "src/pages/Admin.tsx",
+          "trigger": "navigation",
+          "reason": "Painel administrativo em rota secreta"
+        },
+        {
+          "key": "src/pages/PrivacyPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/RefundPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/NotFound.tsx",
+          "trigger": "navigation",
+          "reason": "Fallback de endereço inexistente"
+        },
+        {
+          "key": "_heic2any-C3hLhVBt.js",
+          "trigger": "interaction",
+          "reason": "Conversor de foto HEIC/HEIF, usado só quando o painel envia foto de iPhone"
+        }
+      ],
+      "initialFonts": []
+    },
+    {
+      "url": "/reembolso",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "public",
+      "initialDynamicImports": [
+        "src/pages/RefundPage.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "src/pages/AdPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página de anúncio individual, aberta por link"
+        },
+        {
+          "key": "src/pages/VideosPage.tsx",
+          "trigger": "navigation",
+          "reason": "Lista completa de vídeos"
+        },
+        {
+          "key": "src/pages/Admin.tsx",
+          "trigger": "navigation",
+          "reason": "Painel administrativo em rota secreta"
+        },
+        {
+          "key": "src/pages/PrivacyPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/TermsPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/NotFound.tsx",
+          "trigger": "navigation",
+          "reason": "Fallback de endereço inexistente"
+        },
+        {
+          "key": "_heic2any-C3hLhVBt.js",
+          "trigger": "interaction",
+          "reason": "Conversor de foto HEIC/HEIF, usado só quando o painel envia foto de iPhone"
+        }
+      ],
+      "initialFonts": []
+    },
+    {
+      "url": "/painel-do-pai-tiago-93k",
+      "html": "index.html",
+      "entry": "index.html",
+      "kind": "app",
+      "initialDynamicImports": [
+        "src/pages/Admin.tsx"
+      ],
+      "deferredDynamicImports": [
+        {
+          "key": "src/pages/AdPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página de anúncio individual, aberta por link"
+        },
+        {
+          "key": "src/pages/VideosPage.tsx",
+          "trigger": "navigation",
+          "reason": "Lista completa de vídeos"
+        },
+        {
+          "key": "src/pages/PrivacyPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/TermsPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/RefundPage.tsx",
+          "trigger": "navigation",
+          "reason": "Página legal aberta pelo rodapé"
+        },
+        {
+          "key": "src/pages/NotFound.tsx",
+          "trigger": "navigation",
+          "reason": "Fallback de endereço inexistente"
+        },
+        {
+          "key": "_heic2any-C3hLhVBt.js",
+          "trigger": "interaction",
+          "reason": "Conversor de foto HEIC/HEIF, usado só quando o painel envia foto de iPhone"
+        }
+      ],
+      "initialFonts": []
+    }
+  ]
+}

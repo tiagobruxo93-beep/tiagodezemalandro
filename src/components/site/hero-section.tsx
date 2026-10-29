@@ -41,6 +41,18 @@ export function HeroSection({
   const [videoPronto, setVideoPronto] = useState(false);
   const [mudo, setMudo] = useState(true);
   const [usarVideo, setUsarVideo] = useState(true);
+  const [telaGrande, setTelaGrande] = useState(
+    () => typeof window === "undefined" || window.matchMedia("(min-width: 768px)").matches,
+  );
+
+  // No celular fica só a foto do topo: o vídeo de fundo pesa vários MB e atrasa a abertura.
+  useEffect(() => {
+    const consulta = window.matchMedia("(min-width: 768px)");
+    const aoMudar = () => setTelaGrande(consulta.matches);
+
+    consulta.addEventListener("change", aoMudar);
+    return () => consulta.removeEventListener("change", aoMudar);
+  }, []);
 
   // Em conexão econômica/lenta, mantém a imagem em vez de baixar o vídeo.
   useEffect(() => {
@@ -58,8 +70,8 @@ export function HeroSection({
     const lenta =
       Boolean(conexao?.saveData) || /(^|-)2g$|(^|-)3g$/.test(conexao?.effectiveType ?? "");
 
-    setUsarVideo(!lenta);
-  }, [videoFundo]);
+    setUsarVideo(!lenta && telaGrande);
+  }, [videoFundo, telaGrande]);
 
   const fundo = usarVideo ? videoFundo : undefined;
 
@@ -141,7 +153,7 @@ export function HeroSection({
             muted={mudo}
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             disablePictureInPicture
             disableRemotePlayback
             controls={false}

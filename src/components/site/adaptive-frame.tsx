@@ -32,6 +32,8 @@ export function AdaptiveFrame({
         src={safeUrl(src)}
         alt={alt}
         loading={priority ? "eager" : "lazy"}
+        decoding="async"
+        fetchPriority={priority ? "high" : "auto"}
         onLoad={(evento) => {
           const imagem = evento.currentTarget;
           if (!imagem.naturalWidth || !imagem.naturalHeight) return;

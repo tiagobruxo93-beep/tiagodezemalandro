@@ -1,11 +1,15 @@
+import { lazy } from "react";
 import Index from "./pages/Index";
-import AdPage from "./pages/AdPage";
-import VideosPage from "./pages/VideosPage";
-import PrivacyPage from "./pages/PrivacyPage";
-import TermsPage from "./pages/TermsPage";
-import RefundPage from "./pages/RefundPage";
-import Admin from "./pages/Admin";
-import NotFound from "./pages/NotFound";
+
+// A home vai no pacote inicial; o resto carrega só quando a pessoa abre a página.
+// Isso reduz bastante o download no celular (painel e páginas legais são pesados).
+const AdPage = lazy(() => import("./pages/AdPage"));
+const VideosPage = lazy(() => import("./pages/VideosPage"));
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
+const TermsPage = lazy(() => import("./pages/TermsPage"));
+const RefundPage = lazy(() => import("./pages/RefundPage"));
+const Admin = lazy(() => import("./pages/Admin"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 export const routers = [
   {
