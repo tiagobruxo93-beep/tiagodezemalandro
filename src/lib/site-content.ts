@@ -23,13 +23,20 @@ export type FundoItem = {
   modo: ModoFoto;
 };
 
-export type FundoChave = "trabalhos" | "comoFunciona" | "videos" | "duvidas" | "cards";
+export type FundoChave =
+  | "trabalhos"
+  | "comoFunciona"
+  | "videos"
+  | "duvidas"
+  | "galeria"
+  | "cards";
 
 export const FUNDO_CHAVES: FundoChave[] = [
   "trabalhos",
   "comoFunciona",
   "videos",
   "duvidas",
+  "galeria",
   "cards",
 ];
 
@@ -38,6 +45,7 @@ export const FUNDO_ROTULOS: Record<FundoChave, string> = {
   comoFunciona: "Como funciona",
   videos: "Vídeos",
   duvidas: "Dúvidas",
+  galeria: "Fotos do terreiro",
   cards: "Cards sem arte",
 };
 
@@ -227,7 +235,11 @@ export const DEFAULT_CONTENT: SiteContent = {
   },
   fundos: {
     itens: {
-      trabalhos: { src: "/images/fundo-trabalhos.jpg", opacidade: 65, modo: "sobreposicao" },
+      trabalhos: {
+        src: "/images/fundo-escolha-trabalho.jpg",
+        opacidade: 65,
+        modo: "sobreposicao",
+      },
       comoFunciona: {
         src: "/images/fundo-como-funciona.jpg",
         opacidade: 65,
@@ -235,6 +247,7 @@ export const DEFAULT_CONTENT: SiteContent = {
       },
       videos: { src: "/images/fundo-videos.jpg", opacidade: 65, modo: "sobreposicao" },
       duvidas: { src: "/images/fundo-duvidas.jpg", opacidade: 65, modo: "sobreposicao" },
+      galeria: { src: "/images/fundo-galeria.jpg", opacidade: 65, modo: "sobreposicao" },
       cards: { src: "/images/fundo-cards.jpg", opacidade: 70, modo: "normal" },
     },
   },

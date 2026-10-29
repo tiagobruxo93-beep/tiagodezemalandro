@@ -1,0 +1,13 @@
+update public.spiritual_site_settings
+set content = jsonb_set(
+  jsonb_set(
+    coalesce(content, '{}'::jsonb),
+    '{fundos,itens,trabalhos}',
+    '{"src":"/images/fundo-escolha-trabalho.jpg","opacidade":65,"modo":"sobreposicao"}'::jsonb,
+    true
+  ),
+  '{fundos,itens,galeria}',
+  '{"src":"/images/fundo-galeria.jpg","opacidade":65,"modo":"sobreposicao"}'::jsonb,
+  true
+)
+where id = 1;

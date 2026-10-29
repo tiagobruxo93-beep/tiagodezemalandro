@@ -1,5 +1,6 @@
 import { safeUrl } from "@/lib/security";
-import { DEFAULT_CONTENT, type SiteContent } from "@/lib/site-content";
+import { DEFAULT_CONTENT, fundoDe, type SiteContent } from "@/lib/site-content";
+import { SectionBackdrop } from "@/components/site/section-backdrop";
 
 function GalleryItem({ foto }: { foto: { url: string; alt: string } }) {
   return (
@@ -40,7 +41,11 @@ export function GalleryStrip({ content }: { content: SiteContent }) {
   if (fotos.length === 0) return null;
 
   return (
-    <section className="py-16 sm:py-20">
+    <section
+      id="galeria"
+      className="relative isolate overflow-hidden py-16 sm:py-20"
+    >
+      <SectionBackdrop fundo={fundoDe(content, "galeria")} />
       <div className="section-shell">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

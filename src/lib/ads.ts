@@ -144,6 +144,8 @@ export const IMAGE_LIBRARY = [
   { label: "Pai Tiago (foto)", value: "/images/pai-tiago.jpg" },
   { label: "Fundo — altar de quimbanda", value: "/images/fundo-trabalhos.jpg" },
   { label: "Fundo — como funciona", value: "/images/fundo-como-funciona.jpg" },
+  { label: "Fundo — escolha o seu trabalho", value: "/images/fundo-escolha-trabalho.jpg" },
+  { label: "Fundo — fotos do terreiro", value: "/images/fundo-galeria.jpg" },
   { label: "Fundo — círculo ritual", value: "/images/fundo-videos.jpg" },
   { label: "Fundo — portal gótico", value: "/images/fundo-duvidas.jpg" },
   { label: "Fundo — vertical (cards)", value: "/images/fundo-cards.jpg" },
