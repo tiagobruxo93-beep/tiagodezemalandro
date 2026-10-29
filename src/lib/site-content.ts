@@ -38,6 +38,7 @@ export type ApoieSecao = {
   link: string;
   imagem: string;
   opacidade: number;
+  tamanhoQr: number;
 };
 
 export type EventosSecao = {
@@ -266,6 +267,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     link: "",
     imagem: "/images/fundo-ajude.jpg",
     opacidade: 65,
+    tamanhoQr: 208,
   },
   faq: {
     eyebrow: "Dúvidas",
@@ -575,6 +577,10 @@ export function mergeContent(raw: unknown): SiteContent {
         typeof apoie.opacidade === "number"
           ? Math.min(100, Math.max(10, Math.round(apoie.opacidade)))
           : base.apoie.opacidade,
+      tamanhoQr:
+        typeof apoie.tamanhoQr === "number"
+          ? Math.min(340, Math.max(120, Math.round(apoie.tamanhoQr)))
+          : base.apoie.tamanhoQr,
     },
     faq: {
       eyebrow: texto(faq.eyebrow, base.faq.eyebrow),

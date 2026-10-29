@@ -75,12 +75,12 @@ export function ApoieSection({
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-[320px]">
+          <div className="mx-auto w-full max-w-[360px]">
             <div className="rounded-sm border border-secondary/30 bg-card/60 p-4 backdrop-blur-sm">
               <div className="flex items-center justify-center bg-[hsl(38_45%_94%)] p-4">
                 <QRCodeSVG
                   value={link}
-                  size={208}
+                  size={Math.min(340, Math.max(120, bloco.tamanhoQr ?? 208))}
                   level="M"
                   marginSize={2}
                   bgColor="#f3ece0"

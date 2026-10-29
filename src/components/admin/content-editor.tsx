@@ -797,6 +797,30 @@ export function ContentEditor({
                 }
               />
             </div>
+
+            <div className="space-y-3 rounded-sm border border-border/60 bg-background/40 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                  Tamanho do QR code
+                </Label>
+                <span className="font-display text-lg text-secondary">
+                  {draft.apoie.tamanhoQr}px
+                </span>
+              </div>
+              <Slider
+                min={120}
+                max={340}
+                step={4}
+                value={[draft.apoie.tamanhoQr]}
+                onValueChange={([valor]) =>
+                  set("apoie", { ...draft.apoie, tamanhoQr: valor })
+                }
+              />
+              <p className="text-[11px] leading-relaxed text-muted-foreground">
+                Entre 120 e 340 pixels. Quanto maior, mais fácil de ler de longe —
+                abaixo de 160 px pode dificultar a leitura em celulares antigos.
+              </p>
+            </div>
           </Grupo>
         </TabsContent>
 
