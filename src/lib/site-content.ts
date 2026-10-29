@@ -161,7 +161,13 @@ export interface SiteContent {
   };
   manutencao: { ativo: boolean; mensagem: string };
   rodape: { note: string };
-  contato: { whatsapp: string; instagram: string; paymentNote: string };
+  contato: {
+    whatsapp: string;
+    whatsappNumero: string;
+    instagram: string;
+    paymentNote: string;
+  };
+  marketing: { metaPixel: string; ga4: string };
 }
 
 export const DEFAULT_CONTENT: SiteContent = {
@@ -353,9 +359,11 @@ export const DEFAULT_CONTENT: SiteContent = {
   rodape: { note: "Tradição, sigilo e axé em cada firmeza." },
   contato: {
     whatsapp: "5511999999999",
+    whatsappNumero: "",
     instagram: "https://www.instagram.com/tiagodezemalandro/",
     paymentNote: "Pagamento processado com segurança pela Cakto",
   },
+  marketing: { metaPixel: "", ga4: "" },
 };
 
 function texto(valor: unknown, padrao: string) {
@@ -491,6 +499,7 @@ export function mergeContent(raw: unknown): SiteContent {
   const manutencao = bloco("manutencao");
   const rodape = bloco("rodape");
   const contato = bloco("contato");
+  const marketing = bloco("marketing");
 
   return {
     hero: {
@@ -613,8 +622,17 @@ export function mergeContent(raw: unknown): SiteContent {
     rodape: { note: texto(rodape.note, base.rodape.note) },
     contato: {
       whatsapp: texto(contato.whatsapp, base.contato.whatsapp),
+      whatsappNumero:
+        typeof contato.whatsappNumero === "string"
+          ? contato.whatsappNumero
+          : base.contato.whatsappNumero,
       instagram: texto(contato.instagram, base.contato.instagram),
       paymentNote: texto(contato.paymentNote, base.contato.paymentNote),
+    },
+    marketing: {
+      metaPixel:
+        typeof marketing.metaPixel === "string" ? marketing.metaPixel : base.marketing.metaPixel,
+      ga4: typeof marketing.ga4 === "string" ? marketing.ga4 : base.marketing.ga4,
     },
   };
 }

@@ -2,27 +2,22 @@ import { useEffect, useState } from "react";
 import { Cookie, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { CHAVE_CONSENTIMENTO, registrarConsentimento } from "@/lib/tracking";
 
-const CHAVE = "paitiago:aviso-cookies";
-
-/** Aviso de cookies/preferências (o site não usa cookies de rastreamento). */
+/** Aviso de cookies: a medição de campanhas só liga depois do aceite. */
 export function CookieNotice() {
   const [visivel, setVisivel] = useState(false);
 
   useEffect(() => {
     try {
-      if (!window.localStorage.getItem(CHAVE)) setVisivel(true);
+      if (!window.localStorage.getItem(CHAVE_CONSENTIMENTO)) setVisivel(true);
     } catch {
       // Navegador bloqueando armazenamento: não mostra o aviso.
     }
   }, []);
 
-  const aceitar = () => {
-    try {
-      window.localStorage.setItem(CHAVE, "1");
-    } catch {
-      // sem problema: o aviso apenas volta na próxima visita
-    }
+  const decidir = (aceito: boolean) => {
+    registrarConsentimento(aceito);
     setVisivel(false);
   };
 
@@ -33,7 +28,7 @@ export function CookieNotice() {
       <div className="relative border border-border/80 bg-card/95 p-4 shadow-elegant backdrop-blur">
         <button
           type="button"
-          onClick={aceitar}
+          onClick={() => decidir(false)}
           aria-label="Fechar aviso"
           className="absolute right-3 top-3 text-muted-foreground transition-colors hover:text-foreground"
         >
@@ -46,18 +41,22 @@ export function CookieNotice() {
         </p>
 
         <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
-          Este site <strong className="text-foreground">não usa cookies de rastreamento</strong>.
-          Guardamos apenas no seu próprio navegador as preferências (como o aviso já
-          aceito) e um código anônimo para contar acessos, sem identificar você.{" "}
+          Guardamos no seu navegador as preferências do site e um código anônimo para
+          contar acessos. Se você aceitar, também usamos ferramentas de medição
+          (Meta e Google) para entender quais páginas trazem visitas. Você pode
+          recusar e continuar navegando normalmente.{" "}
           <Link to="/privacidade" className="text-secondary underline-offset-4 hover:underline">
             Ver detalhes
           </Link>
           .
         </p>
 
-        <div className="mt-3 flex gap-2">
-          <Button type="button" variant="forward" size="sm" onClick={aceitar}>
-            Entendi
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button type="button" variant="forward" size="sm" onClick={() => decidir(true)}>
+            Aceitar
+          </Button>
+          <Button type="button" variant="hairline" size="sm" onClick={() => decidir(false)}>
+            Somente essenciais
           </Button>
           <Button asChild variant="ghost" size="sm">
             <Link to="/privacidade">Privacidade</Link>

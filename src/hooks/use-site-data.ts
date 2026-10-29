@@ -18,6 +18,18 @@ import { gravarCache, lerCache } from "@/lib/cache";
 const CACHE_ANUNCIOS = "anuncios";
 const CACHE_CONTEUDO = "conteudo";
 
+/**
+ * Quando o número do WhatsApp é informado, os links passam a ser diretos
+ * (wa.me/NÚMERO), o que permite mensagem pronta e identificação de cada oferta.
+ */
+function comNumeroDeWhatsApp(settings: SiteSettings, content: SiteContent): SiteSettings {
+  const digitos = (content.contato.whatsappNumero || "").replace(/\D/g, "");
+  if (digitos.length < 10) return settings;
+
+  const numero = digitos.startsWith("55") ? digitos : `55${digitos}`;
+  return { ...settings, whatsappNumber: `https://wa.me/${numero}` };
+}
+
 export function useAds() {
   const [ads, setAds] = useState<Ad[]>(() => lerCache<Ad[]>(CACHE_ANUNCIOS) ?? []);
   const [loading, setLoading] = useState(true);
@@ -62,13 +74,17 @@ export function useSiteSettings() {
   const reload = useCallback(async () => {
     try {
       const [dados, texto] = await Promise.all([fetchSiteSettings(), fetchSiteContent()]);
-      setSettings(dados);
+      const comNumero = comNumeroDeWhatsApp(dados, texto);
+      setSettings(comNumero);
       setContent(texto);
-      gravarCache(CACHE_CONTEUDO, { settings: dados, content: texto });
+      gravarCache(CACHE_CONTEUDO, { settings: comNumero, content: texto });
     } catch {
       const reserva = lerCache<{ settings: SiteSettings; content: SiteContent }>(CACHE_CONTEUDO);
-      setSettings(reserva ? reserva.settings : DEFAULT_SETTINGS);
-      setContent(reserva ? mergeContent(reserva.content) : DEFAULT_CONTENT);
+      const conteudo = reserva ? mergeContent(reserva.content) : DEFAULT_CONTENT;
+      setSettings(
+        reserva ? comNumeroDeWhatsApp(reserva.settings, conteudo) : DEFAULT_SETTINGS,
+      );
+      setContent(conteudo);
     } finally {
       setLoading(false);
     }

@@ -17,10 +17,20 @@ const PrivacyPage = () => {
       titulo="Privacidade e cookies"
       resumo="O que o site guarda no seu navegador, como os acessos são contados e quais são os seus direitos como titular de dados (LGPD)."
     >
-      <LegalSection titulo="Cookies de rastreamento">
+      <LegalSection titulo="Cookies e medição de audiência">
         <p>
-          O site <strong className="text-foreground">não usa cookies de rastreamento</strong>,
-          pixels de redes sociais ou publicidade. Você não é seguido pela navegação.
+          O site guarda no seu navegador as preferências de navegação e um código
+          anônimo para contar acessos.{" "}
+          <strong className="text-foreground">Somente com o seu consentimento</strong>{" "}
+          carregamos ferramentas de medição do Meta (Facebook/Instagram) e do Google,
+          que registram a página visitada, o clique no WhatsApp e o início de um
+          checkout. Essas ferramentas podem gravar cookies de publicidade para mostrar
+          anúncios a quem já visitou o site.
+        </p>
+        <p>
+          Nada é carregado antes do seu aceite no aviso de cookies, e você pode recusar
+          e continuar navegando normalmente. Para mudar a escolha depois, limpe os dados
+          do site nas configurações do navegador: o aviso aparece novamente.
         </p>
       </LegalSection>
 
@@ -63,9 +73,10 @@ const PrivacyPage = () => {
       <LegalSection titulo="Base legal e finalidade">
         <p>
           Tratamos apenas dados necessários para: (i) executar o trabalho contratado,
-          (ii) atender você pelo WhatsApp, (iii) medir acessos de forma anônima e
-          (iv) cumprir obrigações legais. Não vendemos e não cedemos dados pessoais a
-          terceiros para marketing.
+          (ii) atender você pelo WhatsApp, (iii) medir acessos de forma anônima,
+          (iv) medir a eficácia das campanhas com o seu consentimento (art. 7º, I, da
+          LGPD) e (v) cumprir obrigações legais. Não vendemos e não cedemos dados
+          pessoais a terceiros para marketing.
         </p>
       </LegalSection>
 
