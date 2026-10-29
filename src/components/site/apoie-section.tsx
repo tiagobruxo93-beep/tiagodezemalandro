@@ -93,9 +93,6 @@ export function ApoieSection({
                 <ScanLine className="h-3.5 w-3.5" />
                 Aponte a câmera do celular
               </p>
-              <p className="mt-2 break-all text-center text-[11px] leading-relaxed text-muted-foreground">
-                {link.length > 64 ? `${link.slice(0, 64)}…` : link}
-              </p>
             </div>
           </div>
         </div>
