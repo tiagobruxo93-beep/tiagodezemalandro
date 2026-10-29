@@ -1,6 +1,5 @@
 import { Heart, ScanLine } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-import { Button } from "@/components/ui/button";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
 import { safeUrl } from "@/lib/security";
 import type { SiteContent } from "@/lib/site-content";
@@ -62,17 +61,9 @@ export function ApoieSection({
               {bloco.texto}
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button asChild variant="forward" size="lg">
-                <a href={link} target="_blank" rel="noopener noreferrer">
-                  {bloco.botao}
-                  <Heart />
-                </a>
-              </Button>
-              <span className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                Qualquer valor · do jeito que puder
-              </span>
-            </div>
+            <p className="mt-8 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+              Qualquer valor · do jeito que puder
+            </p>
           </div>
 
           <div className="mx-auto w-full max-w-[320px]">
