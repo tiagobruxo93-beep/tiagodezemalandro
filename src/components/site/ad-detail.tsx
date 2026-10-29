@@ -248,7 +248,7 @@ export function AdDetail({
               <div>
                 <p className="eyebrow">Na mesma frente</p>
                 <h2 className="mt-3 font-display text-3xl text-foreground sm:text-4xl">
-                  Outros {meta.plural.toLowerCase()}
+                  Veja também
                 </h2>
               </div>
               <Link

@@ -7,6 +7,7 @@ import { AboutSection } from "@/components/site/about-section";
 import { GalleryStrip } from "@/components/site/gallery-strip";
 import { FaqSection } from "@/components/site/faq-section";
 import { VideosSection } from "@/components/site/videos-section";
+import { EventosSection } from "@/components/site/eventos-section";
 import { SiteFooter } from "@/components/site/site-footer";
 import { ManutencaoScreen } from "@/components/site/manutencao-screen";
 import { WhatsAppFab } from "@/components/site/whatsapp-fab";
@@ -68,6 +69,10 @@ const Index = () => {
               );
             case "galeria":
               return <GalleryStrip key={secao} content={content} />;
+            case "eventos":
+              return (
+                <EventosSection key={secao} content={content} settings={settings} />
+              );
             case "duvidas":
               return <FaqSection key={secao} content={content} />;
             default:

@@ -13,6 +13,7 @@ export type SecaoKey =
   | "videos"
   | "sobre"
   | "galeria"
+  | "eventos"
   | "duvidas";
 
 export type ModoFoto = "sobreposicao" | "normal";
@@ -21,6 +22,21 @@ export type FundoItem = {
   src: string;
   opacidade: number;
   modo: ModoFoto;
+};
+
+export type BeneficioEvento = { titulo: string; texto: string };
+
+export type EventosSecao = {
+  ativo: boolean;
+  eyebrow: string;
+  titulo: string;
+  destaque: string;
+  texto: string;
+  beneficios: BeneficioEvento[];
+  botao: string;
+  mensagem: string;
+  imagem: string;
+  opacidade: number;
 };
 
 export type FundoChave =
@@ -65,6 +81,7 @@ export const SECOES_META: Record<SecaoKey, { label: string; descricao: string }>
   videos: { label: "Vídeos", descricao: "Seção de vídeos (se houver vídeo)" },
   sobre: { label: "Sobre mim", descricao: "Apresentação, foto e números" },
   galeria: { label: "Galeria", descricao: "Fotos do terreiro" },
+  eventos: { label: "Eventos (VIP)", descricao: "Contato profissional e presença em eventos" },
   duvidas: { label: "Dúvidas", descricao: "Perguntas frequentes" },
 };
 
@@ -110,6 +127,7 @@ export interface SiteContent {
     heroUrl: string;
     items: VideoItem[];
   };
+  eventos: EventosSecao;
   faq: { eyebrow: string; title: string; highlight: string; intro: string; items: FaqItem[] };
   abas: { ordem: FrenteKey[]; inicial: FrenteKey; itens: Record<FrenteKey, AbaConfig> };
   secoes: { ordem: SecaoKey[] };
@@ -193,6 +211,32 @@ export const DEFAULT_CONTENT: SiteContent = {
     heroUrl: "",
     items: [],
   },
+  eventos: {
+    ativo: true,
+    eyebrow: "Contato profissional",
+    titulo: "Leve o Pai Tiago",
+    destaque: "ao seu evento.",
+    texto:
+      "Atendimento exclusivo para festas, casas, lojas e eventos privados. O Pai Tiago vai até você com a firmeza, o axé e a presença VIP que o seu evento merece — hora marcada, discrição e ritual preparado no local.",
+    beneficios: [
+      {
+        titulo: "Presença VIP",
+        texto: "Recepção reservada, com o ritual preparado no local do evento.",
+      },
+      {
+        titulo: "Ritual sob medida",
+        texto: "A firmeza é montada para o seu evento, com os materiais certos.",
+      },
+      {
+        titulo: "Discrição total",
+        texto: "Atendimento reservado, sem exposição de quem contrata.",
+      },
+    ],
+    botao: "Quero a presença VIP",
+    mensagem: "Olá, Pai Tiago! Quero levar a sua presença VIP para o meu evento.",
+    imagem: "/images/fundo-evento.jpg",
+    opacidade: 70,
+  },
   faq: {
     eyebrow: "Dúvidas",
     title: "Perguntas",
@@ -231,7 +275,16 @@ export const DEFAULT_CONTENT: SiteContent = {
     },
   },
   secoes: {
-    ordem: ["trabalhos", "como-funciona", "corrente", "videos", "sobre", "galeria", "duvidas"],
+    ordem: [
+      "trabalhos",
+      "como-funciona",
+      "corrente",
+      "videos",
+      "sobre",
+      "galeria",
+      "eventos",
+      "duvidas",
+    ],
   },
   fundos: {
     itens: {
@@ -394,6 +447,7 @@ export function mergeContent(raw: unknown): SiteContent {
   const sobre = bloco("sobre");
   const galeria = bloco("galeria");
   const videos = bloco("videos");
+  const eventos = bloco("eventos");
   const faq = bloco("faq");
   const abas = bloco("abas");
   const secoes = bloco("secoes");
@@ -459,6 +513,21 @@ export function mergeContent(raw: unknown): SiteContent {
             link: typeof item?.link === "string" ? item.link : "",
           }))
         : base.videos.items,
+    },
+    eventos: {
+      ativo: typeof eventos.ativo === "boolean" ? eventos.ativo : base.eventos.ativo,
+      eyebrow: texto(eventos.eyebrow, base.eventos.eyebrow),
+      titulo: texto(eventos.titulo, base.eventos.titulo),
+      destaque: texto(eventos.destaque, base.eventos.destaque),
+      texto: texto(eventos.texto, base.eventos.texto),
+      beneficios: lista<BeneficioEvento>(eventos.beneficios, base.eventos.beneficios),
+      botao: texto(eventos.botao, base.eventos.botao),
+      mensagem: texto(eventos.mensagem, base.eventos.mensagem),
+      imagem: texto(eventos.imagem, base.eventos.imagem),
+      opacidade:
+        typeof eventos.opacidade === "number"
+          ? Math.min(100, Math.max(10, Math.round(eventos.opacidade)))
+          : base.eventos.opacidade,
     },
     faq: {
       eyebrow: texto(faq.eyebrow, base.faq.eyebrow),

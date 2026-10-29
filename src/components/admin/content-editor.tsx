@@ -49,6 +49,7 @@ const ABAS = [
   { id: "secoes", rotulo: "Seções" },
   { id: "sobre", rotulo: "Sobre" },
   { id: "videos", rotulo: "Vídeos" },
+  { id: "eventos", rotulo: "Eventos VIP" },
   { id: "duvidas", rotulo: "Dúvidas" },
   { id: "legal", rotulo: "Legal" },
   { id: "contato", rotulo: "Contato" },
@@ -623,6 +624,94 @@ export function ContentEditor({
                   />
                 </div>
               ))}
+            </div>
+          </Grupo>
+        </TabsContent>
+
+        <TabsContent value="eventos" className="mt-6 space-y-5">
+          <Grupo
+            titulo="Contato profissional (eventos)"
+            descricao="Seção para contratar a sua presença em festas, lojas e eventos privados. O botão encaminha para o WhatsApp com a mensagem pronta."
+          >
+            <SwitchField
+              rotulo="Mostrar a seção de eventos no site"
+              valor={draft.eventos.ativo}
+              onChange={(valor) => set("eventos", { ...draft.eventos, ativo: valor })}
+            />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <TextField
+                rotulo="Linha de apoio"
+                valor={draft.eventos.eyebrow}
+                onChange={(valor) => set("eventos", { ...draft.eventos, eyebrow: valor })}
+              />
+              <TextField
+                rotulo="Texto do botão"
+                valor={draft.eventos.botao}
+                onChange={(valor) => set("eventos", { ...draft.eventos, botao: valor })}
+              />
+              <TextField
+                rotulo="Título"
+                valor={draft.eventos.titulo}
+                onChange={(valor) => set("eventos", { ...draft.eventos, titulo: valor })}
+              />
+              <TextField
+                rotulo="Destaque em vermelho"
+                valor={draft.eventos.destaque}
+                onChange={(valor) => set("eventos", { ...draft.eventos, destaque: valor })}
+              />
+            </div>
+
+            <TextAreaField
+              rotulo="Texto da seção"
+              valor={draft.eventos.texto}
+              onChange={(valor) => set("eventos", { ...draft.eventos, texto: valor })}
+            />
+
+            <TextField
+              rotulo="Mensagem que vai no WhatsApp"
+              valor={draft.eventos.mensagem}
+              onChange={(valor) => set("eventos", { ...draft.eventos, mensagem: valor })}
+              ajuda="Chega pronta na conversa quando a pessoa clica no botão."
+            />
+
+            <ListEditor<{ titulo: string; texto: string }>
+              rotulo="Destaques (presença VIP)"
+              itens={draft.eventos.beneficios}
+              onChange={(itens) => set("eventos", { ...draft.eventos, beneficios: itens })}
+              vazio={{ titulo: "", texto: "" }}
+              campos={[
+                { chave: "titulo", rotulo: "Título" },
+                { chave: "texto", rotulo: "Descrição", tipo: "textarea" },
+              ]}
+              botao="Adicionar destaque"
+            />
+
+            <ImageField
+              rotulo="Foto de sobreposição"
+              valor={draft.eventos.imagem}
+              onChange={(valor) => set("eventos", { ...draft.eventos, imagem: valor })}
+              ajuda="Fica atrás do texto, com o degradê escuro para leitura."
+            />
+
+            <div className="space-y-3 rounded-sm border border-border/60 bg-background/40 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                  Opacidade da foto
+                </Label>
+                <span className="font-display text-lg text-secondary">
+                  {draft.eventos.opacidade}%
+                </span>
+              </div>
+              <Slider
+                min={10}
+                max={100}
+                step={1}
+                value={[draft.eventos.opacidade]}
+                onValueChange={([valor]) =>
+                  set("eventos", { ...draft.eventos, opacidade: valor })
+                }
+              />
             </div>
           </Grupo>
         </TabsContent>

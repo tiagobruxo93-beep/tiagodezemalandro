@@ -1,0 +1,1 @@
+update public.spiritual_ads set badge = null where slug = 'consulta-presencial';
