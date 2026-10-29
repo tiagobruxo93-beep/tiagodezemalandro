@@ -1,0 +1,48 @@
+create table if not exists public.spiritual_visitors (
+  id uuid primary key default gen_random_uuid(),
+  session_id text not null unique,
+  impressao text,
+  ip text,
+  user_agent text,
+  navegador text,
+  sistema text,
+  dispositivo text,
+  idioma text,
+  plataforma text,
+  tela text,
+  fuso text,
+  referencia text,
+  campanha text,
+  pais text,
+  regiao text,
+  cidade text,
+  latitude double precision,
+  longitude double precision,
+  provedor text,
+  visitas integer not null default 1,
+  criado_em timestamptz not null default now(),
+  visto_em timestamptz not null default now()
+);
+
+create index if not exists espiritual_visitors_visto_idx on public.spiritual_visitors (visto_em desc);
+create index if not exists espiritual_visitors_ip_idx on public.spiritual_visitors (ip);
+
+alter table public.spiritual_visitors enable row level security;
+
+create policy "visitantes admin le" on public.spiritual_visitors for select to authenticated using (spiritual_is_admin());
+create policy "visitantes admin edita" on public.spiritual_visitors for update to authenticated using (spiritual_is_admin()) with check (spiritual_is_admin());
+create policy "visitantes admin apaga" on public.spiritual_visitors for delete to authenticated using (spiritual_is_admin());
+create policy "visitantes admin cria" on public.spiritual_visitors for insert to authenticated with check (spiritual_is_admin());
+
+create table if not exists public.spiritual_blocked_ips (
+  ip text primary key,
+  motivo text,
+  criado_em timestamptz not null default now()
+);
+
+alter table public.spiritual_blocked_ips enable row level security;
+
+create policy "ips bloqueados admin le" on public.spiritual_blocked_ips for select to authenticated using (spiritual_is_admin());
+create policy "ips bloqueados admin cria" on public.spiritual_blocked_ips for insert to authenticated with check (spiritual_is_admin());
+create policy "ips bloqueados admin edita" on public.spiritual_blocked_ips for update to authenticated using (spiritual_is_admin()) with check (spiritual_is_admin());
+create policy "ips bloqueados admin apaga" on public.spiritual_blocked_ips for delete to authenticated using (spiritual_is_admin());

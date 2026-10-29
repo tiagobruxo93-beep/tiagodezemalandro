@@ -25,6 +25,10 @@ export const ACOES: Record<string, string> = {
   protecao_alterada: "Alterou as proteções do site",
   dois_fatores_ativado: "Ativou a verificação em duas etapas",
   dois_fatores_desativado: "Desativou a verificação em duas etapas",
+  visitante_bloqueado: "Bloqueou um IP de visitante",
+  visitante_desbloqueado: "Desbloqueou um IP de visitante",
+  visitantes_excluidos: "Excluiu registros de visitantes",
+  visitantes_limpos: "Limpou todo o histórico de visitantes",
 };
 
 /** Registra uma ação no histórico. Nunca bloqueia a ação principal. */

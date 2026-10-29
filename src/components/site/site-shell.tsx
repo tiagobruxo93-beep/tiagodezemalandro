@@ -1,9 +1,11 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { BlockedScreen } from "@/components/site/blocked-screen";
 import { ContentProtection } from "@/components/site/content-protection";
 import { SiteTracking } from "@/components/site/site-tracking";
 import { useSiteSettings } from "@/hooks/use-site-data";
 import { gravarSeguranca } from "@/lib/site-security";
+import { registrarVisitante } from "@/lib/visitor";
 
 /** Mostrado enquanto a página aberta termina de carregar (rotas fora da home). */
 function CarregandoPagina() {
@@ -22,6 +24,24 @@ export function SiteShell() {
   const { metaPixel, ga4 } = content.marketing;
   const { sessaoMinutos, tentativasLogin } = content.seguranca;
   const { pathname } = useLocation();
+  const [bloqueado, setBloqueado] = useState(false);
+
+  // Registra quem está acessando (IP, aparelho, localização aproximada).
+  // Se o IP estiver na lista de bloqueio, o site não abre.
+  useEffect(() => {
+    if (pathname.startsWith("/painel")) return;
+
+    let ativo = true;
+    void registrarVisitante()
+      .then((resultado) => {
+        if (ativo) setBloqueado(Boolean(resultado.bloqueado));
+      })
+      .catch(() => undefined);
+
+    return () => {
+      ativo = false;
+    };
+  }, [pathname]);
 
   // Mantém as regras de sessão/login disponíveis antes do painel carregar.
   useEffect(() => {
@@ -43,9 +63,13 @@ export function SiteShell() {
     <>
       <SiteTracking metaPixel={metaPixel} ga4={ga4} />
       <ContentProtection protecao={content.protecao} />
-      <Suspense fallback={<CarregandoPagina />}>
-        <Outlet />
-      </Suspense>
+      {bloqueado ? (
+        <BlockedScreen />
+      ) : (
+        <Suspense fallback={<CarregandoPagina />}>
+          <Outlet />
+        </Suspense>
+      )}
     </>
   );
 }

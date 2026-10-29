@@ -1,0 +1,1 @@
+delete from public.spiritual_blocked_ips where ip = '172.23.47.144';

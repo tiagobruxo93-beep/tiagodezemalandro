@@ -3496,6 +3496,24 @@ export type Database = {
         }
         Relationships: []
       }
+      spiritual_blocked_ips: {
+        Row: {
+          criado_em: string
+          ip: string
+          motivo: string | null
+        }
+        Insert: {
+          criado_em?: string
+          ip: string
+          motivo?: string | null
+        }
+        Update: {
+          criado_em?: string
+          ip?: string
+          motivo?: string | null
+        }
+        Relationships: []
+      }
       spiritual_page_views: {
         Row: {
           created_at: string
@@ -3580,6 +3598,84 @@ export type Database = {
           payment_note?: string
           updated_at?: string
           whatsapp_number?: string
+        }
+        Relationships: []
+      }
+      spiritual_visitors: {
+        Row: {
+          campanha: string | null
+          cidade: string | null
+          criado_em: string
+          dispositivo: string | null
+          fuso: string | null
+          id: string
+          idioma: string | null
+          impressao: string | null
+          ip: string | null
+          latitude: number | null
+          longitude: number | null
+          navegador: string | null
+          pais: string | null
+          plataforma: string | null
+          provedor: string | null
+          referencia: string | null
+          regiao: string | null
+          session_id: string
+          sistema: string | null
+          tela: string | null
+          user_agent: string | null
+          visitas: number
+          visto_em: string
+        }
+        Insert: {
+          campanha?: string | null
+          cidade?: string | null
+          criado_em?: string
+          dispositivo?: string | null
+          fuso?: string | null
+          id?: string
+          idioma?: string | null
+          impressao?: string | null
+          ip?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          navegador?: string | null
+          pais?: string | null
+          plataforma?: string | null
+          provedor?: string | null
+          referencia?: string | null
+          regiao?: string | null
+          session_id: string
+          sistema?: string | null
+          tela?: string | null
+          user_agent?: string | null
+          visitas?: number
+          visto_em?: string
+        }
+        Update: {
+          campanha?: string | null
+          cidade?: string | null
+          criado_em?: string
+          dispositivo?: string | null
+          fuso?: string | null
+          id?: string
+          idioma?: string | null
+          impressao?: string | null
+          ip?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          navegador?: string | null
+          pais?: string | null
+          plataforma?: string | null
+          provedor?: string | null
+          referencia?: string | null
+          regiao?: string | null
+          session_id?: string
+          sistema?: string | null
+          tela?: string | null
+          user_agent?: string | null
+          visitas?: number
+          visto_em?: string
         }
         Relationships: []
       }

@@ -70,13 +70,31 @@ const PrivacyPage = () => {
         </p>
       </LegalSection>
 
+      <LegalSection titulo="Registro de acesso (IP e localização aproximada)">
+        <p>
+          Para segurança do site e para entender de onde vêm as visitas, registramos o
+          endereço IP de quem acessa, o navegador e o aparelho, além da{" "}
+          <strong className="text-foreground">localização aproximada por IP</strong>{" "}
+          (cidade, estado e país — nunca o seu endereço exato). O navegador não permite
+          ler o endereço MAC do aparelho; usamos um identificador técnico aproximado
+          (navegador, tela, fuso e plataforma).
+        </p>
+        <p>
+          Esses registros são usados exclusivamente para segurança, prevenção de fraude
+          e medição de audiência, ficam visíveis apenas para o responsável e podem
+          resultar no bloqueio de um IP que esteja causando dano ao site. Você pode
+          pedir a exclusão dos seus registros pelo canal de contato abaixo.
+        </p>
+      </LegalSection>
+
       <LegalSection titulo="Base legal e finalidade">
         <p>
           Tratamos apenas dados necessários para: (i) executar o trabalho contratado,
           (ii) atender você pelo WhatsApp, (iii) medir acessos de forma anônima,
           (iv) medir a eficácia das campanhas com o seu consentimento (art. 7º, I, da
-          LGPD) e (v) cumprir obrigações legais. Não vendemos e não cedemos dados
-          pessoais a terceiros para marketing.
+          LGPD), (v) proteger o site e seus visitantes, com base no legítimo interesse
+          (art. 7º, IX) e (vi) cumprir obrigações legais. Não vendemos e não cedemos
+          dados pessoais a terceiros para marketing.
         </p>
       </LegalSection>
 

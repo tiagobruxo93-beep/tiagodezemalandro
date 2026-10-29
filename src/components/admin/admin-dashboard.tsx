@@ -12,6 +12,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Star,
+  Users,
   Wallet,
   Video,
 } from "lucide-react";
@@ -22,6 +23,7 @@ import { AdFormDialog } from "@/components/admin/ad-form-dialog";
 import { ContentEditor } from "@/components/admin/content-editor";
 import { SecurityPanel } from "@/components/admin/security-panel";
 import { ToolsPanel } from "@/components/admin/tools-panel";
+import { VisitorsPanel } from "@/components/admin/visitors-panel";
 import { VisitsPanel } from "@/components/admin/visits-panel";
 import { TridentMark } from "@/components/brand/trident-mark";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
@@ -30,7 +32,7 @@ import { exportarDados } from "@/lib/backup";
 import type { Ad } from "@/lib/ads";
 import { cn } from "@/lib/utils";
 
-type View = "anuncios" | "conteudo" | "seguranca" | "ferramentas";
+type View = "anuncios" | "visitantes" | "conteudo" | "seguranca" | "ferramentas";
 
 export function AdminDashboard({
   email,
@@ -126,6 +128,7 @@ export function AdminDashboard({
 
   const navItems: { id: View; label: string; icon: typeof LayoutList }[] = [
     { id: "anuncios", label: "Anúncios", icon: Megaphone },
+    { id: "visitantes", label: "Visitantes", icon: Users },
     { id: "conteudo", label: "Conteúdo do site", icon: Settings2 },
     { id: "seguranca", label: "Segurança", icon: ShieldCheck },
     { id: "ferramentas", label: "Ferramentas", icon: ShieldAlert },
@@ -335,6 +338,22 @@ export function AdminDashboard({
                       onChanged={refreshAll}
                     />
                   )}
+                </div>
+              </>
+            ) : view === "visitantes" ? (
+              <>
+                <div>
+                  <p className="eyebrow">Painel de administração</p>
+                  <h1 className="mt-3 font-display text-4xl text-foreground sm:text-5xl">
+                    Visitantes
+                  </h1>
+                  <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
+                    Quem acessou o site, de onde veio, com qual aparelho — e o bloqueio
+                    de IP por pessoa ou em massa.
+                  </p>
+                </div>
+                <div className="mt-7">
+                  <VisitorsPanel />
                 </div>
               </>
             ) : view === "seguranca" ? (

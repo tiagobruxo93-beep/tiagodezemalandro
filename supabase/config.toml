@@ -2,3 +2,6 @@ project_id = "spb-t4n0ga8018hsxx48"
 
 [functions.track]
 verify_jwt = false
+
+[functions.visitor]
+verify_jwt = false
