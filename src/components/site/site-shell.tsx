@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { BlockedScreen } from "@/components/site/blocked-screen";
 import { ContentProtection } from "@/components/site/content-protection";
@@ -24,6 +24,7 @@ export function SiteShell() {
   const { sessaoMinutos, tentativasLogin, exigirSenhaForte } = content.seguranca;
   const { pathname } = useLocation();
   const [bloqueado, setBloqueado] = useState(false);
+  const primeiraPagina = useRef(true);
 
   // Registra quem está acessando (IP, aparelho, localização aproximada).
   // Se o IP estiver na lista de bloqueio, o site não abre.
@@ -31,7 +32,10 @@ export function SiteShell() {
     if (pathname.startsWith("/painel")) return;
 
     let ativo = true;
-    void registrarVisitante()
+    const primeira = primeiraPagina.current;
+    primeiraPagina.current = false;
+
+    void registrarVisitante({ pagina: !primeira })
       .then((resultado) => {
         if (ativo) setBloqueado(Boolean(resultado.bloqueado));
       })

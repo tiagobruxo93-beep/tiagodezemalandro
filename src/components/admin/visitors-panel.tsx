@@ -619,11 +619,13 @@ export function VisitorsPanel() {
                       <p className="mt-0.5 truncate">{grupo.navegadores.join(", ") || "—"}</p>
                     </div>
 
-                    <div className="flex items-center gap-3 md:w-[110px] md:shrink-0 md:justify-center">
-                      <span className="text-[12px] text-foreground">{grupo.visitas}</span>
-                      <span className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
-                        visitas
-                      </span>
+                    <div className="md:w-[120px] md:shrink-0 md:text-center">
+                      <p className="font-display text-2xl leading-none text-foreground">
+                        {grupo.visitas}
+                      </p>
+                      <p className="mt-0.5 text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                        acessos · {grupo.sessoes} sessão(ões)
+                      </p>
                     </div>
 
                     <p className="text-[11px] text-muted-foreground md:w-[120px] md:shrink-0">

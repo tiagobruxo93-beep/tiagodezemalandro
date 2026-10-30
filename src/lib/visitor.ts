@@ -96,16 +96,12 @@ export async function descobrirIpPublico(): Promise<string> {
   return "";
 }
 
-let cache: Promise<ResultadoVisitante> | null = null;
-
-/** Registra a visita (IP, aparelho e localização aproximada) e diz se o IP está bloqueado. */
-export function registrarVisitante(): Promise<ResultadoVisitante> {
-  if (cache) return cache;
-
+/** Registra cada acesso (abertura ou navegação) e diz se o IP está bloqueado. */
+export function registrarVisitante(opcoes: { pagina?: boolean } = {}): Promise<ResultadoVisitante> {
   const sessao = idDoVisitante();
   if (!sessao) return Promise.resolve(LIBERADO);
 
-  cache = (async () => {
+  return (async () => {
     try {
       const [impressao, ipPublico] = await Promise.all([
         impressaoDoAparelho(),
@@ -124,6 +120,7 @@ export function registrarVisitante(): Promise<ResultadoVisitante> {
           campanha: campanhaDaUrl(),
           user_agent: navigator.userAgent.slice(0, 300),
           ip_publico: ipPublico,
+          pagina: opcoes.pagina === true,
         },
       });
 
@@ -135,6 +132,4 @@ export function registrarVisitante(): Promise<ResultadoVisitante> {
       return LIBERADO;
     }
   })();
-
-  return cache;
 }

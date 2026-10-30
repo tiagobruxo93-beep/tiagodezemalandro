@@ -219,6 +219,28 @@ Deno.serve(async (req) => {
 
   const ua = limpar(corpo.user_agent, 300) || req.headers.get("user-agent") || "";
 
+  // Navegação dentro do site: só soma um acesso na sessão já registrada.
+  if (corpo.pagina === true) {
+    const { data: sessaoExistente } = await supabase
+      .from("spiritual_visitors")
+      .select("id, visitas")
+      .eq("session_id", sessao)
+      .maybeSingle();
+
+    if (sessaoExistente?.id) {
+      await supabase
+        .from("spiritual_visitors")
+        .update({
+          visitas: Number(sessaoExistente.visitas ?? 1) + 1,
+          visto_em: new Date().toISOString(),
+          ip: ip || undefined,
+        })
+        .eq("id", sessaoExistente.id);
+
+      return json({ bloqueado: false });
+    }
+  }
+
   // Aproveita a localização já conhecida do mesmo IP (economiza consultas).
   let geo: Geo | null = null;
 
