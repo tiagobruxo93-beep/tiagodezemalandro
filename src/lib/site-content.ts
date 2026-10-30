@@ -176,6 +176,12 @@ export interface SiteContent {
     botao: string;
     atraso: number;
     frequencia: "sessao" | "dia" | "sempre";
+    mostrarPreco: boolean;
+    fecharFora: boolean;
+    publico: "todos" | "celular" | "computador";
+    origem: "todos" | "anuncio";
+    imagem: string;
+    destino: "anuncio" | "checkout" | "whatsapp";
   };
   marketing: {
     metaPixel: string;
@@ -404,6 +410,12 @@ export const DEFAULT_CONTENT: SiteContent = {
     botao: "Quero esse trabalho",
     atraso: 2,
     frequencia: "sessao",
+    mostrarPreco: true,
+    fecharFora: true,
+    publico: "todos",
+    origem: "todos",
+    imagem: "",
+    destino: "anuncio",
   },
   marketing: {
     metaPixel: "",
@@ -705,11 +717,27 @@ export function mergeContent(raw: unknown): SiteContent {
       titulo: typeof popup.titulo === "string" ? popup.titulo : base.popup.titulo,
       texto: typeof popup.texto === "string" ? popup.texto : base.popup.texto,
       botao: texto(popup.botao, base.popup.botao),
-      atraso: numero(popup.atraso, base.popup.atraso, 0, 20),
+      atraso: numero(popup.atraso, base.popup.atraso, 1, 10),
       frequencia:
         popup.frequencia === "dia" || popup.frequencia === "sempre" || popup.frequencia === "sessao"
           ? popup.frequencia
           : base.popup.frequencia,
+      mostrarPreco:
+        typeof popup.mostrarPreco === "boolean"
+          ? popup.mostrarPreco
+          : base.popup.mostrarPreco,
+      fecharFora:
+        typeof popup.fecharFora === "boolean" ? popup.fecharFora : base.popup.fecharFora,
+      publico:
+        popup.publico === "celular" || popup.publico === "computador"
+          ? popup.publico
+          : base.popup.publico,
+      origem: popup.origem === "anuncio" ? "anuncio" : base.popup.origem,
+      imagem: typeof popup.imagem === "string" ? popup.imagem : base.popup.imagem,
+      destino:
+        popup.destino === "checkout" || popup.destino === "whatsapp"
+          ? popup.destino
+          : base.popup.destino,
     },
     marketing: {
       metaPixel:

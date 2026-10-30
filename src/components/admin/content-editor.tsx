@@ -364,26 +364,22 @@ export function ContentEditor({
             />
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
+              <div className="space-y-2 sm:col-span-2">
                 <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                  Abrir depois de
+                  Abrir depois de {draft.popup.atraso} segundo{draft.popup.atraso > 1 ? "s" : ""}
                 </Label>
-                <Select
-                  value={String(draft.popup.atraso)}
-                  onValueChange={(valor) =>
-                    set("popup", { ...draft.popup, atraso: Number(valor) })
+                <Slider
+                  value={[draft.popup.atraso]}
+                  min={1}
+                  max={10}
+                  step={1}
+                  onValueChange={([valor]) =>
+                    set("popup", { ...draft.popup, atraso: valor ?? 2 })
                   }
-                >
-                  <SelectTrigger className="rounded-sm border-border bg-background/70 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">Na hora</SelectItem>
-                    <SelectItem value="2">2 segundos</SelectItem>
-                    <SelectItem value="5">5 segundos</SelectItem>
-                    <SelectItem value="10">10 segundos</SelectItem>
-                  </SelectContent>
-                </Select>
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  De 1 a 10 segundos depois de a página abrir.
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -409,7 +405,100 @@ export function ContentEditor({
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                  O botão leva para
+                </Label>
+                <Select
+                  value={draft.popup.destino}
+                  onValueChange={(valor) =>
+                    set("popup", {
+                      ...draft.popup,
+                      destino: valor as "anuncio" | "checkout" | "whatsapp",
+                    })
+                  }
+                >
+                  <SelectTrigger className="rounded-sm border-border bg-background/70 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="anuncio">Ficha do anúncio</SelectItem>
+                    <SelectItem value="checkout">Checkout do anúncio</SelectItem>
+                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                  Mostrar para
+                </Label>
+                <Select
+                  value={draft.popup.publico}
+                  onValueChange={(valor) =>
+                    set("popup", {
+                      ...draft.popup,
+                      publico: valor as "todos" | "celular" | "computador",
+                    })
+                  }
+                >
+                  <SelectTrigger className="rounded-sm border-border bg-background/70 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos os visitantes</SelectItem>
+                    <SelectItem value="celular">Só no celular</SelectItem>
+                    <SelectItem value="computador">Só no computador</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                  Quando aparecer
+                </Label>
+                <Select
+                  value={draft.popup.origem}
+                  onValueChange={(valor) =>
+                    set("popup", {
+                      ...draft.popup,
+                      origem: valor as "todos" | "anuncio",
+                    })
+                  }
+                >
+                  <SelectTrigger className="rounded-sm border-border bg-background/70 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Sempre que entrar</SelectItem>
+                    <SelectItem value="anuncio">Só quem veio de anúncio</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-3 sm:col-span-2">
+                <SwitchField
+                  rotulo="Mostrar o preço do trabalho"
+                  valor={draft.popup.mostrarPreco}
+                  onChange={(valor) =>
+                    set("popup", { ...draft.popup, mostrarPreco: valor })
+                  }
+                />
+                <SwitchField
+                  rotulo="Fechar ao clicar fora da janela"
+                  valor={draft.popup.fecharFora}
+                  onChange={(valor) => set("popup", { ...draft.popup, fecharFora: valor })}
+                />
+              </div>
             </div>
+
+            <ImageField
+              rotulo="Imagem da janela (opcional)"
+              valor={draft.popup.imagem}
+              onChange={(valor) => set("popup", { ...draft.popup, imagem: valor })}
+              ajuda="Se ficar vazio, usa a imagem do anúncio escolhido."
+            />
           </Grupo>
         </TabsContent>
 

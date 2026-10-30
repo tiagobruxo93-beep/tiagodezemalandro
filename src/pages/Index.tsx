@@ -87,7 +87,7 @@ const Index = () => {
       </main>
       <SiteFooter settings={settings} content={content} />
       <WhatsAppFab settings={settings} />
-      <WelcomePopup popup={content.popup} ads={ads} />
+      <WelcomePopup popup={content.popup} ads={ads} settings={settings} />
       <CookieNotice />
     </div>
   );

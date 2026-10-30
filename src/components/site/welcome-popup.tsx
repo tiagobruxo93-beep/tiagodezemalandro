@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { safeUrl } from "@/lib/security";
-import type { Ad } from "@/lib/ads";
+import { buildWhatsAppLink, type Ad, type SiteSettings } from "@/lib/ads";
 import type { SiteContent } from "@/lib/site-content";
 
 const CHAVE_SESSAO = "paitiago:popup-visto";
@@ -34,13 +34,33 @@ function marcarVisto(frequencia: SiteContent["popup"]["frequencia"]) {
   }
 }
 
+function veioDeAnuncio() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return ["utm_source", "utm_medium", "utm_campaign", "gclid", "fbclid", "ttclid"].some(
+      (chave) => Boolean(params.get(chave)),
+    );
+  } catch {
+    return false;
+  }
+}
+
+function combinaPublico(publico: SiteContent["popup"]["publico"]) {
+  if (publico === "todos") return true;
+
+  const celular = window.matchMedia("(max-width: 767px)").matches;
+  return publico === "celular" ? celular : !celular;
+}
+
 /** Janela de entrada com um trabalho em destaque (configurada no painel). */
 export function WelcomePopup({
   popup,
   ads,
+  settings,
 }: {
   popup: SiteContent["popup"];
   ads: Ad[];
+  settings: SiteSettings;
 }) {
   const [aberto, setAberto] = useState(false);
   const fecharRef = useRef<HTMLButtonElement | null>(null);
@@ -51,7 +71,6 @@ export function WelcomePopup({
     const escolhido = popup.adSlug ? ads.find((item) => item.slug === popup.adSlug) : undefined;
     if (escolhido) return escolhido;
 
-    // Sem escolha no painel: usa o primeiro trabalho individual ativo.
     return (
       ads.find((item) => item.category === "individual" && item.active) ??
       ads.find((item) => item.category === "consulta" && item.active) ??
@@ -62,13 +81,15 @@ export function WelcomePopup({
 
   useEffect(() => {
     if (!anuncio) return;
+    if (!combinaPublico(popup.publico)) return;
+    if (popup.origem === "anuncio" && !veioDeAnuncio()) return;
     if (jaVisto(popup.frequencia)) return;
 
-    const atraso = Math.max(0, popup.atraso) * 1000;
+    const atraso = Math.min(10, Math.max(1, popup.atraso)) * 1000;
     const relogio = window.setTimeout(() => setAberto(true), atraso);
 
     return () => window.clearTimeout(relogio);
-  }, [anuncio, popup.atraso, popup.frequencia]);
+  }, [anuncio, popup.atraso, popup.frequencia, popup.publico, popup.origem]);
 
   const fechar = () => {
     marcarVisto(popup.frequencia);
@@ -81,7 +102,10 @@ export function WelcomePopup({
     fecharRef.current?.focus();
 
     const aoTeclar = (evento: KeyboardEvent) => {
-      if (evento.key === "Escape") fechar();
+      if (evento.key === "Escape") {
+        marcarVisto(popup.frequencia);
+        setAberto(false);
+      }
     };
 
     document.addEventListener("keydown", aoTeclar);
@@ -92,19 +116,43 @@ export function WelcomePopup({
       document.removeEventListener("keydown", aoTeclar);
       document.body.style.overflow = overflowAnterior;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [aberto]);
+  }, [aberto, popup.frequencia]);
 
   if (!aberto || !anuncio) return null;
 
   const titulo = (popup.titulo ?? "").trim() || anuncio.title;
   const texto = (popup.texto ?? "").trim() || anuncio.summary;
-  const imagem = anuncio.imageUrl ? safeUrl(anuncio.imageUrl) : "";
+  const imagem = (popup.imagem ?? "").trim() || anuncio.imageUrl || "";
+
+  const destino = popup.destino ?? "anuncio";
+  let href = `/anuncio/${anuncio.slug}`;
+  let externo = false;
+
+  if (destino === "checkout" && /^https?:\/\//i.test(anuncio.forwardUrl)) {
+    href = anuncio.forwardUrl;
+    externo = true;
+  } else if (destino === "whatsapp") {
+    href = buildWhatsAppLink(
+      settings.whatsappNumber,
+      `Olá, Pai Tiago! Vi o aviso de "${anuncio.title}" no site e quero saber mais.`,
+    );
+    externo = true;
+  }
+
+  const botao = externo ? (
+    <a href={safeUrl(href, "#")} target="_blank" rel="noopener noreferrer" onClick={fechar}>
+      {popup.botao}
+    </a>
+  ) : (
+    <Link to={href} onClick={fechar}>
+      {popup.botao}
+    </Link>
+  );
 
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-background/85 p-4 backdrop-blur-sm"
-      onClick={fechar}
+      onClick={popup.fecharFora ? fechar : undefined}
     >
       <div
         role="dialog"
@@ -125,7 +173,7 @@ export function WelcomePopup({
 
         {imagem && (
           <img
-            src={imagem}
+            src={safeUrl(imagem)}
             alt=""
             loading="eager"
             decoding="async"
@@ -147,14 +195,12 @@ export function WelcomePopup({
             <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{texto}</p>
           )}
 
-          {anuncio.priceLabel && (
+          {popup.mostrarPreco && anuncio.priceLabel && (
             <p className="mt-3 font-display text-2xl text-secondary">{anuncio.priceLabel}</p>
           )}
 
           <Button asChild variant="forward" size="lg" className="mt-5 w-full">
-            <Link to={`/anuncio/${anuncio.slug}`} onClick={fechar}>
-              {popup.botao}
-            </Link>
+            {botao}
           </Button>
 
           <button
