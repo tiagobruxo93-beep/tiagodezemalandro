@@ -21,7 +21,7 @@ function CarregandoPagina() {
 /** Casca comum a todas as rotas: rastreamento, proteções e página. */
 export function SiteShell() {
   const { content } = useSiteSettings();
-  const { sessaoMinutos, tentativasLogin } = content.seguranca;
+  const { sessaoMinutos, tentativasLogin, exigirSenhaForte } = content.seguranca;
   const { pathname } = useLocation();
   const [bloqueado, setBloqueado] = useState(false);
 
@@ -42,10 +42,22 @@ export function SiteShell() {
     };
   }, [pathname]);
 
+  // Se alguém abrir por http://, manda para a versão segura (evita o aviso "Não seguro").
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const local = /^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/i.test(window.location.hostname);
+
+    if (window.location.protocol === "http:" && !local) {
+      window.location.replace(
+        `https://${window.location.host}${window.location.pathname}${window.location.search}`,
+      );
+    }
+  }, []);
+
   // Mantém as regras de sessão/login disponíveis antes do painel carregar.
   useEffect(() => {
-    gravarSeguranca({ sessaoMinutos, tentativasLogin });
-  }, [sessaoMinutos, tentativasLogin]);
+    gravarSeguranca({ sessaoMinutos, tentativasLogin, exigirSenhaForte });
+  }, [sessaoMinutos, tentativasLogin, exigirSenhaForte]);
 
   // Endereço canônico por página: evita o Google tratar cada rota como duplicata.
   useEffect(() => {

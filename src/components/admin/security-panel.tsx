@@ -129,6 +129,24 @@ export function SecurityPanel({
       return;
     }
 
+    if (content.seguranca.exigirSenhaForte) {
+      const temLetra = /[a-zA-Z]/.test(nova);
+      const temNumero = /\d/.test(nova);
+      const temSimbolo = /[^a-zA-Z0-9]/.test(nova);
+
+      if (nova.length < 10 || !temLetra || !temNumero) {
+        toast.error(
+          "A proteção de senha forte está ativa: use no mínimo 10 caracteres, com letras e números.",
+        );
+        return;
+      }
+
+      if (!temSimbolo) {
+        toast.error("Inclua pelo menos um símbolo (ex.: ! @ # $).");
+        return;
+      }
+    }
+
     if (nova !== confirma) {
       toast.error("A confirmação não confere com a nova senha.");
       return;
@@ -240,7 +258,11 @@ export function SecurityPanel({
           </div>
 
           <div className="space-y-2">
-            <Label className={ROTULO}>Nova senha (mínimo 8 caracteres)</Label>
+            <Label className={ROTULO}>
+              {content.seguranca.exigirSenhaForte
+                ? "Nova senha (10+ caracteres, letra, número e símbolo)"
+                : "Nova senha (mínimo 8 caracteres)"}
+            </Label>
             <Input
               type="password"
               required

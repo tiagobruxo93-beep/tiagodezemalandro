@@ -32,6 +32,7 @@ import { fetchAtividade, registrarAtividade, type Atividade } from "@/lib/activi
 import { exportarDados } from "@/lib/backup";
 import { confirmar2fa, desativar2fa, fatoresTotp, iniciar2fa, type FatorTotp } from "@/lib/mfa";
 import { gravarSeguranca } from "@/lib/site-security";
+import { fetchIpsBloqueados } from "@/lib/visitors";
 import { consentimentoDeMedicao, pixelCarregado, testarPixel } from "@/lib/tracking";
 import { saveSiteContent, type SiteContent } from "@/lib/site-content";
 
@@ -90,6 +91,8 @@ export function ToolsPanel({
   const [marketing, setMarketing] = useState(content.marketing);
   const [salvando, setSalvando] = useState(false);
   const [testado, setTestado] = useState(false);
+  const [ipsBloqueados, setIpsBloqueados] = useState(0);
+  const [ultimoBackup, setUltimoBackup] = useState<string | null>(null);
 
   const [fatores, setFatores] = useState<FatorTotp[]>([]);
   const [carregandoFatores, setCarregandoFatores] = useState(true);
@@ -120,6 +123,16 @@ export function ToolsPanel({
   useEffect(() => {
     void carregarFatores();
     void carregarAcessos();
+
+    void fetchIpsBloqueados()
+      .then((ips) => setIpsBloqueados(ips.length))
+      .catch(() => undefined);
+
+    try {
+      setUltimoBackup(window.localStorage.getItem("paitiago:ultimo-backup"));
+    } catch {
+      setUltimoBackup(null);
+    }
   }, []);
 
   const salvar = async () => {
@@ -206,12 +219,84 @@ export function ToolsPanel({
   const baixarBackup = async () => {
     try {
       await exportarDados();
+      const agora = new Date().toISOString();
+      try {
+        window.localStorage.setItem("paitiago:ultimo-backup", agora);
+      } catch {
+        // sem armazenamento local
+      }
+      setUltimoBackup(agora);
       await registrarAtividade("backup_baixado", {});
       toast.success("Cópia de segurança baixada");
     } catch {
       toast.error("Não foi possível gerar a cópia de segurança");
     }
   };
+
+  const diasDoBackup = (() => {
+    if (!ultimoBackup) return null;
+    const diferenca = Date.now() - new Date(ultimoBackup).getTime();
+    if (!Number.isFinite(diferenca)) return null;
+    return Math.max(0, Math.floor(diferenca / 86400000));
+  })();
+
+  const protecoes = [
+    {
+      nome: "Conexão criptografada (HTTPS)",
+      ok: typeof window !== "undefined" && window.location.protocol === "https:",
+      detalhe: "Certificado do domínio",
+    },
+    {
+      nome: "Verificação em duas etapas",
+      ok: fatores.length > 0,
+      detalhe: fatores.length > 0 ? "Ativa" : "Desligada",
+    },
+    {
+      nome: "Senha forte obrigatória",
+      ok: seguranca.exigirSenhaForte,
+      detalhe: seguranca.exigirSenhaForte ? "Ativa" : "Desligada",
+    },
+    {
+      nome: "Expiração de sessão",
+      ok: true,
+      detalhe: `${seguranca.sessaoMinutos} min sem uso`,
+    },
+    {
+      nome: "Limite de tentativas de senha",
+      ok: true,
+      detalhe: `${seguranca.tentativasLogin} tentativas`,
+    },
+    {
+      nome: "Bloqueio do menu e cópia",
+      ok: protecao.bloquearBotaoDireito || protecao.bloquearCopia,
+      detalhe: protecao.bloquearCopia ? "Cópia e botão direito" : "Botão direito",
+    },
+    {
+      nome: "Inspetor dificultado",
+      ok: protecao.bloquearInspecao,
+      detalhe: protecao.bloquearInspecao ? "Ativo" : "Desligado",
+    },
+    {
+      nome: "IPs bloqueados",
+      ok: ipsBloqueados > 0,
+      detalhe: ipsBloqueados > 0 ? `${ipsBloqueados} bloqueado(s)` : "Nenhum",
+    },
+    {
+      nome: "Medição com consentimento",
+      ok: marketing.exigirConsentimento,
+      detalhe: marketing.exigirConsentimento ? "LGPD ligada" : "Sem consentimento",
+    },
+    {
+      nome: "Cópia de segurança",
+      ok: diasDoBackup !== null && diasDoBackup <= 7,
+      detalhe:
+        diasDoBackup === null
+          ? "Nunca baixada"
+          : diasDoBackup === 0
+            ? "Hoje"
+            : `Há ${diasDoBackup} dia(s)`,
+    },
+  ];
 
   const doisFatoresAtivo = fatores.length > 0;
 
@@ -432,6 +517,13 @@ export function ToolsPanel({
           </div>
         </div>
 
+        <SwitchField
+          rotulo="Exigir senha forte ao trocar a senha"
+          valor={seguranca.exigirSenhaForte}
+          onChange={(valor) => setSeguranca({ ...seguranca, exigirSenhaForte: valor })}
+          ajuda="Mínimo de 10 caracteres, com letra, número e símbolo. Vale para a próxima troca de senha."
+        />
+
         <p className="text-[11px] leading-relaxed text-muted-foreground">
           O bloqueio dura 1 minuto por rodada. O servidor também limita tentativas por
           conta, independente desta configuração.
@@ -618,6 +710,36 @@ export function ToolsPanel({
             ))}
           </ul>
         )}
+      </Cartao>
+
+      <Cartao
+        titulo="Central de proteção"
+        descricao="Tudo que está protegendo o site agora, com o estado real de cada trava."
+        icone={<ShieldCheck className="h-5 w-5" />}
+      >
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {protecoes.map((item) => (
+            <li
+              key={item.nome}
+              className="flex items-start gap-2 border border-border/60 bg-background/40 px-3 py-2"
+            >
+              {item.ok ? (
+                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-secondary" />
+              ) : (
+                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive" />
+              )}
+              <span className="min-w-0">
+                <span className="block text-[12px] text-foreground">{item.nome}</span>
+                <span className="block text-[11px] text-muted-foreground">{item.detalhe}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <p className="text-[11px] leading-relaxed text-muted-foreground">
+          Para bloquear ou liberar visitantes por IP, use a aba <strong className="text-foreground">Visitantes</strong>.
+          Lá também ficam os registros de acesso e as ações em massa.
+        </p>
       </Cartao>
     </div>
   );

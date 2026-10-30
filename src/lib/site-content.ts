@@ -185,7 +185,11 @@ export interface SiteContent {
     bloquearInspecao: boolean;
     noindex: boolean;
   };
-  seguranca: { sessaoMinutos: number; tentativasLogin: number };
+  seguranca: {
+    sessaoMinutos: number;
+    tentativasLogin: number;
+    exigirSenhaForte: boolean;
+  };
 }
 
 export const DEFAULT_CONTENT: SiteContent = {
@@ -399,7 +403,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     bloquearInspecao: true,
     noindex: false,
   },
-  seguranca: { sessaoMinutos: 60, tentativasLogin: 5 },
+  seguranca: { sessaoMinutos: 60, tentativasLogin: 5, exigirSenhaForte: true },
 };
 
 function texto(valor: unknown, padrao: string) {
@@ -729,6 +733,10 @@ export function mergeContent(raw: unknown): SiteContent {
     seguranca: {
       sessaoMinutos: numero(seguranca.sessaoMinutos, base.seguranca.sessaoMinutos, 5, 480),
       tentativasLogin: numero(seguranca.tentativasLogin, base.seguranca.tentativasLogin, 3, 10),
+      exigirSenhaForte:
+        typeof seguranca.exigirSenhaForte === "boolean"
+          ? seguranca.exigirSenhaForte
+          : base.seguranca.exigirSenhaForte,
     },
   };
 }

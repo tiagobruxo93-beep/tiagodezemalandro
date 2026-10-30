@@ -6,7 +6,11 @@ export type SegurancaLocal = SiteContent["seguranca"];
 export const CHAVE_SEGURANCA = "paitiago:seguranca";
 export const EVENTO_SEGURANCA = "paitiago:seguranca-atualizada";
 
-export const SEGURANCA_PADRAO: SegurancaLocal = { sessaoMinutos: 60, tentativasLogin: 5 };
+export const SEGURANCA_PADRAO: SegurancaLocal = {
+  sessaoMinutos: 60,
+  tentativasLogin: 5,
+  exigirSenhaForte: true,
+};
 
 export function lerSeguranca(): SegurancaLocal {
   try {
@@ -26,6 +30,10 @@ export function lerSeguranca(): SegurancaLocal {
         Number.isFinite(tentativas) && tentativas >= 3 && tentativas <= 10
           ? Math.round(tentativas)
           : SEGURANCA_PADRAO.tentativasLogin,
+      exigirSenhaForte:
+        typeof dados.exigirSenhaForte === "boolean"
+          ? dados.exigirSenhaForte
+          : SEGURANCA_PADRAO.exigirSenhaForte,
     };
   } catch {
     return SEGURANCA_PADRAO;

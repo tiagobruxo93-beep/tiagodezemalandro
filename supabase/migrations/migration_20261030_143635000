@@ -1,0 +1,1 @@
+update public.spiritual_site_settings set content = jsonb_set(content, '{protecao}', '{"bloquearBotaoDireito": true, "bloquearCopia": true, "bloquearArrastarImagem": true, "bloquearInspecao": true, "noindex": false}'::jsonb), updated_at = now() where id = 1;
