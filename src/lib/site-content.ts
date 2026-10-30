@@ -38,6 +38,13 @@ export type ApoieSecao = {
   imagem: string;
   opacidade: number;
   tamanhoQr: number;
+  pix: {
+    chave: string;
+    nome: string;
+    cidade: string;
+    valor: string;
+    descricao: string;
+  };
 };
 
 export type EventosSecao = {
@@ -313,6 +320,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     imagem: "/images/fundo-ajude.jpg",
     opacidade: 65,
     tamanhoQr: 208,
+    pix: { chave: "", nome: "", cidade: "", valor: "", descricao: "" },
   },
   faq: {
     eyebrow: "Dúvidas",
@@ -676,6 +684,28 @@ export function mergeContent(raw: unknown): SiteContent {
         typeof apoie.tamanhoQr === "number"
           ? Math.min(340, Math.max(120, Math.round(apoie.tamanhoQr)))
           : base.apoie.tamanhoQr,
+      pix: {
+        chave:
+          typeof (apoie.pix as Record<string, unknown>)?.chave === "string"
+            ? String((apoie.pix as Record<string, unknown>).chave)
+            : base.apoie.pix.chave,
+        nome:
+          typeof (apoie.pix as Record<string, unknown>)?.nome === "string"
+            ? String((apoie.pix as Record<string, unknown>).nome)
+            : base.apoie.pix.nome,
+        cidade:
+          typeof (apoie.pix as Record<string, unknown>)?.cidade === "string"
+            ? String((apoie.pix as Record<string, unknown>).cidade)
+            : base.apoie.pix.cidade,
+        valor:
+          typeof (apoie.pix as Record<string, unknown>)?.valor === "string"
+            ? String((apoie.pix as Record<string, unknown>).valor)
+            : base.apoie.pix.valor,
+        descricao:
+          typeof (apoie.pix as Record<string, unknown>)?.descricao === "string"
+            ? String((apoie.pix as Record<string, unknown>).descricao)
+            : base.apoie.pix.descricao,
+      },
     },
     faq: {
       eyebrow: texto(faq.eyebrow, base.faq.eyebrow),

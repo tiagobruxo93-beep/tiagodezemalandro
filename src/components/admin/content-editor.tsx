@@ -23,6 +23,7 @@ import {
   VideoField,
 } from "@/components/admin/fields";
 import { buildWhatsAppLink, type Ad } from "@/lib/ads";
+import { montarPix, pixConfigurado } from "@/lib/pix";
 import { registrarAtividade } from "@/lib/activity";
 import {
   FRENTES,
@@ -105,7 +106,10 @@ export function ContentEditor({
     atualizar: (atual: SiteContent["videos"]) => SiteContent["videos"],
   ) => setDraft((atual) => ({ ...atual, videos: atualizar(atual.videos) }));
 
+  const pixDoQr = pixConfigurado(draft.apoie.pix) ? montarPix(draft.apoie.pix) : "";
+
   const linkDoQr =
+    pixDoQr ||
     draft.apoie.link.trim() ||
     buildWhatsAppLink(
       draft.contato.whatsapp,
@@ -958,12 +962,87 @@ export function ContentEditor({
               />
             </div>
 
+            <div className="space-y-3 rounded-sm border border-secondary/30 bg-secondary/5 p-4">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-secondary">
+                Pix no QR code
+              </p>
+              <p className="text-[11px] leading-relaxed text-muted-foreground">
+                Preencha a chave Pix para o QR abrir direto o aplicativo do banco, já
+                com o valor preenchido. Sem a chave, o QR volta a abrir o link abaixo.
+              </p>
+
+              <TextField
+                rotulo="Chave Pix"
+                valor={draft.apoie.pix.chave}
+                onChange={(valor) =>
+                  set("apoie", {
+                    ...draft.apoie,
+                    pix: { ...draft.apoie.pix, chave: valor },
+                  })
+                }
+                placeholder="e-mail, telefone, CPF/CNPJ ou chave aleatória"
+              />
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <TextField
+                  rotulo="Nome do recebedor"
+                  valor={draft.apoie.pix.nome}
+                  onChange={(valor) =>
+                    set("apoie", {
+                      ...draft.apoie,
+                      pix: { ...draft.apoie.pix, nome: valor },
+                    })
+                  }
+                  placeholder="PAI TIAGO"
+                  ajuda="Até 25 letras, como aparece no extrato."
+                />
+                <TextField
+                  rotulo="Cidade do recebedor"
+                  valor={draft.apoie.pix.cidade}
+                  onChange={(valor) =>
+                    set("apoie", {
+                      ...draft.apoie,
+                      pix: { ...draft.apoie.pix, cidade: valor },
+                    })
+                  }
+                  placeholder="SAO PAULO"
+                />
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <TextField
+                  rotulo="Valor fixo (opcional)"
+                  valor={draft.apoie.pix.valor}
+                  onChange={(valor) =>
+                    set("apoie", {
+                      ...draft.apoie,
+                      pix: { ...draft.apoie.pix, valor: valor },
+                    })
+                  }
+                  placeholder="37,00"
+                  ajuda="Vazio = quem paga escolhe o valor."
+                />
+                <TextField
+                  rotulo="Identificação (opcional)"
+                  valor={draft.apoie.pix.descricao}
+                  onChange={(valor) =>
+                    set("apoie", {
+                      ...draft.apoie,
+                      pix: { ...draft.apoie.pix, descricao: valor },
+                    })
+                  }
+                  placeholder="AJUDA TERREIRO"
+                  ajuda="Aparece na fatura do pagamento."
+                />
+              </div>
+            </div>
+
             <TextField
-              rotulo="Link do QR code"
+              rotulo="Link do QR code (se não usar Pix)"
               valor={draft.apoie.link}
               onChange={(valor) => set("apoie", { ...draft.apoie, link: valor })}
               placeholder="https://..."
-              ajuda="Vazio = abre o WhatsApp. A mudança vale na hora, o QR é gerado no próprio site."
+              ajuda="Usado só quando a chave Pix está vazia. Sem nada, abre o WhatsApp."
             />
 
             <TextAreaField

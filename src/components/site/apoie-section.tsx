@@ -1,7 +1,9 @@
-import { Heart, ScanLine } from "lucide-react";
+import { useState } from "react";
+import { Check, Copy, Heart, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QRCodeSVG } from "qrcode.react";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
+import { montarPix, pixConfigurado } from "@/lib/pix";
 import { safeUrl } from "@/lib/security";
 import type { SiteContent } from "@/lib/site-content";
 
@@ -23,6 +25,20 @@ export function ApoieSection({
       settings.whatsappNumber,
       "Olá, Pai Tiago! Quero ajudar o terreiro.",
     );
+
+  const temPix = pixConfigurado(bloco.pix);
+  const payload = temPix ? montarPix(bloco.pix) : link;
+  const [copiado, setCopiado] = useState(false);
+
+  const copiar = async () => {
+    try {
+      await navigator.clipboard.writeText(payload);
+      setCopiado(true);
+      window.setTimeout(() => setCopiado(false), 2500);
+    } catch {
+      setCopiado(false);
+    }
+  };
 
   if (!bloco.ativo) return null;
 
@@ -79,7 +95,7 @@ export function ApoieSection({
             <div className="rounded-sm border border-secondary/30 bg-card/60 p-4 backdrop-blur-sm">
               <div className="flex items-center justify-center bg-[hsl(38_45%_94%)] p-4">
                 <QRCodeSVG
-                  value={link}
+                  value={payload}
                   size={Math.min(340, Math.max(120, bloco.tamanhoQr ?? 208))}
                   level="M"
                   marginSize={2}
@@ -91,8 +107,19 @@ export function ApoieSection({
 
               <p className="mt-4 flex items-center justify-center gap-2 text-center text-[10px] uppercase tracking-[0.16em] text-secondary">
                 <ScanLine className="h-3.5 w-3.5" />
-                Aponte a câmera do celular
+                {temPix ? "Aponte a câmera e pague no seu banco" : "Aponte a câmera do celular"}
               </p>
+
+              {temPix && (
+                <button
+                  type="button"
+                  onClick={() => void copiar()}
+                  className="mt-3 flex w-full items-center justify-center gap-2 border border-secondary/40 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-secondary transition-colors hover:border-secondary hover:bg-secondary/10 hover:text-foreground"
+                >
+                  {copiado ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copiado ? "Código copiado" : "Copiar código Pix"}
+                </button>
+              )}
             </div>
           </div>
         </div>
