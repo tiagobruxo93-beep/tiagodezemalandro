@@ -45,6 +45,7 @@ import {
 
 const ABAS = [
   { id: "textos", rotulo: "Textos" },
+  { id: "entrada", rotulo: "Aviso de entrada" },
   { id: "fotos", rotulo: "Fotos" },
   { id: "abas", rotulo: "Abas" },
   { id: "secoes", rotulo: "Seções" },
@@ -289,6 +290,126 @@ export function ContentEditor({
               onChange={(valor) => set("trabalhos", { ...draft.trabalhos, text: valor })}
               ajuda="Os anúncios em si ficam na aba Anúncios deste painel."
             />
+          </Grupo>
+        </TabsContent>
+
+        <TabsContent value="entrada" className="mt-6 space-y-5">
+          <Grupo
+            titulo="Janela de entrada"
+            descricao="Aquela janela que abre quando a pessoa entra no site, anunciando um trabalho. Serve para puxar a atenção para um trabalho individual assim que o visitante chega."
+          >
+            <SwitchField
+              rotulo="Mostrar a janela ao entrar no site"
+              valor={draft.popup.ativo}
+              onChange={(valor) => set("popup", { ...draft.popup, ativo: valor })}
+              ajuda="A janela abre só na página inicial e pode ser fechada no X, no Esc ou clicando fora."
+            />
+
+            <div className="space-y-2">
+              <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                Trabalho anunciado
+              </Label>
+              <Select
+                value={draft.popup.adSlug || "__auto__"}
+                onValueChange={(valor) =>
+                  set("popup", {
+                    ...draft.popup,
+                    adSlug: valor === "__auto__" ? "" : valor,
+                  })
+                }
+              >
+                <SelectTrigger className="rounded-sm border-border bg-background/70 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__auto__">
+                    Automático (primeiro trabalho individual)
+                  </SelectItem>
+                  {ads.map((anuncio) => (
+                    <SelectItem key={anuncio.id} value={anuncio.slug}>
+                      {anuncio.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[11px] text-muted-foreground">
+                A imagem, o preço e o destino do botão vêm do próprio anúncio escolhido.
+              </p>
+            </div>
+
+            <TextField
+              rotulo="Linha de apoio"
+              valor={draft.popup.eyebrow}
+              onChange={(valor) => set("popup", { ...draft.popup, eyebrow: valor })}
+            />
+
+            <TextField
+              rotulo="Título (opcional)"
+              valor={draft.popup.titulo}
+              onChange={(valor) => set("popup", { ...draft.popup, titulo: valor })}
+              placeholder="Deixe vazio para usar o título do anúncio"
+            />
+
+            <TextAreaField
+              rotulo="Texto (opcional)"
+              valor={draft.popup.texto}
+              onChange={(valor) => set("popup", { ...draft.popup, texto: valor })}
+              rows={3}
+            />
+
+            <TextField
+              rotulo="Texto do botão"
+              valor={draft.popup.botao}
+              onChange={(valor) => set("popup", { ...draft.popup, botao: valor })}
+            />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                  Abrir depois de
+                </Label>
+                <Select
+                  value={String(draft.popup.atraso)}
+                  onValueChange={(valor) =>
+                    set("popup", { ...draft.popup, atraso: Number(valor) })
+                  }
+                >
+                  <SelectTrigger className="rounded-sm border-border bg-background/70 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">Na hora</SelectItem>
+                    <SelectItem value="2">2 segundos</SelectItem>
+                    <SelectItem value="5">5 segundos</SelectItem>
+                    <SelectItem value="10">10 segundos</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                  Mostrar
+                </Label>
+                <Select
+                  value={draft.popup.frequencia}
+                  onValueChange={(valor) =>
+                    set("popup", {
+                      ...draft.popup,
+                      frequencia: valor as "sessao" | "dia" | "sempre",
+                    })
+                  }
+                >
+                  <SelectTrigger className="rounded-sm border-border bg-background/70 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sessao">Uma vez por visita</SelectItem>
+                    <SelectItem value="dia">Uma vez por dia</SelectItem>
+                    <SelectItem value="sempre">Sempre que abrir</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </Grupo>
         </TabsContent>
 

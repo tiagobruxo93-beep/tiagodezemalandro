@@ -167,6 +167,16 @@ export interface SiteContent {
     instagram: string;
     paymentNote: string;
   };
+  popup: {
+    ativo: boolean;
+    adSlug: string;
+    eyebrow: string;
+    titulo: string;
+    texto: string;
+    botao: string;
+    atraso: number;
+    frequencia: "sessao" | "dia" | "sempre";
+  };
   marketing: {
     metaPixel: string;
     ga4: string;
@@ -385,6 +395,16 @@ export const DEFAULT_CONTENT: SiteContent = {
     instagram: "https://www.instagram.com/tiagodezemalandro/",
     paymentNote: "Pagamento processado com segurança pela Cakto",
   },
+  popup: {
+    ativo: true,
+    adSlug: "",
+    eyebrow: "Trabalho individual",
+    titulo: "",
+    texto: "",
+    botao: "Quero esse trabalho",
+    atraso: 2,
+    frequencia: "sessao",
+  },
   marketing: {
     metaPixel: "",
     ga4: "",
@@ -545,6 +565,7 @@ export function mergeContent(raw: unknown): SiteContent {
   const manutencao = bloco("manutencao");
   const rodape = bloco("rodape");
   const contato = bloco("contato");
+  const popup = bloco("popup");
   const marketing = bloco("marketing");
   const protecao = bloco("protecao");
   const seguranca = bloco("seguranca");
@@ -676,6 +697,19 @@ export function mergeContent(raw: unknown): SiteContent {
           : base.contato.whatsappNumero,
       instagram: texto(contato.instagram, base.contato.instagram),
       paymentNote: texto(contato.paymentNote, base.contato.paymentNote),
+    },
+    popup: {
+      ativo: typeof popup.ativo === "boolean" ? popup.ativo : base.popup.ativo,
+      adSlug: typeof popup.adSlug === "string" ? popup.adSlug : base.popup.adSlug,
+      eyebrow: texto(popup.eyebrow, base.popup.eyebrow),
+      titulo: typeof popup.titulo === "string" ? popup.titulo : base.popup.titulo,
+      texto: typeof popup.texto === "string" ? popup.texto : base.popup.texto,
+      botao: texto(popup.botao, base.popup.botao),
+      atraso: numero(popup.atraso, base.popup.atraso, 0, 20),
+      frequencia:
+        popup.frequencia === "dia" || popup.frequencia === "sempre" || popup.frequencia === "sessao"
+          ? popup.frequencia
+          : base.popup.frequencia,
     },
     marketing: {
       metaPixel:

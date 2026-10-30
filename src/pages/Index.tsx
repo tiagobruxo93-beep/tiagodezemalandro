@@ -13,6 +13,7 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { ManutencaoScreen } from "@/components/site/manutencao-screen";
 import { WhatsAppFab } from "@/components/site/whatsapp-fab";
 import { CookieNotice } from "@/components/site/cookie-notice";
+import { WelcomePopup } from "@/components/site/welcome-popup";
 import { useAds, useSiteSettings } from "@/hooks/use-site-data";
 import { fundoDe, type SecaoKey } from "@/lib/site-content";
 
@@ -86,6 +87,7 @@ const Index = () => {
       </main>
       <SiteFooter settings={settings} content={content} />
       <WhatsAppFab settings={settings} />
+      <WelcomePopup popup={content.popup} ads={ads} />
       <CookieNotice />
     </div>
   );
