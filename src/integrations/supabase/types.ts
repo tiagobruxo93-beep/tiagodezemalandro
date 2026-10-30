@@ -3444,6 +3444,8 @@ export type Database = {
           image_url: string | null
           includes: string[]
           kicker: string
+          link_code: string | null
+          link_token: string | null
           price_label: string
           slug: string
           sort_order: number
@@ -3465,6 +3467,8 @@ export type Database = {
           image_url?: string | null
           includes?: string[]
           kicker?: string
+          link_code?: string | null
+          link_token?: string | null
           price_label?: string
           slug: string
           sort_order?: number
@@ -3486,6 +3490,8 @@ export type Database = {
           image_url?: string | null
           includes?: string[]
           kicker?: string
+          link_code?: string | null
+          link_token?: string | null
           price_label?: string
           slug?: string
           sort_order?: number

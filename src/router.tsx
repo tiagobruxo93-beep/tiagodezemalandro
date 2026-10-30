@@ -28,6 +28,16 @@ export const routers = [
     element: <Admin />,
   },
   {
+    path: "/oferta/:codigo",
+    name: "oferta",
+    element: <AdPage modo="link" />,
+  },
+  {
+    path: "/l/:codigo",
+    name: "link-curto",
+    element: <AdPage modo="link" />,
+  },
+  {
     path: "/videos",
     name: "videos",
     element: <VideosPage />,

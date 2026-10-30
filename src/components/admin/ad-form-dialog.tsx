@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ImagePlus, Loader2, Save } from "lucide-react";
+import { Copy, ExternalLink, ImagePlus, Link2, Loader2, Save } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { IMAGE_LIBRARY, slugify, type Ad } from "@/lib/ads";
+import { gerarLinkPago, IMAGE_LIBRARY, slugify, type Ad } from "@/lib/ads";
 import { adToDraft, emptyDraft, type AdDraft } from "@/lib/admin-ads";
 import { VideoField } from "@/components/admin/fields";
 
@@ -43,13 +44,48 @@ export function AdFormDialog({
   const [slugTouched, setSlugTouched] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [link, setLink] = useState({ token: "", code: "" });
+  const [gerandoLink, setGerandoLink] = useState(false);
 
   useEffect(() => {
     if (!open) return;
     setDraft(ad ? adToDraft(ad) : emptyDraft(nextOrder));
     setSlugTouched(Boolean(ad));
     setError(null);
+    setLink({ token: ad?.linkToken ?? "", code: ad?.linkCode ?? "" });
   }, [open, ad, nextOrder]);
+
+  const origem = typeof window === "undefined" ? "" : window.location.origin;
+  const linkCurto = link.code ? `${origem}/l/${link.code}` : "";
+  const linkCompleto = link.token ? `${origem}/oferta/${link.token}` : "";
+
+  const copiar = async (valor: string, rotulo: string) => {
+    try {
+      await navigator.clipboard.writeText(valor);
+      toast.success(`${rotulo} copiado`);
+    } catch {
+      toast.error("Não foi possível copiar. Selecione o texto manualmente.");
+    }
+  };
+
+  const criarLinkPago = async () => {
+    if (!ad) {
+      toast.error("Salve o anúncio primeiro para gerar o link.");
+      return;
+    }
+
+    setGerandoLink(true);
+
+    try {
+      const gerado = await gerarLinkPago(ad.id);
+      setLink(gerado);
+      toast.success("Link privado gerado");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Não foi possível gerar o link");
+    } finally {
+      setGerandoLink(false);
+    }
+  };
 
   const update = <K extends keyof AdDraft>(key: K, value: AdDraft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -307,6 +343,95 @@ export function AdFormDialog({
                 onChange={(valor) => update("video_url", valor)}
                 ajuda="Envie um vídeo do computador/celular (MP4, WEBM ou MOV) ou cole um link do YouTube/Vimeo. Ele aparece na ficha do anúncio e um selo “Vídeo” aparece no card."
               />
+            </div>
+
+            <div className="space-y-3 rounded-sm border border-secondary/30 bg-secondary/5 p-4 sm:col-span-2">
+              <div className="flex items-center gap-2">
+                <Link2 className="h-4 w-4 text-secondary" />
+                <p className="text-[10px] uppercase tracking-[0.16em] text-secondary">
+                  Link privado do anúncio
+                </p>
+              </div>
+
+              <p className="text-[11px] leading-relaxed text-muted-foreground">
+                Use este endereço no anúncio pago. Ele não aparece em nenhuma página,
+                menu ou busca do site — fica só aqui no painel.
+              </p>
+
+              {link.code ? (
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className={fieldLabel}>Link curto</Label>
+                    <div className="flex flex-wrap gap-2">
+                      <Input
+                        readOnly
+                        value={linkCurto}
+                        onFocus={(event) => event.currentTarget.select()}
+                        className={fieldClass}
+                      />
+                      <Button
+                        type="button"
+                        variant="hairline"
+                        size="sm"
+                        onClick={() => void copiar(linkCurto, "Link curto")}
+                      >
+                        <Copy />
+                        Copiar
+                      </Button>
+                      <Button asChild variant="ghost" size="sm">
+                        <a href={linkCurto} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink />
+                          Abrir
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className={fieldLabel}>Link completo (mais difícil de adivinhar)</Label>
+                    <div className="flex flex-wrap gap-2">
+                      <Input
+                        readOnly
+                        value={linkCompleto}
+                        onFocus={(event) => event.currentTarget.select()}
+                        className={fieldClass}
+                      />
+                      <Button
+                        type="button"
+                        variant="hairline"
+                        size="sm"
+                        onClick={() => void copiar(linkCompleto, "Link completo")}
+                      >
+                        <Copy />
+                        Copiar
+                      </Button>
+                    </div>
+                  </div>
+
+                  <p className="text-[10px] leading-relaxed text-muted-foreground">
+                    Os dois abrem a mesma ficha. O curto é melhor para ditar e digitar;
+                    o completo é melhor para campanha paga, porque ninguém acerta por acaso.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Button
+                    type="button"
+                    variant="forward"
+                    size="sm"
+                    disabled={!ad || gerandoLink}
+                    onClick={() => void criarLinkPago()}
+                  >
+                    {gerandoLink ? <Loader2 className="animate-spin" /> : <Link2 />}
+                    Gerar link privado
+                  </Button>
+                  {!ad && (
+                    <p className="text-[11px] text-muted-foreground">
+                      Salve o anúncio primeiro e abra de novo para gerar o link.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">

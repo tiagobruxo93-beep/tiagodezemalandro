@@ -1,0 +1,4 @@
+alter table public.spiritual_ads add column if not exists link_token text;
+alter table public.spiritual_ads add column if not exists link_code text;
+create unique index if not exists espiritual_ads_link_token_idx on public.spiritual_ads (link_token) where link_token is not null;
+create unique index if not exists espiritual_ads_link_code_idx on public.spiritual_ads (link_code) where link_code is not null;

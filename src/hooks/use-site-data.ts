@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   DEFAULT_SETTINGS,
+  fetchAdByLink,
   fetchAdBySlug,
   fetchAds,
   fetchSiteSettings,
@@ -95,6 +96,42 @@ export function useSiteSettings() {
   }, [reload]);
 
   return { settings, content, loading, reload };
+}
+
+export function useAdLink(valor: string | undefined) {
+  const [ad, setAd] = useState<Ad | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    if (!valor) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    fetchAdByLink(valor)
+      .then((data) => {
+        if (!active) return;
+        setAd(data);
+        setError(null);
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
+        setError(err instanceof Error ? err.message : "Erro ao carregar o anúncio");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [valor]);
+
+  return { ad, loading, error };
 }
 
 export function useAd(slug: string | undefined) {

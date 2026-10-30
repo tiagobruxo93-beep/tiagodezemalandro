@@ -24,6 +24,8 @@ export interface Ad {
   active: boolean;
   featured: boolean;
   sortOrder: number;
+  linkToken: string;
+  linkCode: string;
 }
 
 export interface SiteSettings {
@@ -57,6 +59,8 @@ type AdRow = {
   active: boolean;
   featured: boolean;
   sort_order: number;
+  link_token: string | null;
+  link_code: string | null;
 };
 
 type SettingsRow = {
@@ -182,6 +186,8 @@ function mapAd(row: AdRow): Ad {
     active: row.active,
     featured: row.featured,
     sortOrder: row.sort_order ?? 0,
+    linkToken: row.link_token ?? "",
+    linkCode: row.link_code ?? "",
   };
 }
 
@@ -217,6 +223,63 @@ export async function fetchAdBySlug(slug: string): Promise<Ad | null> {
     .select("*")
     .eq("slug", slug)
     .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data ? mapAd(data as AdRow) : null;
+}
+
+const ALFABETO_CURTO = "abcdefghjkmnpqrstuvwxyz23456789";
+
+function codigoCurto(tamanho = 6) {
+  const bytes = new Uint8Array(tamanho);
+  crypto.getRandomValues(bytes);
+
+  return Array.from(bytes)
+    .map((byte) => ALFABETO_CURTO[byte % ALFABETO_CURTO.length])
+    .join("");
+}
+
+/**
+ * Cria o link privado daquele anúncio (usado em tráfego pago).
+ * O link não aparece em nenhuma página do site, só no painel.
+ */
+export async function gerarLinkPago(adId: string): Promise<{ token: string; code: string }> {
+  const token = crypto.randomUUID().replace(/-/g, "").slice(0, 22);
+
+  for (let tentativa = 0; tentativa < 5; tentativa++) {
+    const code = codigoCurto();
+
+    const { data: existente } = await supabase
+      .from("spiritual_ads")
+      .select("id")
+      .eq("link_code", code)
+      .maybeSingle();
+
+    if (existente) continue;
+
+    const { error } = await supabase
+      .from("spiritual_ads")
+      .update({ link_token: token, link_code: code })
+      .eq("id", adId);
+
+    if (error) throw new Error(error.message);
+
+    return { token, code };
+  }
+
+  throw new Error("Não foi possível gerar o link curto. Tente novamente.");
+}
+
+/** Busca o anúncio pelo link privado (token longo ou código curto). */
+export async function fetchAdByLink(valor: string): Promise<Ad | null> {
+  const limpo = (valor || "").replace(/[^a-zA-Z0-9]/g, "").slice(0, 40);
+  if (limpo.length < 4) return null;
+
+  const { data, error } = await supabase
+    .from("spiritual_ads")
+    .select("*")
+    .or(`link_token.eq.${limpo},link_code.eq.${limpo}`)
+    .maybeSingle();
+
   if (error) throw new Error(error.message);
   return data ? mapAd(data as AdRow) : null;
 }

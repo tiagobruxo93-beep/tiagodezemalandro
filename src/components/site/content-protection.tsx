@@ -38,6 +38,32 @@ export function ContentProtection({ protecao }: { protecao: SiteContent["proteca
   }, [noPainel, protecao.bloquearCopia]);
 
   useEffect(() => {
+    if (noPainel || !protecao.bloquearInspecao) return;
+
+    const bloquearAtalhos = (evento: KeyboardEvent) => {
+      const tecla = evento.key.toLowerCase();
+      const comando = evento.ctrlKey || evento.metaKey;
+
+      if (evento.key === "F12") {
+        evento.preventDefault();
+        return;
+      }
+
+      if (comando && evento.shiftKey && ["i", "j", "c", "k"].includes(tecla)) {
+        evento.preventDefault();
+        return;
+      }
+
+      if (comando && tecla === "u") {
+        evento.preventDefault();
+      }
+    };
+
+    document.addEventListener("keydown", bloquearAtalhos, true);
+    return () => document.removeEventListener("keydown", bloquearAtalhos, true);
+  }, [noPainel, protecao.bloquearInspecao]);
+
+  useEffect(() => {
     if (noPainel || !protecao.bloquearArrastarImagem) return;
 
     const bloquear = (evento: DragEvent) => {

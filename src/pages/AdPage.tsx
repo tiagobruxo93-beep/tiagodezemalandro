@@ -5,19 +5,23 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { ManutencaoScreen } from "@/components/site/manutencao-screen";
 import { WhatsAppFab } from "@/components/site/whatsapp-fab";
 import { AdDetail } from "@/components/site/ad-detail";
-import { useAd, useAds, useSiteSettings } from "@/hooks/use-site-data";
+import { useAd, useAdLink, useAds, useSiteSettings } from "@/hooks/use-site-data";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const AdPage = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const { ad, loading, error } = useAd(slug);
+const AdPage = ({ modo }: { modo?: "link" }) => {
+  const { slug, codigo } = useParams<{ slug?: string; codigo?: string }>();
+  const porLink = modo === "link";
+
+  const porSlug = useAd(porLink ? undefined : slug);
+  const porCodigo = useAdLink(porLink ? codigo : undefined);
+  const { ad, loading, error } = porLink ? porCodigo : porSlug;
   const { settings, content } = useSiteSettings();
   const { ads } = useAds();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-  }, [slug]);
+  }, [slug, codigo]);
 
   useEffect(() => {
     if (ad) document.title = `${ad.title} — Pai Tiago de Zé Malandro`;
@@ -25,6 +29,23 @@ const AdPage = () => {
       document.title = "Pai Tiago de Zé Malandro — Trabalhos espirituais";
     };
   }, [ad]);
+
+  // Link usado em anúncio pago: fora do Google e com o endereço público no canonical.
+  useEffect(() => {
+    if (!porLink || !ad) return;
+
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    meta.dataset.linkPago = "1";
+    document.head.appendChild(meta);
+
+    document
+      .querySelector('link[rel="canonical"]')
+      ?.setAttribute("href", `${window.location.origin}/anuncio/${ad.slug}`);
+
+    return () => meta.remove();
+  }, [porLink, ad]);
 
   const related = useMemo(
     () =>

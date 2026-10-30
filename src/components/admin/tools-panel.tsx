@@ -237,6 +237,12 @@ export function ToolsPanel({
           ajuda="Impede arrastar a foto para a área de trabalho ou para outra aba."
         />
         <SwitchField
+          rotulo="Dificultar a abertura do código-fonte (inspecionar)"
+          valor={protecao.bloquearInspecao}
+          onChange={(valor) => setProtecao({ ...protecao, bloquearInspecao: valor })}
+          ajuda="Bloqueia F12, Ctrl+Shift+I/J/C e Ctrl+U no site. É uma barreira de dissuasão: nenhum site consegue impedir de verdade que alguém abra o inspetor do próprio navegador."
+        />
+        <SwitchField
           rotulo="Esconder o site do Google"
           valor={protecao.noindex}
           onChange={(valor) => setProtecao({ ...protecao, noindex: valor })}

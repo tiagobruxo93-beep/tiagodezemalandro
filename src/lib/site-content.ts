@@ -172,6 +172,7 @@ export interface SiteContent {
     bloquearBotaoDireito: boolean;
     bloquearCopia: boolean;
     bloquearArrastarImagem: boolean;
+    bloquearInspecao: boolean;
     noindex: boolean;
   };
   seguranca: { sessaoMinutos: number; tentativasLogin: number };
@@ -375,6 +376,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     bloquearBotaoDireito: false,
     bloquearCopia: false,
     bloquearArrastarImagem: true,
+    bloquearInspecao: true,
     noindex: false,
   },
   seguranca: { sessaoMinutos: 60, tentativasLogin: 5 },
@@ -669,6 +671,10 @@ export function mergeContent(raw: unknown): SiteContent {
         typeof protecao.bloquearArrastarImagem === "boolean"
           ? protecao.bloquearArrastarImagem
           : base.protecao.bloquearArrastarImagem,
+      bloquearInspecao:
+        typeof protecao.bloquearInspecao === "boolean"
+          ? protecao.bloquearInspecao
+          : base.protecao.bloquearInspecao,
       noindex:
         typeof protecao.noindex === "boolean" ? protecao.noindex : base.protecao.noindex,
     },
