@@ -78,17 +78,47 @@ export function ApoieSection({
               {bloco.texto}
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button asChild variant="forward" size="lg">
-                <a href={link} target="_blank" rel="noopener noreferrer">
-                  {bloco.botao}
-                  <Heart />
-                </a>
-              </Button>
-              <span className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-                Qualquer valor · do jeito que puder
-              </span>
-            </div>
+            {temPix ? (
+              <div className="mt-8 max-w-md space-y-5 rounded-sm border border-secondary/30 bg-card/50 p-5 backdrop-blur-sm">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-secondary">
+                  Como doar por Pix
+                </p>
+
+                <ol className="space-y-3">
+                  {[
+                    "Abra o aplicativo do seu banco e entre na sua conta.",
+                    'Escolha Pix e depois "Pix Copia e Cola" — ou use "Ler QR Code" e aponte para o código ao lado.',
+                    "Cole o código no seu banco, confira o nome do recebedor e o valor, e confirme.",
+                  ].map((passo, indice) => (
+                    <li key={passo} className="flex gap-3">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border border-secondary/50 text-[10px] text-secondary">
+                        {indice + 1}
+                      </span>
+                      <span className="text-[12px] leading-relaxed text-muted-foreground">
+                        {passo}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+
+                <div className="space-y-2">
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                    Código Pix copia e cola
+                  </p>
+                  <p className="max-h-24 overflow-y-auto break-all border border-border/70 bg-background/70 p-3 font-mono text-[10px] leading-relaxed text-foreground/90">
+                    {payload}
+                  </p>
+                  <Button type="button" variant="forward" size="sm" onClick={() => void copiar()}>
+                    {copiado ? <Check /> : <Copy />}
+                    {copiado ? "Código copiado" : "Copiar código"}
+                  </Button>
+                </div>
+
+                <p className="border-t border-border/60 pt-3 text-[11px] leading-relaxed text-muted-foreground">
+                  {bloco.nota}
+                </p>
+              </div>
+            ) : null}
           </div>
 
           <div className="mx-auto w-full max-w-[360px]">
@@ -118,16 +148,6 @@ export function ApoieSection({
                 )}
               </div>
 
-              {temPix && (
-                <button
-                  type="button"
-                  onClick={() => void copiar()}
-                  className="mt-3 flex w-full items-center justify-center gap-2 border border-secondary/40 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-secondary transition-colors hover:border-secondary hover:bg-secondary/10 hover:text-foreground"
-                >
-                  {copiado ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                  {copiado ? "Código copiado" : "Copiar código Pix"}
-                </button>
-              )}
             </div>
           </div>
         </div>

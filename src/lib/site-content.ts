@@ -38,6 +38,7 @@ export type ApoieSecao = {
   imagem: string;
   opacidade: number;
   tamanhoQr: number;
+  nota: string;
   pix: {
     chave: string;
     nome: string;
@@ -320,6 +321,7 @@ export const DEFAULT_CONTENT: SiteContent = {
     imagem: "/images/fundo-ajude.jpg",
     opacidade: 65,
     tamanhoQr: 208,
+    nota: "Qualquer valor é bem-vindo e nenhum valor muda o recebimento do seu pedido. A contribuição existe para manter as velas e os materiais do atendimento.",
     pix: { chave: "", nome: "", cidade: "", valor: "", descricao: "" },
   },
   faq: {
@@ -684,6 +686,7 @@ export function mergeContent(raw: unknown): SiteContent {
         typeof apoie.tamanhoQr === "number"
           ? Math.min(340, Math.max(120, Math.round(apoie.tamanhoQr)))
           : base.apoie.tamanhoQr,
+      nota: texto(apoie.nota, base.apoie.nota),
       pix: {
         chave:
           typeof (apoie.pix as Record<string, unknown>)?.chave === "string"

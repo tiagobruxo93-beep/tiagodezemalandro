@@ -899,6 +899,14 @@ export function ContentEditor({
               botao="Adicionar destaque"
             />
 
+            <TextAreaField
+              rotulo="Observação abaixo do código Pix"
+              valor={draft.apoie.nota}
+              onChange={(valor) => set("apoie", { ...draft.apoie, nota: valor })}
+              rows={3}
+              ajuda="Aparece abaixo do código copia e cola, no bloco de doação."
+            />
+
             <ImageField
               rotulo="Foto de sobreposição"
               valor={draft.eventos.imagem}

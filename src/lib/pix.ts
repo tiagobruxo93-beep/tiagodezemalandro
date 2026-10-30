@@ -79,6 +79,7 @@ export function montarPix(pix: DadosPix) {
 
   const payload =
     campo("00", "01") +
+    campo("01", "11") +
     campo("26", conta) +
     campo("52", "0000") +
     campo("53", "986") +
