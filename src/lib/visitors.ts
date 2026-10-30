@@ -84,6 +84,89 @@ function celula(valor: unknown) {
   return `"${String(valor ?? "").replace(/"/g, '""')}"`;
 }
 
+
+export interface GrupoIp {
+  chave: string;
+  ip: string | null;
+  visitas: number;
+  sessoes: number;
+  primeira: string;
+  ultima: string;
+  cidade: string | null;
+  regiao: string | null;
+  pais: string | null;
+  provedor: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  impressao: string | null;
+  referencia: string | null;
+  campanha: string | null;
+  dispositivos: string[];
+  navegadores: string[];
+  sistemas: string[];
+  telas: string[];
+  registros: Visitante[];
+}
+
+/** Junta os acessos do mesmo IP, para o painel mostrar uma linha por pessoa/rede. */
+export function agruparPorIp(itens: Visitante[]): GrupoIp[] {
+  const mapa = new Map<string, Visitante[]>();
+
+  itens.forEach((item) => {
+    const chave = item.ip?.trim() || `sessao:${item.session_id}`;
+    const lista = mapa.get(chave);
+    if (lista) lista.push(item);
+    else mapa.set(chave, [item]);
+  });
+
+  const grupos: GrupoIp[] = [];
+
+  mapa.forEach((registros, chave) => {
+    const ordenados = [...registros].sort(
+      (a, b) => new Date(b.visto_em).getTime() - new Date(a.visto_em).getTime(),
+    );
+    const recente = ordenados[0];
+    const primeira = ordenados.reduce(
+      (menor, item) => (item.criado_em < menor ? item.criado_em : menor),
+      recente.criado_em,
+    );
+
+    const distintos = (campo: keyof Visitante) =>
+      Array.from(
+        new Set(
+          ordenados
+            .map((item) => item[campo])
+            .filter((valor): valor is string => typeof valor === "string" && valor !== ""),
+        ),
+      );
+
+    grupos.push({
+      chave,
+      ip: recente.ip && recente.ip.trim() !== "" ? recente.ip : null,
+      visitas: ordenados.reduce((total, item) => total + Number(item.visitas ?? 1), 0),
+      sessoes: ordenados.length,
+      primeira,
+      ultima: recente.visto_em,
+      cidade: recente.cidade,
+      regiao: recente.regiao,
+      pais: recente.pais,
+      provedor: recente.provedor,
+      latitude: recente.latitude,
+      longitude: recente.longitude,
+      impressao: recente.impressao,
+      referencia: recente.referencia,
+      campanha: recente.campanha,
+      dispositivos: distintos("dispositivo"),
+      navegadores: distintos("navegador"),
+      sistemas: distintos("sistema"),
+      telas: distintos("tela"),
+      registros: ordenados,
+    });
+  });
+
+  return grupos.sort((a, b) => new Date(b.ultima).getTime() - new Date(a.ultima).getTime());
+}
+
 export function visitantesParaCsv(itens: Visitante[], bloqueados: Set<string>) {
   const cabecalho = [
     "IP",
