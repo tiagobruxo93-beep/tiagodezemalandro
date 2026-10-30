@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/select";
 import { registrarAtividade } from "@/lib/activity";
 import {
-  agruparPorIp,
+  agruparVisitantes,
   baixarArquivo,
   bloquearIp,
   desbloquearIp,
@@ -152,13 +152,13 @@ export function VisitorsPanel() {
     return () => window.clearInterval(relogio);
   }, [autoAtualizar, carregar]);
 
-  const grupos = useMemo(() => agruparPorIp(visitantes), [visitantes]);
+  const grupos = useMemo(() => agruparVisitantes(visitantes), [visitantes]);
 
   const filtrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
 
     const lista = grupos.filter((grupo) => {
-      const bloqueado = Boolean(grupo.ip && conjuntoBloqueados.has(grupo.ip));
+      const bloqueado = grupo.ips.some((ip) => conjuntoBloqueados.has(ip));
 
       if (status === "bloqueados" && !bloqueado) return false;
       if (status === "liberados" && bloqueado) return false;
@@ -234,14 +234,7 @@ export function VisitorsPanel() {
   };
 
   const ipsSelecionados = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          selecionadosNaTela
-            .map((grupo) => grupo.ip)
-            .filter((ip): ip is string => Boolean(ip)),
-        ),
-      ),
+    () => Array.from(new Set(selecionadosNaTela.flatMap((grupo) => grupo.ips))),
     [selecionadosNaTela],
   );
 
@@ -323,20 +316,20 @@ export function VisitorsPanel() {
   };
 
   const alternarBloqueioDoGrupo = (grupo: GrupoIp) => {
-    if (!grupo.ip) return;
-    const bloqueado = conjuntoBloqueados.has(grupo.ip);
+    if (grupo.ips.length === 0) return;
+    const bloqueado = grupo.ips.some((ip) => conjuntoBloqueados.has(ip));
 
     void executar(
       async () => {
         if (bloqueado) {
-          await desbloquearIp(grupo.ip!);
-          await registrarAtividade("visitante_desbloqueado", { ip: grupo.ip });
+          await Promise.all(grupo.ips.map((ip) => desbloquearIp(ip)));
+          await registrarAtividade("visitante_desbloqueado", { ips: grupo.ips });
         } else {
-          await bloquearIp(grupo.ip!);
-          await registrarAtividade("visitante_bloqueado", { ip: grupo.ip });
+          await Promise.all(grupo.ips.map((ip) => bloquearIp(ip)));
+          await registrarAtividade("visitante_bloqueado", { ips: grupo.ips });
         }
       },
-      bloqueado ? "IP liberado" : "IP bloqueado",
+      bloqueado ? "Acesso liberado" : "Acesso bloqueado",
     );
   };
 
@@ -350,7 +343,7 @@ export function VisitorsPanel() {
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[
-          { label: "Pessoas (IPs)", valor: stats.total, icone: Users, hint: "redes distintas" },
+          { label: "Pessoas", valor: stats.total, icone: Users, hint: "aparelhos distintos" },
           { label: "Hoje", valor: stats.hoje, icone: Activity, hint: "acessos do dia" },
           { label: "Bloqueados", valor: stats.bloqueados, icone: Ban, hint: "IPs na lista" },
           { label: "Países", valor: stats.paises, icone: Globe2, hint: "origens" },
@@ -550,10 +543,10 @@ export function VisitorsPanel() {
             className="h-3.5 w-3.5 accent-[hsl(var(--secondary))]"
           />
           <span className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
-            Rede / IP
+            Pessoa / aparelho
           </span>
           <span className="ml-auto text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
-            {stats.total} rede(s) registradas
+            {stats.total} pessoa(s) registrada(s)
           </span>
         </div>
 
@@ -570,7 +563,7 @@ export function VisitorsPanel() {
         ) : (
           <ul className="divide-y divide-border/60">
             {filtrados.map((grupo) => {
-              const bloqueado = Boolean(grupo.ip && conjuntoBloqueados.has(grupo.ip));
+              const bloqueado = grupo.ips.some((ip) => conjuntoBloqueados.has(ip));
               const marcado = selecionados.has(grupo.chave);
               const aberto = expandidos.has(grupo.chave);
 
@@ -589,6 +582,11 @@ export function VisitorsPanel() {
                         <p className="truncate font-mono text-[12px] text-foreground">
                           {grupo.ip ?? "sem IP"}
                         </p>
+                        {grupo.ips.length > 1 && (
+                          <p className="text-[10px] text-muted-foreground">
+                            +{grupo.ips.length - 1} IP(s) do mesmo aparelho
+                          </p>
+                        )}
                         <p
                           className={`mt-0.5 inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.12em] ${
                             bloqueado ? "text-destructive" : "text-secondary"
@@ -657,7 +655,7 @@ export function VisitorsPanel() {
                         </Button>
                       )}
 
-                      {grupo.ip && (
+                      {grupo.ips.length > 0 && (
                         <Button
                           type="button"
                           variant="ghost"
@@ -690,6 +688,13 @@ export function VisitorsPanel() {
                           <span className={ROTULO}>Telas</span>
                           <br />
                           <span className="text-foreground">{grupo.telas.join(", ") || "—"}</span>
+                        </p>
+                        <p className="text-muted-foreground">
+                          <span className={ROTULO}>IPs deste aparelho</span>
+                          <br />
+                          <span className="break-all font-mono text-foreground">
+                            {grupo.ips.length > 0 ? grupo.ips.join(", ") : "—"}
+                          </span>
                         </p>
                         <p className="text-muted-foreground">
                           <span className={ROTULO}>ID do aparelho</span>

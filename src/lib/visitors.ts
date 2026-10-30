@@ -88,6 +88,7 @@ function celula(valor: unknown) {
 export interface GrupoIp {
   chave: string;
   ip: string | null;
+  ips: string[];
   visitas: number;
   sessoes: number;
   primeira: string;
@@ -108,12 +109,20 @@ export interface GrupoIp {
   registros: Visitante[];
 }
 
-/** Junta os acessos do mesmo IP, para o painel mostrar uma linha por pessoa/rede. */
-export function agruparPorIp(itens: Visitante[]): GrupoIp[] {
+/**
+ * Junta os acessos da mesma pessoa.
+ * A chave é a impressão digital do aparelho: assim o celular que troca de IP
+ * (comum em 4G/5G) continua sendo uma linha só, com o total de acessos.
+ */
+export function agruparVisitantes(itens: Visitante[]): GrupoIp[] {
   const mapa = new Map<string, Visitante[]>();
 
   itens.forEach((item) => {
-    const chave = item.ip?.trim() || `sessao:${item.session_id}`;
+    const chave =
+      item.impressao?.trim() ||
+      item.ip?.trim() ||
+      `sessao:${item.session_id}`;
+
     const lista = mapa.get(chave);
     if (lista) lista.push(item);
     else mapa.set(chave, [item]);
@@ -126,6 +135,7 @@ export function agruparPorIp(itens: Visitante[]): GrupoIp[] {
       (a, b) => new Date(b.visto_em).getTime() - new Date(a.visto_em).getTime(),
     );
     const recente = ordenados[0];
+
     const primeira = ordenados.reduce(
       (menor, item) => (item.criado_em < menor ? item.criado_em : menor),
       recente.criado_em,
@@ -140,9 +150,12 @@ export function agruparPorIp(itens: Visitante[]): GrupoIp[] {
         ),
       );
 
+    const ips = distintos("ip");
+
     grupos.push({
       chave,
-      ip: recente.ip && recente.ip.trim() !== "" ? recente.ip : null,
+      ip: recente.ip && recente.ip.trim() !== "" ? recente.ip : (ips[0] ?? null),
+      ips,
       visitas: ordenados.reduce((total, item) => total + Number(item.visitas ?? 1), 0),
       sessoes: ordenados.length,
       primeira,
