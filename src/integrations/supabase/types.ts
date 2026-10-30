@@ -3618,6 +3618,7 @@ export type Database = {
           idioma: string | null
           impressao: string | null
           ip: string | null
+          ip_servidor: string | null
           latitude: number | null
           longitude: number | null
           navegador: string | null
@@ -3643,6 +3644,7 @@ export type Database = {
           idioma?: string | null
           impressao?: string | null
           ip?: string | null
+          ip_servidor?: string | null
           latitude?: number | null
           longitude?: number | null
           navegador?: string | null
@@ -3668,6 +3670,7 @@ export type Database = {
           idioma?: string | null
           impressao?: string | null
           ip?: string | null
+          ip_servidor?: string | null
           latitude?: number | null
           longitude?: number | null
           navegador?: string | null

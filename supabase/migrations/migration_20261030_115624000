@@ -1,0 +1,1 @@
+delete from public.spiritual_visitors where session_id in ('teste12345678','diag123456789','testepublico001') or (ip = '172.23.47.144' and ip_servidor = '172.23.47.144');

@@ -28,14 +28,36 @@ function limpar(valor: unknown, max: number): string {
   return typeof valor === "string" ? valor.trim().slice(0, max) : "";
 }
 
+/** Junta todos os cabeçalhos que podem trazer o IP de quem chamou. */
+function candidatosDeIp(req: Request): string[] {
+  const lista: string[] = [];
+
+  const adicionar = (valor: string | null | undefined) => {
+    if (!valor) return;
+    valor.split(",").forEach((parte) => {
+      const limpo = parte.trim();
+      if (limpo) lista.push(limpo);
+    });
+  };
+
+  adicionar(req.headers.get("cf-connecting-ip"));
+  adicionar(req.headers.get("true-client-ip"));
+  adicionar(req.headers.get("x-client-ip"));
+  adicionar(req.headers.get("x-envoy-external-address"));
+  adicionar(req.headers.get("x-forwarded-for"));
+  adicionar(req.headers.get("x-real-ip"));
+  adicionar(req.headers.get("forwarded"));
+
+  return lista
+    .map((valor) => valor.replace(/^for=/i, "").replace(/^"|"$/g, "").replace(/[[\]]/g, ""))
+    .map((valor) => (valor.includes(":") && valor.startsWith("::ffff:") ? valor.slice(7) : valor))
+    .filter((valor) => valor.length > 0);
+}
+
+/** Primeiro IP público encontrado nos cabeçalhos (ignora rede interna do proxy). */
 function ipDoPedido(req: Request): string {
-  const cf = req.headers.get("cf-connecting-ip");
-  if (cf) return cf.trim();
-
-  const encaminhado = req.headers.get("x-forwarded-for");
-  if (encaminhado) return encaminhado.split(",")[0].trim();
-
-  return (req.headers.get("x-real-ip") ?? "").trim();
+  const Lista = candidatosDeIp(req);
+  return Lista.find((valor) => ipValido(valor)) ?? "";
 }
 
 function ipValido(ip: string) {
@@ -167,7 +189,13 @@ Deno.serve(async (req) => {
     return json({ error: "invalid_session" }, 400);
   }
 
-  const ip = ipDoPedido(req);
+  // IP do cabeçalho (confiável, mas o proxy pode entregar o IP interno dele)
+  // e IP público detectado no navegador do visitante (fallback).
+  const ipServidorBruto = candidatosDeIp(req)[0] ?? "";
+  const ipServidor = ipValido(ipServidorBruto) ? ipServidorBruto : "";
+  const ipEnviado = limpar(corpo.ip_publico, 45);
+  const ipCliente = ipValido(ipEnviado) ? ipEnviado : "";
+  const ip = ipServidor || ipCliente;
 
   const supabase = createClient(
     Deno.env.get("SUPABASE_URL")!,
@@ -175,15 +203,16 @@ Deno.serve(async (req) => {
     { auth: { persistSession: false } },
   );
 
-  // IP bloqueado: nem segue para o registro.
-  if (ip) {
-    const { data: bloqueio } = await supabase
+  // IP bloqueado: vale tanto o IP do cabeçalho quanto o detectado no navegador.
+  const paraConferir = Array.from(new Set([ipServidor, ipCliente, ip].filter(Boolean)));
+
+  if (paraConferir.length > 0) {
+    const { data: bloqueios } = await supabase
       .from("spiritual_blocked_ips")
       .select("ip")
-      .eq("ip", ip)
-      .maybeSingle();
+      .in("ip", paraConferir);
 
-    if (bloqueio) {
+    if (bloqueios && bloqueios.length > 0) {
       return json({ bloqueado: true });
     }
   }
@@ -221,6 +250,7 @@ Deno.serve(async (req) => {
     session_id: sessao,
     impressao: limpar(corpo.impressao, 64) || null,
     ip: ip || null,
+    ip_servidor: ipServidorBruto || null,
     user_agent: ua.slice(0, 300) || null,
     navegador: navegadorDe(ua),
     sistema: sistemaDe(ua),

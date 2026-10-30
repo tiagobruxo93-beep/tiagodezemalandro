@@ -80,6 +80,11 @@ const PrivacyPage = () => {
           (navegador, tela, fuso e plataforma).
         </p>
         <p>
+          Para identificar essa conexão, o site consulta um serviço público que apenas
+          devolve o número de IP do visitante (sem cookies e sem qualquer outro dado).
+          O registro completo fica visível somente para o responsável.
+        </p>
+        <p>
           Esses registros são usados exclusivamente para segurança, prevenção de fraude
           e medição de audiência, ficam visíveis apenas para o responsável e podem
           resultar no bloqueio de um IP que esteja causando dano ao site. Você pode

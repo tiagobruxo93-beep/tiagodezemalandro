@@ -54,6 +54,48 @@ async function impressaoDoAparelho() {
   }
 }
 
+const CHAVE_IP = "paitiago:ip-publico";
+
+/**
+ * Descobre o IP público do próprio visitante.
+ * O servidor às vezes recebe apenas o IP interno do proxy; este valor garante
+ * que o painel mostre o IP real de quem entrou no site.
+ */
+export async function descobrirIpPublico(): Promise<string> {
+  try {
+    const salvo = window.sessionStorage.getItem(CHAVE_IP);
+    if (salvo) return salvo;
+  } catch {
+    // sem sessão
+  }
+
+  for (const servico of [
+    "https://api64.ipify.org?format=json",
+    "https://api.ipify.org?format=json",
+  ]) {
+    try {
+      const resposta = await fetch(servico, { signal: AbortSignal.timeout(2500) });
+      if (!resposta.ok) continue;
+
+      const dados = (await resposta.json()) as { ip?: string };
+      const ip = (dados?.ip ?? "").trim();
+
+      if (ip) {
+        try {
+          window.sessionStorage.setItem(CHAVE_IP, ip);
+        } catch {
+          // sem armazenamento: consulta de novo na próxima página
+        }
+        return ip;
+      }
+    } catch {
+      // tenta o próximo serviço
+    }
+  }
+
+  return "";
+}
+
 let cache: Promise<ResultadoVisitante> | null = null;
 
 /** Registra a visita (IP, aparelho e localização aproximada) e diz se o IP está bloqueado. */
@@ -65,7 +107,10 @@ export function registrarVisitante(): Promise<ResultadoVisitante> {
 
   cache = (async () => {
     try {
-      const impressao = await impressaoDoAparelho();
+      const [impressao, ipPublico] = await Promise.all([
+        impressaoDoAparelho(),
+        descobrirIpPublico(),
+      ]);
 
       const { data, error } = await supabase.functions.invoke("visitor", {
         body: {
@@ -78,6 +123,7 @@ export function registrarVisitante(): Promise<ResultadoVisitante> {
           referencia: document.referrer.slice(0, 250),
           campanha: campanhaDaUrl(),
           user_agent: navigator.userAgent.slice(0, 300),
+          ip_publico: ipPublico,
         },
       });
 
