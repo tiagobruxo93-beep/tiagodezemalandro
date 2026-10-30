@@ -105,10 +105,18 @@ export function ApoieSection({
                 />
               </div>
 
-              <p className="mt-4 flex items-center justify-center gap-2 text-center text-[10px] uppercase tracking-[0.16em] text-secondary">
-                <ScanLine className="h-3.5 w-3.5" />
-                {temPix ? "Aponte a câmera e pague no seu banco" : "Aponte a câmera do celular"}
-              </p>
+              <div className="mt-4 space-y-1.5 text-center">
+                <p className="flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.16em] text-secondary">
+                  <ScanLine className="h-3.5 w-3.5" />
+                  {temPix ? "Abra seu banco" : "Aponte a câmera do celular"}
+                </p>
+                {temPix && (
+                  <p className="text-[11px] leading-relaxed text-muted-foreground">
+                    Abra a área de pagamento por QR code do aplicativo e escaneie a chave
+                    de pagamento abaixo.
+                  </p>
+                )}
+              </div>
 
               {temPix && (
                 <button
