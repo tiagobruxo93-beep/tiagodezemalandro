@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  Activity,
   AlertTriangle,
   CheckCircle2,
   Copy,
@@ -26,11 +27,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SwitchField } from "@/components/admin/fields";
+import { SwitchField, TextAreaField, TextField } from "@/components/admin/fields";
 import { fetchAtividade, registrarAtividade, type Atividade } from "@/lib/activity";
 import { exportarDados } from "@/lib/backup";
 import { confirmar2fa, desativar2fa, fatoresTotp, iniciar2fa, type FatorTotp } from "@/lib/mfa";
 import { gravarSeguranca } from "@/lib/site-security";
+import { consentimentoDeMedicao, pixelCarregado, testarPixel } from "@/lib/tracking";
 import { saveSiteContent, type SiteContent } from "@/lib/site-content";
 
 const ROTULO = "text-[10px] uppercase tracking-[0.16em] text-muted-foreground";
@@ -85,7 +87,9 @@ export function ToolsPanel({
 }) {
   const [protecao, setProtecao] = useState(content.protecao);
   const [seguranca, setSeguranca] = useState(content.seguranca);
+  const [marketing, setMarketing] = useState(content.marketing);
   const [salvando, setSalvando] = useState(false);
+  const [testado, setTestado] = useState(false);
 
   const [fatores, setFatores] = useState<FatorTotp[]>([]);
   const [carregandoFatores, setCarregandoFatores] = useState(true);
@@ -122,7 +126,7 @@ export function ToolsPanel({
     setSalvando(true);
 
     try {
-      await saveSiteContent({ ...content, protecao, seguranca });
+      await saveSiteContent({ ...content, protecao, seguranca, marketing });
       gravarSeguranca(seguranca);
       await registrarAtividade("protecao_alterada", { protecao, seguranca });
       await onSaved();
@@ -254,6 +258,132 @@ export function ToolsPanel({
           O painel nunca é afetado por essas travas — você continua copiando e
           editando normalmente.
         </p>
+      </Cartao>
+
+      <Cartao
+        titulo="Meta Pixel e Google Analytics"
+        descricao="Ferramenta de rastreamento das campanhas: identificadores, privacidade, eventos e rotas onde o pixel não deve rodar."
+        icone={<Activity className="h-5 w-5" />}
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextField
+            rotulo="Meta Pixel (ID)"
+            valor={marketing.metaPixel}
+            onChange={(valor) => setMarketing({ ...marketing, metaPixel: valor })}
+            placeholder="2210389353246972"
+            ajuda="Só os números do Gerenciador de Eventos."
+          />
+          <TextField
+            rotulo="Google Analytics 4"
+            valor={marketing.ga4}
+            onChange={(valor) => setMarketing({ ...marketing, ga4: valor })}
+            placeholder="G-XXXXXXXXXX"
+            ajuda="Opcional. Mede visitas e cliques."
+          />
+        </div>
+
+        <SwitchField
+          rotulo="Exigir aceite de cookies antes de medir"
+          valor={marketing.exigirConsentimento}
+          onChange={(valor) => setMarketing({ ...marketing, exigirConsentimento: valor })}
+          ajuda="Recomendado: mantém o site dentro da LGPD. Desligado, o pixel dispara já na abertura — aumenta a medição e o risco jurídico."
+        />
+
+        <SwitchField
+          rotulo="Desligar coleta automática de formulários (autoConfig)"
+          valor={!marketing.autoConfig}
+          onChange={(valor) => setMarketing({ ...marketing, autoConfig: !valor })}
+          ajuda="Ligado: o Meta não varre campos de formulário do site."
+        />
+
+        <SwitchField
+          rotulo="Desligar correspondência automática de dados"
+          valor={!marketing.automaticMatching}
+          onChange={(valor) => setMarketing({ ...marketing, automaticMatching: !valor })}
+          ajuda="Ligado: o pixel não usa e-mail/telefone do visitante para casar com perfis."
+        />
+
+        <div className="space-y-3 border border-border/60 bg-background/40 p-4">
+          <p className="text-[10px] uppercase tracking-[0.16em] text-secondary">
+            Eventos enviados
+          </p>
+
+          <SwitchField
+            rotulo="PageView (cada página aberta)"
+            valor={marketing.eventoPageView}
+            onChange={(valor) => setMarketing({ ...marketing, eventoPageView: valor })}
+          />
+          <SwitchField
+            rotulo="Contact (clique no WhatsApp)"
+            valor={marketing.eventoContato}
+            onChange={(valor) => setMarketing({ ...marketing, eventoContato: valor })}
+          />
+          <SwitchField
+            rotulo="InitiateCheckout (clique no checkout)"
+            valor={marketing.eventoCheckout}
+            onChange={(valor) => setMarketing({ ...marketing, eventoCheckout: valor })}
+          />
+        </div>
+
+        <TextAreaField
+          rotulo="Rotas onde o pixel não roda"
+          valor={marketing.rotasBloqueadas}
+          onChange={(valor) => setMarketing({ ...marketing, rotasBloqueadas: valor })}
+          rows={6}
+          ajuda="Uma rota por linha. O painel (/painel) é sempre bloqueado, mesmo que não esteja na lista."
+        />
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="button"
+            variant="forward"
+            onClick={() => void salvar()}
+            disabled={salvando}
+          >
+            {salvando ? <Loader2 className="animate-spin" /> : <Save />}
+            Salvar rastreamento
+          </Button>
+
+          <Button
+            type="button"
+            variant="hairline"
+            onClick={() => {
+              if (!marketing.metaPixel.trim()) {
+                toast.error("Preencha o ID do pixel antes de testar.");
+                return;
+              }
+              const carregou = testarPixel(marketing.metaPixel);
+              setTestado(carregou);
+              toast[carregou ? "success" : "error"](
+                carregou
+                  ? "Pixel carregado neste navegador. Confira no Gerenciador de Eventos."
+                  : "Não foi possível carregar o pixel. Verifique o ID.",
+              );
+            }}
+          >
+            <Activity />
+            Testar pixel agora
+          </Button>
+        </div>
+
+        <div className="space-y-1 border border-border/60 bg-background/40 p-3 text-[11px] leading-relaxed text-muted-foreground">
+          <p>
+            Consentimento neste navegador:{" "}
+            <strong className="text-foreground">
+              {consentimentoDeMedicao() ? "aceito" : "não aceito"}
+            </strong>
+          </p>
+          <p>
+            Pixel carregado nesta sessão:{" "}
+            <strong className="text-foreground">
+              {testado || pixelCarregado() ? "sim" : "não"}
+            </strong>
+          </p>
+          <p>
+            O teste dispara um PageView real a partir deste navegador. Use uma vez para
+            conferir e veja o resultado em business.facebook.com → Gerenciador de Eventos.
+          </p>
+        </div>
       </Cartao>
 
       <Cartao

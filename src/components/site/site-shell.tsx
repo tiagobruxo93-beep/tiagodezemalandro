@@ -21,7 +21,6 @@ function CarregandoPagina() {
 /** Casca comum a todas as rotas: rastreamento, proteções e página. */
 export function SiteShell() {
   const { content } = useSiteSettings();
-  const { metaPixel, ga4 } = content.marketing;
   const { sessaoMinutos, tentativasLogin } = content.seguranca;
   const { pathname } = useLocation();
   const [bloqueado, setBloqueado] = useState(false);
@@ -61,7 +60,7 @@ export function SiteShell() {
 
   return (
     <>
-      <SiteTracking metaPixel={metaPixel} ga4={ga4} />
+      <SiteTracking marketing={content.marketing} />
       <ContentProtection protecao={content.protecao} />
       {bloqueado ? (
         <BlockedScreen />

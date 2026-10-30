@@ -167,7 +167,17 @@ export interface SiteContent {
     instagram: string;
     paymentNote: string;
   };
-  marketing: { metaPixel: string; ga4: string };
+  marketing: {
+    metaPixel: string;
+    ga4: string;
+    exigirConsentimento: boolean;
+    autoConfig: boolean;
+    automaticMatching: boolean;
+    eventoPageView: boolean;
+    eventoContato: boolean;
+    eventoCheckout: boolean;
+    rotasBloqueadas: string;
+  };
   protecao: {
     bloquearBotaoDireito: boolean;
     bloquearCopia: boolean;
@@ -371,7 +381,17 @@ export const DEFAULT_CONTENT: SiteContent = {
     instagram: "https://www.instagram.com/tiagodezemalandro/",
     paymentNote: "Pagamento processado com segurança pela Cakto",
   },
-  marketing: { metaPixel: "", ga4: "" },
+  marketing: {
+    metaPixel: "",
+    ga4: "",
+    exigirConsentimento: true,
+    autoConfig: false,
+    automaticMatching: false,
+    eventoPageView: true,
+    eventoContato: true,
+    eventoCheckout: true,
+    rotasBloqueadas: "/painel\n/admin\n/dashboard\n/login\n/entrar\n/auth\n/conta\n/settings\n/configuracoes",
+  },
   protecao: {
     bloquearBotaoDireito: false,
     bloquearCopia: false,
@@ -657,6 +677,34 @@ export function mergeContent(raw: unknown): SiteContent {
       metaPixel:
         typeof marketing.metaPixel === "string" ? marketing.metaPixel : base.marketing.metaPixel,
       ga4: typeof marketing.ga4 === "string" ? marketing.ga4 : base.marketing.ga4,
+      exigirConsentimento:
+        typeof marketing.exigirConsentimento === "boolean"
+          ? marketing.exigirConsentimento
+          : base.marketing.exigirConsentimento,
+      autoConfig:
+        typeof marketing.autoConfig === "boolean"
+          ? marketing.autoConfig
+          : base.marketing.autoConfig,
+      automaticMatching:
+        typeof marketing.automaticMatching === "boolean"
+          ? marketing.automaticMatching
+          : base.marketing.automaticMatching,
+      eventoPageView:
+        typeof marketing.eventoPageView === "boolean"
+          ? marketing.eventoPageView
+          : base.marketing.eventoPageView,
+      eventoContato:
+        typeof marketing.eventoContato === "boolean"
+          ? marketing.eventoContato
+          : base.marketing.eventoContato,
+      eventoCheckout:
+        typeof marketing.eventoCheckout === "boolean"
+          ? marketing.eventoCheckout
+          : base.marketing.eventoCheckout,
+      rotasBloqueadas:
+        typeof marketing.rotasBloqueadas === "string"
+          ? marketing.rotasBloqueadas
+          : base.marketing.rotasBloqueadas,
     },
     protecao: {
       bloquearBotaoDireito:

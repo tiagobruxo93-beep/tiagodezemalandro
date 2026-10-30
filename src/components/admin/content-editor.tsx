@@ -55,7 +55,6 @@ const ABAS = [
   { id: "duvidas", rotulo: "Dúvidas" },
   { id: "legal", rotulo: "Legal" },
   { id: "contato", rotulo: "Contato" },
-  { id: "marketing", rotulo: "Marketing" },
 ];
 
 function Grupo({
@@ -965,43 +964,6 @@ export function ContentEditor({
             />
           </Grupo>
         </TabsContent>
-        <TabsContent value="marketing" className="mt-6 space-y-5">
-          <Grupo
-            titulo="Rastreamento de campanhas"
-            descricao="Cole aqui os códigos das ferramentas de anúncio. Eles só carregam depois que o visitante aceita os cookies no site, como manda a LGPD. Sem esses códigos, o Meta e o Google não conseguem otimizar os anúncios nem medir quantas vendas vieram deles."
-          >
-            <TextField
-              rotulo="Meta Pixel (Facebook/Instagram)"
-              valor={draft.marketing.metaPixel}
-              onChange={(valor) => set("marketing", { ...draft.marketing, metaPixel: valor })}
-              placeholder="123456789012345"
-              ajuda="Só os números do ID do pixel, como aparecem no Gerenciador de Eventos. O site envia PageView, Contact (clique no WhatsApp) e InitiateCheckout (clique no checkout)."
-            />
-            <TextField
-              rotulo="Google Analytics 4"
-              valor={draft.marketing.ga4}
-              onChange={(valor) => set("marketing", { ...draft.marketing, ga4: valor })}
-              placeholder="G-XXXXXXXXXX"
-              ajuda="Mede visitas, cliques no WhatsApp e início de checkout. Para o Google Ads, vincule esta propriedade ao Ads e importe as conversões por lá."
-            />
-            <div className="space-y-2 border border-border/70 bg-background/40 p-4 text-[11px] leading-relaxed text-muted-foreground">
-              <p className="text-[10px] uppercase tracking-[0.16em] text-secondary">
-                Para fechar a conta
-              </p>
-              <p>
-                A compra em si acontece na Cakto. Para registrar a venda no Meta, use o
-                mesmo ID de pixel dentro da Cakto (Configurações → Pixel). O site mede
-                até o clique no checkout; a Cakto mede a compra aprovada.
-              </p>
-              <p>
-                Depois de salvar, faça um teste: abra o site em outra aba, aceite os
-                cookies e confira no Gerenciador de Eventos do Meta se o PageView
-                apareceu.
-              </p>
-            </div>
-          </Grupo>
-        </TabsContent>
-
         <TabsContent value="abas" className="mt-6 space-y-5">
           <Grupo
             titulo="Abas dos trabalhos"

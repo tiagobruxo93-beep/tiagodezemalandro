@@ -1,6 +1,6 @@
 /**
- * Rastreamento de campanhas (Meta Pixel e GA4).
- * Só carrega depois que a pessoa aceita os cookies de medição — exigência da LGPD.
+ * Rastreamento de campanhas (Meta Pixel e GA4), controlado pelo painel.
+ * Por padrão só carrega depois que a pessoa aceita os cookies de medição (LGPD).
  */
 
 export const CHAVE_CONSENTIMENTO = "paitiago:aviso-cookies";
@@ -22,6 +22,43 @@ declare global {
   }
 }
 
+export type OpcoesRastreamento = {
+  metaPixel?: string;
+  ga4?: string;
+  exigirConsentimento?: boolean;
+  autoConfig?: boolean;
+  automaticMatching?: boolean;
+  eventoPageView?: boolean;
+  eventoContato?: boolean;
+  eventoCheckout?: boolean;
+};
+
+const PADRAO = {
+  exigirConsentimento: true,
+  autoConfig: false,
+  automaticMatching: false,
+  eventoPageView: true,
+  eventoContato: true,
+  eventoCheckout: true,
+};
+
+let opcoes = { ...PADRAO };
+
+export function configurarRastreamento(novo: OpcoesRastreamento) {
+  const limpo: Partial<typeof PADRAO> = {};
+
+  (Object.keys(PADRAO) as (keyof typeof PADRAO)[]).forEach((chave) => {
+    const valor = novo[chave];
+    if (typeof valor === "boolean") limpo[chave] = valor;
+  });
+
+  opcoes = { ...opcoes, ...limpo };
+}
+
+export function opcoesDeRastreamento() {
+  return { ...opcoes };
+}
+
 export function consentimentoDeMedicao(): boolean {
   try {
     const valor = window.localStorage.getItem(CHAVE_CONSENTIMENTO);
@@ -40,12 +77,25 @@ export function registrarConsentimento(aceito: boolean) {
   window.dispatchEvent(new Event(EVENTO_CONSENTIMENTO));
 }
 
+/** Pode medir agora? (respeita a exigência de consentimento configurada no painel) */
+export function podeMedir(): boolean {
+  return !opcoes.exigirConsentimento || consentimentoDeMedicao();
+}
+
 function apenasDigitos(valor: string) {
   return (valor || "").replace(/\D/g, "");
 }
 
 let pixelAtivo = "";
 let gaAtivo = "";
+
+export function pixelCarregado() {
+  return pixelAtivo;
+}
+
+export function gaCarregado() {
+  return gaAtivo;
+}
 
 function carregarScript(src: string) {
   if (document.querySelector(`script[src="${src}"]`)) return;
@@ -71,10 +121,11 @@ function iniciarPixel(id: string) {
     carregarScript("https://connect.facebook.net/en_US/fbevents.js");
   }
 
-  // Restrições de privacidade pedidas para esta conta:
-  // sem coleta automática de formulários e sem correspondência automática de dados.
-  window.fbq("set", "autoConfig", false, id);
-  window.fbq("init", id, {}, { automaticMatching: false });
+  if (opcoes.autoConfig === false) {
+    window.fbq("set", "autoConfig", false, id);
+  }
+
+  window.fbq("init", id, {}, { automaticMatching: opcoes.automaticMatching });
   pixelAtivo = id;
 }
 
@@ -94,12 +145,14 @@ function iniciarGa4(id: string) {
   gaAtivo = id;
 }
 
-/** Liga o rastreamento com os IDs configurados no painel (se houver consentimento). */
-export function iniciarRastreamento(ids: { metaPixel?: string; ga4?: string }) {
-  if (!consentimentoDeMedicao()) return false;
+/** Liga o rastreamento com as opções salvas no painel. */
+export function iniciarRastreamento(config: OpcoesRastreamento) {
+  configurarRastreamento(config);
 
-  const pixel = apenasDigitos(ids.metaPixel ?? "");
-  const ga = (ids.ga4 ?? "").trim();
+  if (!podeMedir()) return false;
+
+  const pixel = apenasDigitos(config.metaPixel ?? "");
+  const ga = (config.ga4 ?? "").trim();
 
   if (pixel) iniciarPixel(pixel);
   if (ga) iniciarGa4(ga);
@@ -107,8 +160,17 @@ export function iniciarRastreamento(ids: { metaPixel?: string; ga4?: string }) {
   return Boolean(pixel || ga);
 }
 
+/** Carrega o pixel mesmo sem consentimento — usado só no teste do painel. */
+export function testarPixel(id: string) {
+  const pixel = apenasDigitos(id);
+  if (!pixel) return false;
+
+  iniciarPixel(pixel);
+  return Boolean(window.fbq);
+}
+
 export function paginaVista(caminho: string) {
-  if (!consentimentoDeMedicao()) return;
+  if (!podeMedir() || !opcoes.eventoPageView) return;
 
   window.fbq?.("track", "PageView");
   window.gtag?.("event", "page_view", {
@@ -118,13 +180,13 @@ export function paginaVista(caminho: string) {
 }
 
 export function eventoMeta(nome: string, dados?: Record<string, unknown>) {
-  if (!consentimentoDeMedicao()) return;
+  if (!podeMedir()) return;
   if (dados) window.fbq?.("track", nome, dados);
   else window.fbq?.("track", nome);
 }
 
 export function eventoGa(nome: string, dados?: Record<string, unknown>) {
-  if (!consentimentoDeMedicao()) return;
+  if (!podeMedir()) return;
   window.gtag?.("event", nome, dados ?? {});
 }
 
