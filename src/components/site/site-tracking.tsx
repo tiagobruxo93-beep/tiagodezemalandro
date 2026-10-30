@@ -8,10 +8,25 @@ import {
   paginaVista,
 } from "@/lib/tracking";
 
+const ROTAS_SEM_PIXEL = [
+  "/painel",
+  "/admin",
+  "/dashboard",
+  "/login",
+  "/entrar",
+  "/auth",
+  "/conta",
+  "/settings",
+  "/configuracoes",
+];
+
 /** Carrega Meta Pixel/GA4 conforme o painel e envia eventos de contato e checkout. */
 export function SiteTracking({ metaPixel, ga4 }: { metaPixel: string; ga4: string }) {
   const { pathname } = useLocation();
-  const noPainel = pathname.startsWith("/painel");
+  const caminho = pathname.toLowerCase();
+  const noPainel =
+    ROTAS_SEM_PIXEL.some((rota) => caminho === rota || caminho.startsWith(`${rota}/`)) ||
+    caminho.startsWith("/painel");
 
   useEffect(() => {
     if (noPainel) return;

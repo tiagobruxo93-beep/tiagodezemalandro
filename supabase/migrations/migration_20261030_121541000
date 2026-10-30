@@ -1,0 +1,1 @@
+update public.spiritual_site_settings set content = jsonb_set(content, '{marketing,metaPixel}', to_jsonb('2210389353246972'::text)), updated_at = now() where id = 1;

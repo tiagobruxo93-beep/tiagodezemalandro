@@ -71,7 +71,10 @@ function iniciarPixel(id: string) {
     carregarScript("https://connect.facebook.net/en_US/fbevents.js");
   }
 
-  window.fbq("init", id);
+  // Restrições de privacidade pedidas para esta conta:
+  // sem coleta automática de formulários e sem correspondência automática de dados.
+  window.fbq("set", "autoConfig", false, id);
+  window.fbq("init", id, {}, { automaticMatching: false });
   pixelAtivo = id;
 }
 
