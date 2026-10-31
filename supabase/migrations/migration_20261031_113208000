@@ -1,0 +1,1 @@
+update public.spiritual_site_settings set content = jsonb_set(content, '{secoes,ordem}', '["trabalhos","como-funciona","corrente","sobre","eventos","videos","galeria","duvidas","apoie"]'::jsonb), updated_at = now() where id = 1;

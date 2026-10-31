@@ -1,0 +1,1 @@
+update public.spiritual_site_settings set content = jsonb_set(content, '{apoie,pix}', jsonb_build_object('chave', 'tiagodezemalandro@gmail.com', 'nome', 'TIAGODEZMALANDRO', 'cidade', 'PRESIDENTE PRUDENTE', 'valor', '', 'descricao', '')), updated_at = now() where id = 1;
