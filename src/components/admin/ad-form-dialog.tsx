@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Copy, ExternalLink, ImagePlus, Link2, Loader2, Save } from "lucide-react";
+import { Copy, ExternalLink, Link2, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -20,9 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { gerarLinkPago, IMAGE_LIBRARY, slugify, type Ad } from "@/lib/ads";
+import { gerarLinkPago, slugify, type Ad } from "@/lib/ads";
 import { adToDraft, emptyDraft, type AdDraft } from "@/lib/admin-ads";
-import { VideoField } from "@/components/admin/fields";
+import { ImageField, VideoField } from "@/components/admin/fields";
 
 const fieldLabel = "text-[10px] uppercase tracking-[0.16em] text-muted-foreground";
 const fieldClass = "rounded-sm border-border bg-background/70 text-sm focus-visible:ring-secondary/50";
@@ -293,47 +293,13 @@ export function AdFormDialog({
               />
             </div>
 
-            <div className="space-y-2 sm:col-span-2">
-              <Label className={fieldLabel}>Imagem do anúncio</Label>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <div className="flex h-24 w-full shrink-0 items-center justify-center overflow-hidden border border-border/70 bg-background/60 sm:w-40">
-                  {draft.image_url ? (
-                    <img
-                      src={draft.image_url}
-                      alt="Prévia"
-                      className="h-full w-full object-contain"
-                    />
-                  ) : (
-                    <ImagePlus className="h-5 w-5 text-muted-foreground/60" />
-                  )}
-                </div>
-                <div className="flex-1 space-y-2">
-                  <Input
-                    value={draft.image_url ?? ""}
-                    onChange={(event) => update("image_url", event.target.value)}
-                    placeholder="/images/hero-altar.jpg"
-                    className={fieldClass}
-                  />
-                  <Select
-                    value={draft.image_url ?? ""}
-                    onValueChange={(value) =>
-                      update("image_url", value === "__none__" ? null : value)
-                    }
-                  >
-                    <SelectTrigger className={fieldClass}>
-                      <SelectValue placeholder="Escolher da biblioteca" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__none__">Sem imagem</SelectItem>
-                      {IMAGE_LIBRARY.map((image) => (
-                        <SelectItem key={image.value} value={image.value}>
-                          {image.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+            <div className="sm:col-span-2">
+              <ImageField
+                rotulo="Imagem do anúncio"
+                valor={draft.image_url ?? ""}
+                onChange={(valor) => update("image_url", valor === "" ? null : valor)}
+                ajuda="Envie a foto do computador ou celular, escolha da biblioteca ou cole um endereço."
+              />
             </div>
 
             <div className="space-y-2 sm:col-span-2">
