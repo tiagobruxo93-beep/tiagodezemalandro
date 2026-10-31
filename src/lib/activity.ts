@@ -29,6 +29,7 @@ export const ACOES: Record<string, string> = {
   visitante_desbloqueado: "Desbloqueou um IP de visitante",
   visitantes_excluidos: "Excluiu registros de visitantes",
   visitantes_limpos: "Limpou todo o histórico de visitantes",
+  acesso_regras_alteradas: "Alterou as regras de acesso do site",
 };
 
 /** Registra uma ação no histórico. Nunca bloqueia a ação principal. */

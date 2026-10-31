@@ -8,7 +8,10 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+type Regras = { paises: string[]; liberados: string[]; bots: boolean; limite: number };
+
 type Geo = {
+  codigo: string;
   pais: string;
   regiao: string;
   cidade: string;
@@ -16,6 +19,59 @@ type Geo = {
   longitude: number | null;
   provedor: string;
 };
+
+const PADRAO_BOT =
+  /bot|crawl|spider|slurp|scrapy|python-requests|curl\/|wget|headless|phantom|ahrefs|semrush|petalbot|bytespider|gptbot|ccbot|claude|perplexity/i;
+
+let cacheRegras: { valor: Regras; expira: number } | null = null;
+
+/** Lê as regras de acesso salvas no painel (cache de 1 minuto). */
+async function carregarRegras(supabase: ReturnType<typeof createClient>): Promise<Regras> {
+  if (cacheRegras && Date.now() < cacheRegras.expira) return cacheRegras.valor;
+
+  let valor: Regras = { paises: [], liberados: [], bots: false, limite: 0 };
+
+  try {
+    const { data } = await supabase
+      .from("spiritual_site_settings")
+      .select("content")
+      .eq("id", 1)
+      .maybeSingle();
+
+    const acesso = (data?.content as Record<string, unknown> | null)?.seguranca as
+      | {
+          acesso?: {
+            paisesBloqueados?: string;
+            ipsLiberados?: string;
+            bloquearBots?: boolean;
+            limitePorMinuto?: number;
+          };
+        }
+      | undefined;
+
+    const paises = String(acesso?.acesso?.paisesBloqueados ?? "")
+      .split(/[,\s]+/)
+      .map((item) => item.trim().toUpperCase())
+      .filter((item) => item.length === 2);
+
+    const liberados = String(acesso?.acesso?.ipsLiberados ?? "")
+      .split(/[,\s]+/)
+      .map((item) => item.trim())
+      .filter((item) => item.length >= 7);
+
+    valor = {
+      paises,
+      liberados,
+      bots: Boolean(acesso?.acesso?.bloquearBots),
+      limite: Number(acesso?.acesso?.limitePorMinuto ?? 0) || 0,
+    };
+  } catch {
+    // sem regras: site continua aberto
+  }
+
+  cacheRegras = { valor, expira: Date.now() + 60_000 };
+  return valor;
+}
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -120,6 +176,7 @@ async function localizar(ip: string): Promise<Geo | null> {
 
       if (dados?.success) {
         return {
+          codigo: limpar(dados.country_code, 2).toUpperCase(),
           pais: limpar(dados.country, 80),
           regiao: limpar(dados.region, 80),
           cidade: limpar(dados.city, 80),
@@ -152,6 +209,7 @@ async function localizar(ip: string): Promise<Geo | null> {
 
       if (!dados?.error) {
         return {
+          codigo: limpar(dados.country_code, 2).toUpperCase(),
           pais: limpar(dados.country_name, 80),
           regiao: limpar(dados.region, 80),
           cidade: limpar(dados.city, 80),
@@ -247,7 +305,7 @@ Deno.serve(async (req) => {
   if (ipValido(ip)) {
     const { data: anterior } = await supabase
       .from("spiritual_visitors")
-      .select("pais, regiao, cidade, latitude, longitude, provedor")
+      .select("pais, pais_codigo, regiao, cidade, latitude, longitude, provedor")
       .eq("ip", ip)
       .not("cidade", "is", null)
       .order("visto_em", { ascending: false })
@@ -256,6 +314,7 @@ Deno.serve(async (req) => {
 
     if (anterior?.cidade) {
       geo = {
+        codigo: String(anterior.pais_codigo ?? "").toUpperCase(),
         pais: anterior.pais ?? "",
         regiao: anterior.regiao ?? "",
         cidade: anterior.cidade ?? "",
@@ -265,6 +324,38 @@ Deno.serve(async (req) => {
       };
     } else {
       geo = await localizar(ip);
+    }
+  }
+
+  // ---- Regras de acesso definidas no painel ----
+  const regras = await carregarRegras(supabase);
+  const liberado =
+    ip !== "" &&
+    regras.liberados.some((item) => item === ip || item === ipServidor || item === ipCliente);
+
+  if (!liberado && regras.bots && PADRAO_BOT.test(ua)) {
+    return json({ bloqueado: true, motivo: "robo" });
+  }
+
+  if (!liberado && regras.paises.length > 0) {
+    const codigo = (geo?.codigo || "").toUpperCase();
+
+    if (codigo && regras.paises.includes(codigo)) {
+      return json({ bloqueado: true, motivo: "pais" });
+    }
+  }
+
+  if (!liberado && regras.limite > 0 && ip) {
+    const { data: limite } = await supabase.rpc("spiritual_rate_hit", {
+      p_chave: `visitor:minuto:${ip}`,
+      p_janela_segundos: 60,
+      p_limite: regras.limite,
+    });
+
+    const resultado = limite as { permitido?: boolean } | null;
+
+    if (resultado && resultado.permitido === false) {
+      return json({ bloqueado: true, motivo: "limite" });
     }
   }
 
@@ -283,6 +374,7 @@ Deno.serve(async (req) => {
     fuso: limpar(corpo.fuso, 60) || null,
     referencia: limpar(corpo.referencia, 250) || null,
     campanha: limpar(corpo.campanha, 250) || null,
+    pais_codigo: geo?.codigo || null,
     pais: geo?.pais ?? null,
     regiao: geo?.regiao ?? null,
     cidade: geo?.cidade ?? null,

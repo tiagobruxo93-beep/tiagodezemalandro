@@ -21,7 +21,7 @@ function CarregandoPagina() {
 /** Casca comum a todas as rotas: rastreamento, proteções e página. */
 export function SiteShell() {
   const { content } = useSiteSettings();
-  const { sessaoMinutos, tentativasLogin, exigirSenhaForte } = content.seguranca;
+  const { sessaoMinutos, tentativasLogin, exigirSenhaForte, acesso } = content.seguranca;
   const { pathname } = useLocation();
   const [bloqueado, setBloqueado] = useState(false);
   const primeiraPagina = useRef(true);
@@ -60,8 +60,8 @@ export function SiteShell() {
 
   // Mantém as regras de sessão/login disponíveis antes do painel carregar.
   useEffect(() => {
-    gravarSeguranca({ sessaoMinutos, tentativasLogin, exigirSenhaForte });
-  }, [sessaoMinutos, tentativasLogin, exigirSenhaForte]);
+    gravarSeguranca({ sessaoMinutos, tentativasLogin, exigirSenhaForte, acesso });
+  }, [sessaoMinutos, tentativasLogin, exigirSenhaForte, acesso]);
 
   // Endereço canônico por página: evita o Google tratar cada rota como duplicata.
   useEffect(() => {

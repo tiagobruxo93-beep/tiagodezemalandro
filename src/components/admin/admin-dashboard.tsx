@@ -23,6 +23,7 @@ import { AdFormDialog } from "@/components/admin/ad-form-dialog";
 import { ContentEditor } from "@/components/admin/content-editor";
 import { SecurityPanel } from "@/components/admin/security-panel";
 import { ToolsPanel } from "@/components/admin/tools-panel";
+import { AccessTool } from "@/components/admin/access-tool";
 import { PopupTool } from "@/components/admin/popup-tool";
 import { VisitorsPanel } from "@/components/admin/visitors-panel";
 import { VisitsPanel } from "@/components/admin/visits-panel";
@@ -380,7 +381,10 @@ export function AdminDashboard({
                       ))}
                     </div>
                   ) : (
-                    <PopupTool content={content} ads={ads} onSaved={reloadSettings} />
+                    <div className="space-y-6">
+                      <PopupTool content={content} ads={ads} onSaved={reloadSettings} />
+                      <AccessTool content={content} onSaved={reloadSettings} />
+                    </div>
                   )}
                 </div>
               </>

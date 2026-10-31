@@ -3623,6 +3623,7 @@ export type Database = {
           longitude: number | null
           navegador: string | null
           pais: string | null
+          pais_codigo: string | null
           plataforma: string | null
           provedor: string | null
           referencia: string | null
@@ -3649,6 +3650,7 @@ export type Database = {
           longitude?: number | null
           navegador?: string | null
           pais?: string | null
+          pais_codigo?: string | null
           plataforma?: string | null
           provedor?: string | null
           referencia?: string | null
@@ -3675,6 +3677,7 @@ export type Database = {
           longitude?: number | null
           navegador?: string | null
           pais?: string | null
+          pais_codigo?: string | null
           plataforma?: string | null
           provedor?: string | null
           referencia?: string | null
@@ -3752,7 +3755,7 @@ export type Database = {
         }
         Relationships: []
       }
-      messages_2026_10_23: {
+      messages_2026_10_30: {
         Row: {
           event: string | null
           extension: string
@@ -3785,7 +3788,7 @@ export type Database = {
         }
         Relationships: []
       }
-      messages_2026_10_24: {
+      messages_2026_10_31: {
         Row: {
           event: string | null
           extension: string
@@ -3818,7 +3821,7 @@ export type Database = {
         }
         Relationships: []
       }
-      messages_2026_10_25: {
+      messages_2026_11_01: {
         Row: {
           event: string | null
           extension: string
@@ -3851,7 +3854,7 @@ export type Database = {
         }
         Relationships: []
       }
-      messages_2026_10_26: {
+      messages_2026_11_02: {
         Row: {
           event: string | null
           extension: string
@@ -3884,7 +3887,7 @@ export type Database = {
         }
         Relationships: []
       }
-      messages_2026_10_27: {
+      messages_2026_11_03: {
         Row: {
           event: string | null
           extension: string

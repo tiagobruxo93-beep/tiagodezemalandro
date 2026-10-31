@@ -213,6 +213,12 @@ export interface SiteContent {
     sessaoMinutos: number;
     tentativasLogin: number;
     exigirSenhaForte: boolean;
+    acesso: {
+      paisesBloqueados: string;
+      ipsLiberados: string;
+      bloquearBots: boolean;
+      limitePorMinuto: number;
+    };
   };
 }
 
@@ -445,7 +451,17 @@ export const DEFAULT_CONTENT: SiteContent = {
     bloquearInspecao: true,
     noindex: false,
   },
-  seguranca: { sessaoMinutos: 60, tentativasLogin: 5, exigirSenhaForte: true },
+  seguranca: {
+    sessaoMinutos: 60,
+    tentativasLogin: 5,
+    exigirSenhaForte: true,
+    acesso: {
+      paisesBloqueados: "",
+      ipsLiberados: "",
+      bloquearBots: false,
+      limitePorMinuto: 0,
+    },
+  },
 };
 
 function texto(valor: unknown, padrao: string) {
@@ -832,6 +848,26 @@ export function mergeContent(raw: unknown): SiteContent {
         typeof seguranca.exigirSenhaForte === "boolean"
           ? seguranca.exigirSenhaForte
           : base.seguranca.exigirSenhaForte,
+      acesso: {
+        paisesBloqueados:
+          typeof (seguranca.acesso as Record<string, unknown>)?.paisesBloqueados === "string"
+            ? String((seguranca.acesso as Record<string, unknown>).paisesBloqueados)
+            : base.seguranca.acesso.paisesBloqueados,
+        ipsLiberados:
+          typeof (seguranca.acesso as Record<string, unknown>)?.ipsLiberados === "string"
+            ? String((seguranca.acesso as Record<string, unknown>).ipsLiberados)
+            : base.seguranca.acesso.ipsLiberados,
+        bloquearBots:
+          typeof (seguranca.acesso as Record<string, unknown>)?.bloquearBots === "boolean"
+            ? Boolean((seguranca.acesso as Record<string, unknown>).bloquearBots)
+            : base.seguranca.acesso.bloquearBots,
+        limitePorMinuto: numero(
+          (seguranca.acesso as Record<string, unknown>)?.limitePorMinuto,
+          base.seguranca.acesso.limitePorMinuto,
+          0,
+          600,
+        ),
+      },
     },
   };
 }

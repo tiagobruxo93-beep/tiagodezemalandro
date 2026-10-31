@@ -10,6 +10,12 @@ export const SEGURANCA_PADRAO: SegurancaLocal = {
   sessaoMinutos: 60,
   tentativasLogin: 5,
   exigirSenhaForte: true,
+  acesso: {
+    paisesBloqueados: "",
+    ipsLiberados: "",
+    bloquearBots: false,
+    limitePorMinuto: 0,
+  },
 };
 
 export function lerSeguranca(): SegurancaLocal {
@@ -34,6 +40,24 @@ export function lerSeguranca(): SegurancaLocal {
         typeof dados.exigirSenhaForte === "boolean"
           ? dados.exigirSenhaForte
           : SEGURANCA_PADRAO.exigirSenhaForte,
+      acesso: {
+        paisesBloqueados:
+          typeof dados.acesso?.paisesBloqueados === "string"
+            ? dados.acesso.paisesBloqueados
+            : SEGURANCA_PADRAO.acesso.paisesBloqueados,
+        ipsLiberados:
+          typeof dados.acesso?.ipsLiberados === "string"
+            ? dados.acesso.ipsLiberados
+            : SEGURANCA_PADRAO.acesso.ipsLiberados,
+        bloquearBots:
+          typeof dados.acesso?.bloquearBots === "boolean"
+            ? dados.acesso.bloquearBots
+            : SEGURANCA_PADRAO.acesso.bloquearBots,
+        limitePorMinuto:
+          typeof dados.acesso?.limitePorMinuto === "number"
+            ? dados.acesso.limitePorMinuto
+            : SEGURANCA_PADRAO.acesso.limitePorMinuto,
+      },
     };
   } catch {
     return SEGURANCA_PADRAO;
