@@ -6,6 +6,7 @@ import { TridentMark } from "@/components/brand/trident-mark";
 import { cn } from "@/lib/utils";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
 import type { SiteContent } from "@/lib/site-content";
+import { trackWhatsAppClicked } from "@/lib/analytics-events";
 
 const NAV_LINKS = [
   { href: "/#trabalhos", label: "Trabalhos" },
@@ -94,6 +95,7 @@ export function SiteHeader({
               href={buildWhatsAppLink(settings.whatsappNumber)}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackWhatsAppClicked("header")}
             >
               Participar
               <ArrowUpRight />
@@ -130,6 +132,7 @@ export function SiteHeader({
                   href={buildWhatsAppLink(settings.whatsappNumber)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackWhatsAppClicked("header")}
                 >
                   Falar no WhatsApp
                   <ArrowUpRight />

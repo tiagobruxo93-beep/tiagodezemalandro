@@ -6,6 +6,7 @@ import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
 import { montarPix, pixConfigurado } from "@/lib/pix";
 import { safeUrl } from "@/lib/security";
 import type { SiteContent } from "@/lib/site-content";
+import { trackPixCodeCopied } from "@/lib/analytics-events";
 
 /** Seção de apoio ao terreiro, com QR code gerado na hora (funciona offline). */
 export function ApoieSection({
@@ -33,6 +34,7 @@ export function ApoieSection({
   const copiar = async () => {
     try {
       await navigator.clipboard.writeText(payload);
+      trackPixCodeCopied(temPix ? "pix" : "link");
       setCopiado(true);
       window.setTimeout(() => setCopiado(false), 2500);
     } catch {

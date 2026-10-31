@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
 import { safeUrl } from "@/lib/security";
 import type { SiteContent } from "@/lib/site-content";
+import { trackWhatsAppClicked } from "@/lib/analytics-events";
 
 const ICONES = [Crown, Sparkles, ShieldCheck];
 
@@ -50,6 +51,7 @@ export function EventosSection({
                   href={buildWhatsAppLink(settings.whatsappNumber, bloco.mensagem)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackWhatsAppClicked("eventos")}
                 >
                   {bloco.botao}
                   <ArrowUpRight />

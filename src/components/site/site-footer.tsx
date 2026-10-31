@@ -3,6 +3,7 @@ import { TridentMark } from "@/components/brand/trident-mark";
 import { safeUrl } from "@/lib/security";
 import { buildWhatsAppLink, type SiteSettings } from "@/lib/ads";
 import type { SiteContent } from "@/lib/site-content";
+import { trackWhatsAppClicked } from "@/lib/analytics-events";
 
 export function SiteFooter({
   settings,
@@ -67,6 +68,7 @@ export function SiteFooter({
                   href={buildWhatsAppLink(settings.whatsappNumber)}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackWhatsAppClicked("footer")}
                 >
                   WhatsApp do terreiro
                   <ArrowUpRight className="h-3.5 w-3.5" />

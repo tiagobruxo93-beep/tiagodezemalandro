@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { safeUrl } from "@/lib/security";
 import { buildWhatsAppLink, type Ad, type SiteSettings } from "@/lib/ads";
 import type { SiteContent } from "@/lib/site-content";
+import {
+  trackWelcomePopupClicked,
+  trackWelcomePopupDismissed,
+} from "@/lib/analytics-events";
 
 const CHAVE_SESSAO = "paitiago:popup-visto";
 const CHAVE_DIA = "paitiago:popup-dia";
@@ -91,8 +95,21 @@ export function WelcomePopup({
     return () => window.clearTimeout(relogio);
   }, [anuncio, popup.atraso, popup.frequencia, popup.publico, popup.origem]);
 
+  const destino = popup.destino ?? "anuncio";
+
   const fechar = () => {
     marcarVisto(popup.frequencia);
+    if (anuncio) trackWelcomePopupDismissed(anuncio.slug);
+    setAberto(false);
+  };
+
+  const clicarNoBotao = () => {
+    marcarVisto(popup.frequencia);
+    if (anuncio) {
+      const caminho =
+        destino === "checkout" && !/^https?:\/\//i.test(anuncio.forwardUrl) ? "ad" : destino;
+      trackWelcomePopupClicked(anuncio.slug, caminho);
+    }
     setAberto(false);
   };
 
@@ -104,6 +121,7 @@ export function WelcomePopup({
     const aoTeclar = (evento: KeyboardEvent) => {
       if (evento.key === "Escape") {
         marcarVisto(popup.frequencia);
+        if (anuncio) trackWelcomePopupDismissed(anuncio.slug);
         setAberto(false);
       }
     };
@@ -116,7 +134,7 @@ export function WelcomePopup({
       document.removeEventListener("keydown", aoTeclar);
       document.body.style.overflow = overflowAnterior;
     };
-  }, [aberto, popup.frequencia]);
+  }, [aberto, anuncio, popup.frequencia]);
 
   if (!aberto || !anuncio) return null;
 
@@ -124,7 +142,6 @@ export function WelcomePopup({
   const texto = (popup.texto ?? "").trim() || anuncio.summary;
   const imagem = (popup.imagem ?? "").trim() || anuncio.imageUrl || "";
 
-  const destino = popup.destino ?? "anuncio";
   let href = `/anuncio/${anuncio.slug}`;
   let externo = false;
 
@@ -140,11 +157,16 @@ export function WelcomePopup({
   }
 
   const botao = externo ? (
-    <a href={safeUrl(href, "#")} target="_blank" rel="noopener noreferrer" onClick={fechar}>
+    <a
+      href={safeUrl(href, "#")}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={clicarNoBotao}
+    >
       {popup.botao}
     </a>
   ) : (
-    <Link to={href} onClick={fechar}>
+    <Link to={href} onClick={clicarNoBotao}>
       {popup.botao}
     </Link>
   );

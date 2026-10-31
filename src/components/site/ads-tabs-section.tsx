@@ -5,6 +5,7 @@ import { AdCard } from "@/components/site/ad-card";
 import type { Ad, FrenteKey, SiteSettings } from "@/lib/ads";
 import { fundoDe, type SiteContent } from "@/lib/site-content";
 import { SectionBackdrop } from "@/components/site/section-backdrop";
+import { trackAdsTabChanged } from "@/lib/analytics-events";
 
 export function AdsTabsSection({
   ads,
@@ -89,7 +90,10 @@ export function AdsTabsSection({
         ) : (
           <Tabs
             value={tab}
-            onValueChange={(valor) => setTab(valor as FrenteKey)}
+            onValueChange={(valor) => {
+              setTab(valor as FrenteKey);
+              if (valor !== tab) trackAdsTabChanged(valor);
+            }}
             className="mt-8"
           >
             <div className="overflow-x-auto pb-1 scrollbar-none">

@@ -6,10 +6,12 @@ import {
   buildWhatsAppLink,
   CATEGORY_META,
   forwardHref,
+  isExternalForward,
   type Ad,
   type SiteSettings,
 } from "@/lib/ads";
 import { DEFAULT_CONTENT, type SiteContent } from "@/lib/site-content";
+import { trackAdForwardClicked, trackWhatsAppClicked } from "@/lib/analytics-events";
 import { AdaptiveFrame } from "@/components/site/adaptive-frame";
 import { isDirectVideo } from "@/lib/site-content";
 import { Link } from "react-router-dom";
@@ -202,7 +204,12 @@ export function HeroSection({
                 </a>
               </Button>
               <Button asChild variant="outline" size="xl" className="min-w-[190px]">
-                <a href={buildWhatsAppLink(settings.whatsappNumber)} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={buildWhatsAppLink(settings.whatsappNumber)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackWhatsAppClicked("hero")}
+                >
                   Falar no WhatsApp
                   <ArrowUpRight />
                 </a>
@@ -275,7 +282,18 @@ export function HeroSection({
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button asChild variant="forward" size="lg">
-                  <a href={forwardHref(featuredAd, settings)} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={forwardHref(featuredAd, settings)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() =>
+                      trackAdForwardClicked(
+                        featuredAd,
+                        "hero",
+                        isExternalForward(featuredAd) ? "checkout" : "whatsapp",
+                      )
+                    }
+                  >
                     {featuredAd.forwardLabel}
                     <ArrowUpRight />
                   </a>

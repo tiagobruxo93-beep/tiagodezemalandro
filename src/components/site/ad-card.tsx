@@ -12,6 +12,7 @@ import {
   type AdCategory,
   type SiteSettings,
 } from "@/lib/ads";
+import { trackAdForwardClicked } from "@/lib/analytics-events";
 
 const FALLBACK_ICON = {
   coletivo: Flame,
@@ -144,7 +145,10 @@ export function AdCard({
               href={forwardHref(ad, settings)}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => void trackForward(ad.id, external ? "checkout" : "whatsapp")}
+              onClick={() => {
+                void trackForward(ad.id, external ? "checkout" : "whatsapp");
+                trackAdForwardClicked(ad, "ad_card", external ? "checkout" : "whatsapp");
+              }}
             >
               {ad.forwardLabel}
               <ArrowUpRight />

@@ -8,6 +8,7 @@ import { AdDetail } from "@/components/site/ad-detail";
 import { useAd, useAdLink, useAds, useSiteSettings } from "@/hooks/use-site-data";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { trackAdViewed } from "@/lib/analytics-events";
 
 const AdPage = ({ modo }: { modo?: "link" }) => {
   const { slug, codigo } = useParams<{ slug?: string; codigo?: string }>();
@@ -29,6 +30,12 @@ const AdPage = ({ modo }: { modo?: "link" }) => {
       document.title = "Pai Tiago de Zé Malandro — Trabalhos espirituais";
     };
   }, [ad]);
+
+  // Medição: qual trabalho foi aberto e se a visita veio do link de anúncio pago.
+  useEffect(() => {
+    if (!ad) return;
+    trackAdViewed(ad, porLink ? "paid_link" : "public");
+  }, [ad, porLink]);
 
   // Link usado em anúncio pago: fora do Google e com o endereço público no canonical.
   useEffect(() => {

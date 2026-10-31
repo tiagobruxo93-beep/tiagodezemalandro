@@ -20,6 +20,7 @@ import {
   type SiteSettings,
 } from "@/lib/ads";
 import { AdCard } from "@/components/site/ad-card";
+import { trackAdForwardClicked, trackWhatsAppClicked } from "@/lib/analytics-events";
 import { fundoDe, type SiteContent } from "@/lib/site-content";
 import { isDirectVideo, videoEmbedUrl } from "@/lib/site-content";
 import { VideoPlayer } from "@/components/site/video-player";
@@ -208,16 +209,22 @@ export function AdDetail({
                     href={forwardHref(ad, settings)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() =>
-                      void trackForward(ad.id, external ? "checkout" : "whatsapp")
-                    }
+                    onClick={() => {
+                      void trackForward(ad.id, external ? "checkout" : "whatsapp");
+                      trackAdForwardClicked(ad, "ad_detail", external ? "checkout" : "whatsapp");
+                    }}
                   >
                     {ad.forwardLabel}
                     <ArrowUpRight />
                   </a>
                 </Button>
                 <Button asChild variant="whatsapp" size="lg" className="w-full">
-                  <a href={whatsapp} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackWhatsAppClicked("ad_detail")}
+                  >
                     <MessageCircle />
                     Tirar dúvida no WhatsApp
                   </a>
