@@ -11,6 +11,7 @@ import {
   Settings2,
   ShieldCheck,
   Star,
+  Wrench,
   Users,
   Wallet,
   Video,
@@ -22,6 +23,7 @@ import { AdFormDialog } from "@/components/admin/ad-form-dialog";
 import { ContentEditor } from "@/components/admin/content-editor";
 import { SecurityPanel } from "@/components/admin/security-panel";
 import { ToolsPanel } from "@/components/admin/tools-panel";
+import { PopupTool } from "@/components/admin/popup-tool";
 import { VisitorsPanel } from "@/components/admin/visitors-panel";
 import { VisitsPanel } from "@/components/admin/visits-panel";
 import { TridentMark } from "@/components/brand/trident-mark";
@@ -31,7 +33,7 @@ import { exportarDados } from "@/lib/backup";
 import type { Ad } from "@/lib/ads";
 import { cn } from "@/lib/utils";
 
-type View = "anuncios" | "visitantes" | "conteudo" | "seguranca";
+type View = "anuncios" | "visitantes" | "conteudo" | "ferramentas" | "seguranca";
 
 export function AdminDashboard({
   email,
@@ -128,6 +130,7 @@ export function AdminDashboard({
   const navItems: { id: View; label: string; icon: typeof LayoutList }[] = [
     { id: "anuncios", label: "Anúncios", icon: Megaphone },
     { id: "visitantes", label: "Visitantes", icon: Users },
+    { id: "ferramentas", label: "Ferramentas", icon: Wrench },
     { id: "conteudo", label: "Conteúdo do site", icon: Settings2 },
     { id: "seguranca", label: "Segurança", icon: ShieldCheck },
   ];
@@ -352,6 +355,33 @@ export function AdminDashboard({
                 </div>
                 <div className="mt-7">
                   <VisitorsPanel />
+                </div>
+              </>
+            ) : view === "ferramentas" ? (
+              <>
+                <div>
+                  <p className="eyebrow">Painel de administração</p>
+                  <h1 className="mt-3 font-display text-4xl text-foreground sm:text-5xl">
+                    Ferramentas
+                  </h1>
+                  <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-muted-foreground">
+                    Controle a janela de entrada do site: mensagem, trabalho anunciado,
+                    tempo, destino do botão e para quem ela aparece.
+                  </p>
+                </div>
+                <div className="mt-7 max-w-5xl">
+                  {carregandoConteudo ? (
+                    <div className="space-y-3">
+                      {[0, 1, 2].map((chave) => (
+                        <div
+                          key={chave}
+                          className="h-28 animate-pulse border border-border/60 bg-card/40"
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <PopupTool content={content} ads={ads} onSaved={reloadSettings} />
+                  )}
                 </div>
               </>
             ) : view === "seguranca" ? (
