@@ -172,13 +172,15 @@ export function WelcomePopup({
         </button>
 
         {imagem && (
-          <img
-            src={safeUrl(imagem)}
-            alt=""
-            loading="eager"
-            decoding="async"
-            className="h-44 w-full object-cover sm:h-52"
-          />
+          <div className="flex max-h-[48vh] items-center justify-center overflow-hidden border-b border-border/60 bg-background/60">
+            <img
+              src={safeUrl(imagem)}
+              alt=""
+              loading="eager"
+              decoding="async"
+              className="max-h-[48vh] w-full object-contain"
+            />
+          </div>
         )}
 
         <div className="p-6">

@@ -86,13 +86,14 @@ export function AdDetail({
         <div className="grid gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:gap-16">
           <div>
             {ad.imageUrl && (
-              <div className="relative mx-auto mb-12 max-w-[460px]">
+              <div className="relative mx-auto mb-12 max-w-[520px]">
                 <div className="absolute -inset-3 -z-10 border border-secondary/20" />
                 <div className="relative border border-secondary/30 bg-card/40 p-3 shadow-elegant">
                   <img
                     src={safeUrl(ad.imageUrl)}
                     alt={ad.title}
-                    className="aspect-[4/5] w-full object-contain"
+                    decoding="async"
+                    className="mx-auto h-auto max-h-[560px] w-full object-contain"
                   />
                 </div>
               </div>
