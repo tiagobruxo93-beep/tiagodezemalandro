@@ -1,21 +1,22 @@
-# Google Search Console verification
+# Google Search Console verification (meta tag)
 
 ## Goal
 
-Make the site verifiable by Google Search Console using the verification file you attached, so Google can confirm ownership of the domain and start indexing it.
+Prove ownership of **www.paitiagodezemalandro.com** to Google Search Console so the site can be indexed, using a meta verification tag instead of the HTML file.
 
 ## What changes
 
-- Publish the file `googleed6043b2784ad77a.html` at the site root, at the exact address Google will check: `https://<your-domain>/googleed6043b2784ad77a.html`.
-- The file keeps its exact content (`google-site-verification: googleed6043b2784ad77a.html`) and exact name — Google rejects any alteration, prefix, or redirect.
+- The site's `<head>` gains one line: the Google verification tag you provided, with its exact content:
+  `<meta name="google-site-verification" content="3maCRAx1rbuQ22olpyIQYx59cny6GeQcgHHBCPzS4Ak" />`
+- No other markup, styling or behavior is touched.
 
 ## Scope
 
-- [ ] The verification file is added to the public assets so it is served from the site root, unchanged, with the exact filename.
-- [ ] Existing pages, styles, robots rules and analytics keep working exactly as they do today.
-- [ ] Nothing else is added — no sitemap, no meta tag, no new routes.
+- [ ] Every page of the published site includes the verification tag in its head.
+- [ ] The content string is copied exactly as given — Google fails verification if a single character differs.
+- [ ] Existing titles, descriptions, social preview tags, fonts, robots rules, analytics and all pages behave exactly as they do today.
 
 ## Notes
 
-- Verification only succeeds after the site is published at the domain you entered in Search Console; the file does nothing on the preview URL.
-- If you would rather verify with a meta tag instead of a file, say so and I will add the `<meta name="google-site-verification">` tag to the page head instead.
+- You enter the domain in Search Console, then click **Verify**; the tag only works once the change is live on www.paitiagodezemalandro.com, not on the preview URL.
+- The HTML file you attached earlier is not needed with this method.
