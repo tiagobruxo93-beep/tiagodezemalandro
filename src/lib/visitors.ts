@@ -20,6 +20,9 @@ export interface Visitante {
   cidade: string | null;
   latitude: number | null;
   longitude: number | null;
+  precisao_metros: number | null;
+  local_exato: boolean | null;
+  endereco: string | null;
   provedor: string | null;
   visitas: number;
   criado_em: string;
@@ -99,6 +102,9 @@ export interface GrupoIp {
   provedor: string | null;
   latitude: number | null;
   longitude: number | null;
+  precisao: number | null;
+  exato: boolean;
+  endereco: string | null;
   impressao: string | null;
   referencia: string | null;
   campanha: string | null;
@@ -152,6 +158,12 @@ export function agruparVisitantes(itens: Visitante[]): GrupoIp[] {
 
     const ips = distintos("ip");
 
+    // O ponto exato (autorizado no navegador) vale mais que a cidade do IP.
+    const exata =
+      ordenados.find(
+        (item) => item.local_exato === true && item.latitude !== null && item.longitude !== null,
+      ) ?? null;
+
     grupos.push({
       chave,
       ip: recente.ip && recente.ip.trim() !== "" ? recente.ip : (ips[0] ?? null),
@@ -160,12 +172,15 @@ export function agruparVisitantes(itens: Visitante[]): GrupoIp[] {
       sessoes: ordenados.length,
       primeira,
       ultima: recente.visto_em,
-      cidade: recente.cidade,
-      regiao: recente.regiao,
-      pais: recente.pais,
+      cidade: exata?.cidade ?? recente.cidade,
+      regiao: exata?.regiao ?? recente.regiao,
+      pais: exata?.pais ?? recente.pais,
       provedor: recente.provedor,
-      latitude: recente.latitude,
-      longitude: recente.longitude,
+      latitude: exata?.latitude ?? recente.latitude,
+      longitude: exata?.longitude ?? recente.longitude,
+      precisao: exata?.precisao_metros ?? null,
+      exato: Boolean(exata),
+      endereco: exata?.endereco ?? null,
       impressao: recente.impressao,
       referencia: recente.referencia,
       campanha: recente.campanha,
@@ -187,6 +202,9 @@ export function visitantesParaCsv(itens: Visitante[], bloqueados: Set<string>) {
     "Cidade",
     "Estado",
     "País",
+    "Endereço exato",
+    "Precisão (m)",
+    "Tipo de localização",
     "Provedor",
     "Dispositivo",
     "Sistema",
@@ -209,6 +227,9 @@ export function visitantesParaCsv(itens: Visitante[], bloqueados: Set<string>) {
       v.cidade,
       v.regiao,
       v.pais,
+      v.endereco,
+      v.precisao_metros,
+      v.local_exato ? "Exata (autorizada)" : "Aproximada (IP)",
       v.provedor,
       v.dispositivo,
       v.sistema,

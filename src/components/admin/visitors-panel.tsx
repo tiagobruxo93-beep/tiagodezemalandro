@@ -12,6 +12,7 @@ import {
   Globe2,
   Loader2,
   Lock,
+  Locate,
   MapPin,
   MonitorSmartphone,
   RefreshCw,
@@ -90,8 +91,18 @@ function dentroDoPeriodo(valor: string, periodo: Periodo) {
 }
 
 function localDoGrupo(grupo: GrupoIp) {
+  if (grupo.exato && grupo.endereco) return grupo.endereco;
+
   const partes = [grupo.cidade, grupo.regiao, grupo.pais].filter(Boolean);
-  return partes.length > 0 ? partes.join(" · ") : "Localização não identificada";
+  if (partes.length > 0) return partes.join(" · ");
+
+  return grupo.exato ? "Localização exata registrada" : "Localização não identificada";
+}
+
+function precisaoLegivel(metros: number | null) {
+  if (metros === null || !Number.isFinite(metros)) return "—";
+  if (metros < 1000) return `±${Math.round(metros)} m`;
+  return `±${(metros / 1000).toFixed(1)} km`;
 }
 
 function resumoDispositivo(grupo: GrupoIp) {
@@ -607,6 +618,12 @@ export function VisitorsPanel() {
                         {grupo.provedor ? `${grupo.provedor} · ` : ""}
                         {grupo.referencia ? `veio de ${grupo.referencia}` : "acesso direto"}
                       </p>
+                      {grupo.exato && (
+                        <p className="mt-1 inline-flex items-center gap-1 border border-secondary/40 px-1.5 py-0.5 text-[9px] uppercase tracking-[0.12em] text-secondary">
+                          <Locate className="h-3 w-3" />
+                          Exata · {precisaoLegivel(grupo.precisao)}
+                        </p>
+                      )}
                     </div>
 
                     <div className="text-[11px] text-muted-foreground md:w-[160px] md:shrink-0">
@@ -674,6 +691,34 @@ export function VisitorsPanel() {
                   {aberto && (
                     <div className="mt-3 space-y-3 border border-border/60 bg-background/40 p-4">
                       <div className="grid gap-3 text-[11px] sm:grid-cols-2 lg:grid-cols-3">
+                        <p className="text-muted-foreground">
+                          <span className={ROTULO}>Localização</span>
+                          <br />
+                          <span className="text-foreground">
+                            {grupo.exato
+                              ? "Exata (autorizada no navegador)"
+                              : "Aproximada por IP (cidade)"}
+                          </span>
+                        </p>
+                        {grupo.exato && (
+                          <>
+                            <p className="text-muted-foreground">
+                              <span className={ROTULO}>Endereço</span>
+                              <br />
+                              <span className="text-foreground">
+                                {grupo.endereco ?? "Endereço não encontrado"}
+                              </span>
+                            </p>
+                            <p className="text-muted-foreground">
+                              <span className={ROTULO}>Coordenadas</span>
+                              <br />
+                              <span className="font-mono text-foreground">
+                                {grupo.latitude?.toFixed(5)}, {grupo.longitude?.toFixed(5)} ·{" "}
+                                {precisaoLegivel(grupo.precisao)}
+                              </span>
+                            </p>
+                          </>
+                        )}
                         <p className="text-muted-foreground">
                           <span className={ROTULO}>Provedor</span>
                           <br />

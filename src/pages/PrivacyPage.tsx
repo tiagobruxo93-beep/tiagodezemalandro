@@ -70,14 +70,21 @@ const PrivacyPage = () => {
         </p>
       </LegalSection>
 
-      <LegalSection titulo="Registro de acesso (IP e localização aproximada)">
+      <LegalSection titulo="Registro de acesso (IP e localização)">
         <p>
           Para segurança do site e para entender de onde vêm as visitas, registramos o
           endereço IP de quem acessa, o navegador e o aparelho, além da{" "}
           <strong className="text-foreground">localização aproximada por IP</strong>{" "}
-          (cidade, estado e país — nunca o seu endereço exato). O navegador não permite
-          ler o endereço MAC do aparelho; usamos um identificador técnico aproximado
-          (navegador, tela, fuso e plataforma).
+          (cidade, estado e país). O navegador não permite ler o endereço MAC do
+          aparelho; usamos um identificador técnico aproximado (navegador, tela, fuso e
+          plataforma).
+        </p>
+        <p>
+          A <strong className="text-foreground">localização exata</strong> (endereço e
+          coordenadas) só é registrada se você aceitar o aviso de localização do site e
+          confirmar a permissão no seu navegador. Recusar não altera nada na navegação.
+          Você pode retirar essa permissão quando quiser nas configurações do navegador,
+          e os registros já feitos podem ser apagados pelo contato abaixo.
         </p>
         <p>
           Para identificar essa conexão, o site consulta um serviço público que apenas
@@ -98,8 +105,9 @@ const PrivacyPage = () => {
           (ii) atender você pelo WhatsApp, (iii) medir acessos de forma anônima,
           (iv) medir a eficácia das campanhas com o seu consentimento (art. 7º, I, da
           LGPD), (v) proteger o site e seus visitantes, com base no legítimo interesse
-          (art. 7º, IX) e (vi) cumprir obrigações legais. Não vendemos e não cedemos
-          dados pessoais a terceiros para marketing.
+          (art. 7º, IX), (vi) registrar a localização exata apenas quando você autoriza
+          no navegador (consentimento, art. 7º, I) e (vii) cumprir obrigações legais. Não
+          vendemos e não cedemos dados pessoais a terceiros para marketing.
         </p>
       </LegalSection>
 

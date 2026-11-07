@@ -2,6 +2,8 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { BlockedScreen } from "@/components/site/blocked-screen";
 import { ContentProtection } from "@/components/site/content-protection";
+import { CookieNotice } from "@/components/site/cookie-notice";
+import { LocationConsent } from "@/components/site/location-consent";
 import { SiteTracking } from "@/components/site/site-tracking";
 import { useSiteSettings } from "@/hooks/use-site-data";
 import { gravarSeguranca } from "@/lib/site-security";
@@ -78,6 +80,12 @@ export function SiteShell() {
     <>
       <SiteTracking marketing={content.marketing} />
       <ContentProtection protecao={content.protecao} />
+      {!pathname.startsWith("/painel") && (
+        <>
+          <CookieNotice />
+          <LocationConsent />
+        </>
+      )}
       {bloqueado ? (
         <BlockedScreen />
       ) : (

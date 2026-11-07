@@ -1,0 +1,1 @@
+delete from public.spiritual_visitors where session_id = 'teste-localizacao-exata-0001';

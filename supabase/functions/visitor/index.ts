@@ -226,6 +226,111 @@ async function localizar(ip: string): Promise<Geo | null> {
   return null;
 }
 
+type Endereco = { texto: string; cidade: string; regiao: string; pais: string; codigo: string };
+
+/**
+ * Converte as coordenadas autorizadas pelo visitante em endereço legível.
+ * O IP só entrega cidade; o ponto exato vem da permissão do navegador.
+ */
+async function reverterCoordenadas(lat: number, lon: number): Promise<Endereco | null> {
+  try {
+    const resposta = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&accept-language=pt-BR&lat=${lat}&lon=${lon}`,
+      {
+        headers: {
+          Accept: "application/json",
+          "User-Agent": "PaiTiagoSite/1.0 (https://www.paitiagodezemalandro.com)",
+        },
+        signal: AbortSignal.timeout(3500),
+      },
+    );
+
+    if (resposta.ok) {
+      const dados = (await resposta.json()) as {
+        address?: {
+          road?: string;
+          pedestrian?: string;
+          house_number?: string;
+          suburb?: string;
+          neighbourhood?: string;
+          city_district?: string;
+          city?: string;
+          town?: string;
+          village?: string;
+          municipality?: string;
+          state?: string;
+          state_code?: string;
+          country?: string;
+          country_code?: string;
+        };
+      };
+
+      const achado = dados?.address;
+
+      if (achado) {
+        const via = [achado.road ?? achado.pedestrian, achado.house_number]
+          .filter(Boolean)
+          .join(", ");
+        const bairro = achado.suburb ?? achado.neighbourhood ?? achado.city_district ?? "";
+        const cidade =
+          achado.city ?? achado.town ?? achado.village ?? achado.municipality ?? "";
+        const estado = achado.state ?? achado.state_code ?? "";
+        const texto = [via, bairro, cidade, estado].filter(Boolean).join(" · ").slice(0, 200);
+
+        if (texto) {
+          return {
+            texto,
+            cidade: limpar(cidade, 80),
+            regiao: limpar(estado, 80),
+            pais: limpar(achado.country, 80),
+            codigo: limpar(achado.country_code, 2).toUpperCase(),
+          };
+        }
+      }
+    }
+  } catch {
+    // segue para o serviço alternativo
+  }
+
+  try {
+    const resposta = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=pt`,
+      { signal: AbortSignal.timeout(3000) },
+    );
+
+    if (resposta.ok) {
+      const dados = (await resposta.json()) as {
+        city?: string;
+        locality?: string;
+        principalSubdivision?: string;
+        countryName?: string;
+        countryCode?: string;
+      };
+
+      const cidade = dados.city || dados.locality || "";
+      const regiao = dados.principalSubdivision || "";
+      const texto = [cidade, regiao, dados.countryName ?? ""]
+        .filter(Boolean)
+        .join(" · ")
+        .slice(0, 200);
+
+      if (texto) {
+        return {
+          texto,
+          cidade: limpar(cidade, 80),
+          regiao: limpar(regiao, 80),
+          pais: limpar(dados.countryName, 80),
+          codigo: limpar(dados.countryCode, 2).toUpperCase(),
+        };
+      }
+    }
+  } catch {
+    // sem endereço: guarda ao menos as coordenadas exatas
+  }
+
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -297,6 +402,81 @@ Deno.serve(async (req) => {
 
       return json({ bloqueado: false });
     }
+  }
+
+  // Localização exata: chega só depois que o visitante permite no navegador.
+  const pedidoGeo = (corpo.geo ?? null) as {
+    latitude?: unknown;
+    longitude?: unknown;
+    precisao?: unknown;
+  } | null;
+
+  const latitudePedida = Number(pedidoGeo?.latitude);
+  const longitudePedida = Number(pedidoGeo?.longitude);
+  const precisaoPedida = Number(pedidoGeo?.precisao);
+  const temCoordenadas =
+    Number.isFinite(latitudePedida) &&
+    Number.isFinite(longitudePedida) &&
+    Math.abs(latitudePedida) <= 90 &&
+    Math.abs(longitudePedida) <= 180 &&
+    !(latitudePedida === 0 && longitudePedida === 0);
+
+  if (temCoordenadas) {
+    const endereco = await reverterCoordenadas(latitudePedida, longitudePedida);
+
+    const dadosExatos = {
+      latitude: latitudePedida,
+      longitude: longitudePedida,
+      precisao_metros:
+        Number.isFinite(precisaoPedida) && precisaoPedida > 0
+          ? Math.round(precisaoPedida)
+          : null,
+      local_exato: true,
+      endereco: endereco?.texto ?? null,
+      cidade: endereco?.cidade || null,
+      regiao: endereco?.regiao || null,
+      pais: endereco?.pais || null,
+      pais_codigo: endereco?.codigo || null,
+    };
+
+    const { data: sessaoExata } = await supabase
+      .from("spiritual_visitors")
+      .select("id")
+      .eq("session_id", sessao)
+      .maybeSingle();
+
+    if (sessaoExata?.id) {
+      const { error } = await supabase
+        .from("spiritual_visitors")
+        .update(dadosExatos)
+        .eq("id", sessaoExata.id);
+
+      if (error) console.error("visitor_geo_update_error", error.message);
+    } else {
+      const { error } = await supabase.from("spiritual_visitors").insert({
+        session_id: sessao,
+        impressao: limpar(corpo.impressao, 64) || null,
+        ip: ip || null,
+        ip_servidor: ipServidorBruto || null,
+        user_agent: ua.slice(0, 300) || null,
+        navegador: navegadorDe(ua),
+        sistema: sistemaDe(ua),
+        dispositivo: dispositivoDe(ua),
+        visto_em: new Date().toISOString(),
+        ...dadosExatos,
+      });
+
+      if (error) console.error("visitor_geo_insert_error", error.message);
+    }
+
+    return json({
+      bloqueado: false,
+      exato: true,
+      endereco: endereco?.texto ?? "",
+      cidade: endereco?.cidade ?? "",
+      regiao: endereco?.regiao ?? "",
+      pais: endereco?.pais ?? "",
+    });
   }
 
   // Aproveita a localização já conhecida do mesmo IP (economiza consultas).
@@ -386,14 +566,51 @@ Deno.serve(async (req) => {
 
   const { data: existente } = await supabase
     .from("spiritual_visitors")
-    .select("id, visitas")
+    .select("id, visitas, local_exato")
     .eq("session_id", sessao)
     .maybeSingle();
 
   if (existente?.id) {
+    // Quem já autorizou a localização exata não volta para a cidade estimada
+    // por IP ao recarregar a página.
+    const aparelho = {
+      impressao: registro.impressao,
+      ip: registro.ip,
+      ip_servidor: registro.ip_servidor,
+      user_agent: registro.user_agent,
+      navegador: registro.navegador,
+      sistema: registro.sistema,
+      dispositivo: registro.dispositivo,
+      idioma: registro.idioma,
+      plataforma: registro.plataforma,
+      tela: registro.tela,
+      fuso: registro.fuso,
+      referencia: registro.referencia,
+      campanha: registro.campanha,
+      provedor: registro.provedor,
+      visto_em: registro.visto_em,
+    };
+
+    const aproximada = {
+      pais_codigo: registro.pais_codigo,
+      pais: registro.pais,
+      regiao: registro.regiao,
+      cidade: registro.cidade,
+      latitude: registro.latitude,
+      longitude: registro.longitude,
+    };
+
     const { error } = await supabase
       .from("spiritual_visitors")
-      .update({ ...registro, visitas: Number(existente.visitas ?? 1) + 1 })
+      .update(
+        existente.local_exato
+          ? { ...aparelho, visitas: Number(existente.visitas ?? 1) + 1 }
+          : {
+              ...aparelho,
+              ...aproximada,
+              visitas: Number(existente.visitas ?? 1) + 1,
+            },
+      )
       .eq("id", existente.id);
 
     if (error) {
